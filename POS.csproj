@@ -111,7 +111,15 @@
     <Compile Include="ReturnModalForm.Designer.cs">
       <DependentUpon>ReturnModalForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="SettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SettingsForm.Designer.cs">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FontManager.cs" />
+    <Compile Include="UITheme.cs" />
+    <Compile Include="UIStyler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="DashboardForm.resx">
@@ -158,6 +166,7 @@
     <EmbeddedResource Include="UsersForm.resx">
       <DependentUpon>UsersForm.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="prompt2.md" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

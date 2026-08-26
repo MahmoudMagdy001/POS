@@ -177,6 +177,32 @@ namespace POS
                 if (ctrl is Button btn)
                 {
                     btn.UseCompatibleTextRendering = false;
+                    btn.RightToLeft = RightToLeft.No;
+                    btn.TextAlign = ContentAlignment.MiddleCenter;
+                    btn.ImageAlign = ContentAlignment.MiddleCenter;
+                    btn.TextImageRelation = TextImageRelation.ImageBeforeText;
+                    btn.Padding = new Padding(0);
+
+                    // Auto-fit button size if text exceeds current width
+                    if (btn.Dock == DockStyle.None && !string.IsNullOrWhiteSpace(btn.Text))
+                    {
+                        Size measured = TextRenderer.MeasureText(btn.Text, btn.Font);
+                        if (btn.Width < measured.Width + 24)
+                        {
+                            btn.Width = measured.Width + 24;
+                        }
+                        if (btn.Height < measured.Height + 12)
+                        {
+                            btn.Height = Math.Max(btn.Height, measured.Height + 12);
+                        }
+                    }
+                }
+                else if (ctrl is TabControl tab)
+                {
+                    foreach (TabPage tp in tab.TabPages)
+                    {
+                        ApplyCairoFont(tp);
+                    }
                 }
                 else if (ctrl is Label lbl)
                 {

@@ -14,10 +14,11 @@ namespace POS
 
         private async void LoginForm_Load(object sender, EventArgs e)
         {
-            FontManager.ApplyCairoFont(this);
+            UIStyler.ApplyTheme(this);
             lblSignInTitle.Font = FontManager.GetBold(18f);
             lblLeftTitle.Font = FontManager.GetBold(18f);
-            btnLogin.Font = FontManager.GetBold(11f);
+            UIStyler.StylePrimaryButton(btnLogin);
+            UIStyler.StyleSecondaryButton(btnExit);
             lblStatus.Text = string.Empty;
             
             // تهيئة جداول قاعدة البيانات والبيانات الأولية باللغة العربية

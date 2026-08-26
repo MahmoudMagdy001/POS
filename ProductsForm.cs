@@ -17,8 +17,15 @@ namespace POS
 
         private void ProductsForm_Load(object sender, EventArgs e)
         {
-            FontManager.ApplyCairoFont(this);
+            UIStyler.ApplyTheme(this);
             lblEditorTitle.Font = FontManager.GetBold(11.5f);
+            UIStyler.StylePrimaryButton(btnSaveProduct, "💾 حفظ بيانات المنتج");
+            UIStyler.StyleSecondaryButton(btnNewProduct, "➕ صنف جديد (تفريغ الحقول)");
+            UIStyler.StyleSecondaryButton(btnGenBarcode, "⚡ باركود");
+            UIStyler.StyleSecondaryButton(btnManageCategories, "⚙️ الأقسام");
+            UIStyler.StyleDangerButton(btnDeleteProduct, "🗑️ حذف الصنف المحدد");
+            UIStyler.StyleSecondaryButton(btnRefresh, "🔄 تحديث");
+            UIStyler.StyleDataGrid(dgvProducts);
             LoadCategories();
             LoadProducts();
         }
@@ -356,6 +363,9 @@ namespace POS
                     }
                 };
 
+                btnAdd.TextAlign = ContentAlignment.MiddleCenter;
+                btnDel.TextAlign = ContentAlignment.MiddleCenter;
+
                 catForm.Controls.Add(lblCat);
                 catForm.Controls.Add(txtCat);
                 catForm.Controls.Add(btnAdd);
@@ -363,6 +373,7 @@ namespace POS
                 catForm.Controls.Add(btnDel);
 
                 refreshCats();
+                FontManager.ApplyCairoFont(catForm);
                 catForm.ShowDialog(this);
 
                 LoadCategories();

@@ -18,10 +18,16 @@ namespace POS
 
         private void SalesForm_Load(object sender, EventArgs e)
         {
-            FontManager.ApplyCairoFont(this);
+            UIStyler.ApplyTheme(this);
             lblCardRevenueVal.Font = FontManager.GetBold(15f);
             lblCardCountVal.Font = FontManager.GetBold(15f);
             lblCardItemsVal.Font = FontManager.GetBold(15f);
+            UIStyler.StyleSecondaryButton(btnRefresh, "🔄 تحديث");
+            UIStyler.StylePrimaryButton(btnPrintReceipt, "🖨️ طباعة إيصال");
+            UIStyler.StyleSecondaryButton(btnExportImage, "🖼️ تصدير كصورة");
+            UIStyler.StyleDangerButton(btnReturn, "↩️ إرجاع أصناف");
+            UIStyler.StyleDataGrid(dgvSalesList);
+            UIStyler.StyleDataGrid(dgvSaleDetails);
             cmbPeriod.SelectedIndex = 0; // اليوم
             RefreshData();
         }

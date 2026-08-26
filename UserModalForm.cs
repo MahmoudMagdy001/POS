@@ -26,8 +26,10 @@ namespace POS
 
         private void SetupForm()
         {
-            FontManager.ApplyCairoFont(this);
+            UIStyler.ApplyTheme(this);
             lblHeaderTitle.Font = FontManager.GetBold(14f);
+            UIStyler.StylePrimaryButton(btnSave);
+            UIStyler.StyleSecondaryButton(btnCancel, "إلغاء");
             lblStatus.Text = string.Empty;
 
             cboRole.Items.Clear();

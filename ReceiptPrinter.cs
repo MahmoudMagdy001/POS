@@ -10,9 +10,10 @@ namespace POS
 {
     public static class ReceiptPrinter
     {
-        // تحميل خط Cairo من مجلد fonts بجانب الـ exe
+        // تحميل خط Cairo من مجلد fonts بجانب الـ exe — كل وزن كعائلة منفصلة
         private static readonly PrivateFontCollection _fonts = new PrivateFontCollection();
-        private static FontFamily _cairoFamily;
+        private static FontFamily _cairoRegularFamily;
+        private static FontFamily _cairoBoldFamily;
 
         static ReceiptPrinter()
         {
@@ -22,25 +23,48 @@ namespace POS
                 string regularPath = Path.Combine(fontsDir, "Cairo-Regular.ttf");
                 string boldPath = Path.Combine(fontsDir, "Cairo-Bold.ttf");
 
-                if (File.Exists(regularPath)) _fonts.AddFontFile(regularPath);
-                if (File.Exists(boldPath)) _fonts.AddFontFile(boldPath);
-
-                foreach (var family in _fonts.Families)
+                if (File.Exists(regularPath))
                 {
-                    if (family.Name.IndexOf("Cairo", StringComparison.OrdinalIgnoreCase) >= 0)
-                    {
-                        _cairoFamily = family;
-                        break;
-                    }
+                    _fonts.AddFontFile(regularPath);
                 }
+                if (File.Exists(boldPath))
+                {
+                    _fonts.AddFontFile(boldPath);
+                }
+
+                // كل عائلة بتتحدد بترتيب تحميلها، مش بالاسم، عشان بعض نسخ Cairo
+                // بتسجل الاتنين بنفس اسم العائلة "Cairo"
+                if (_fonts.Families.Length >= 1) _cairoRegularFamily = _fonts.Families[0];
+                if (_fonts.Families.Length >= 2) _cairoBoldFamily = _fonts.Families[1];
+                else _cairoBoldFamily = _cairoRegularFamily; // مفيش ملف Bold منفصل، استخدم نفس العائلة
             }
             catch
             {
-                _cairoFamily = null; // هيرجع لـ Tahoma تلقائي لو فشل التحميل
+                _cairoRegularFamily = null;
+                _cairoBoldFamily = null;
             }
         }
 
-        private static FontFamily ArabicFamily => _cairoFamily ?? new FontFamily("Tahoma");
+        // بيرجع الخط الصح حسب الوزن المطلوب فعلياً — من غير ما يطلب Bold صناعي من GDI+
+        private static Font CreateFont(float size, bool bold)
+        {
+            FontFamily family = bold ? _cairoBoldFamily : _cairoRegularFamily;
+
+            if (family != null)
+            {
+                // نطلب دايماً Regular من العائلة نفسها، لأن الوزن (Bold/Regular)
+                // ده جاي من اختيار ملف الخط مش من الـ FontStyle
+                if (family.IsStyleAvailable(FontStyle.Regular))
+                    return new Font(family, size, FontStyle.Regular);
+
+                // لو العائلة مش بتدعم Regular لأي سبب، اطلب أي style متاح فعلياً
+                if (family.IsStyleAvailable(FontStyle.Bold))
+                    return new Font(family, size, FontStyle.Bold);
+            }
+
+            // فallback نهائي: Tahoma بتدعم الوزنين بشكل طبيعي وسليم
+            return new Font("Tahoma", size, bold ? FontStyle.Bold : FontStyle.Regular);
+        }
 
         // عرض قابل للطباعة آمن لورق 80مم (بالمئة من البوصة)
         private const int PaperWidthHundredths = 302;
@@ -93,9 +117,6 @@ namespace POS
         }
 
         // ═══════════════════════════════════════════════
-        // تصدير الفاتورة كصورة PNG بمقاس 80مم حقيقي (من غير أي طابعة)
-        // ═══════════════════════════════════════════════
-        // ═══════════════════════════════════════════════
         // تصدير الفاتورة كصورة PNG بمقاس 80مم حقيقي — بتتحفظ أوتوماتيك على الـ Desktop
         // ═══════════════════════════════════════════════
         public static string PreviewReceiptAsImage(SaleModel sale, List<CartItemModel> items, bool openAfterSave = true)
@@ -122,7 +143,6 @@ namespace POS
                     DrawReceiptContent(g, sale, items, startX, pageWidth);
                 }
 
-                // حفظ أوتوماتيك على سطح المكتب
                 string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
                 string fileName = $"Receipt_{sale.SaleId:D5}_{DateTime.Now:yyyyMMdd_HHmmss}.png";
                 string fullPath = Path.Combine(desktopPath, fileName);
@@ -146,11 +166,11 @@ namespace POS
         // ═══════════════════════════════════════════════
         private static void DrawReceiptContent(Graphics g, SaleModel sale, List<CartItemModel> items, int startX, int pageWidth)
         {
-            using (Font titleFont = new Font(ArabicFamily, 12, FontStyle.Bold))
-            using (Font headerFont = new Font(ArabicFamily, 8.5f, FontStyle.Regular))
-            using (Font boldFont = new Font(ArabicFamily, 8.5f, FontStyle.Bold))
-            using (Font smallFont = new Font(ArabicFamily, 8, FontStyle.Regular))
-            using (Font largeBoldFont = new Font(ArabicFamily, 11, FontStyle.Bold))
+            using (Font titleFont = CreateFont(12, bold: true))
+            using (Font headerFont = CreateFont(8.5f, bold: false))
+            using (Font boldFont = CreateFont(8.5f, bold: true))
+            using (Font smallFont = CreateFont(8, bold: false))
+            using (Font largeBoldFont = CreateFont(11, bold: true))
             using (Pen dashedPen = new Pen(Color.Black, 1) { DashStyle = System.Drawing.Drawing2D.DashStyle.Dash })
             {
                 Color textColor = Color.Black;
@@ -160,18 +180,25 @@ namespace POS
                 TextFormatFlags flagsCenterWrapped = TextFormatFlags.HorizontalCenter | TextFormatFlags.WordBreak | TextFormatFlags.RightToLeft;
                 TextFormatFlags flagsRightWrapped = TextFormatFlags.Right | TextFormatFlags.WordBreak | TextFormatFlags.RightToLeft;
 
+                SystemSettingsModel sysSettings = DbHelper.GetSystemSettings();
+                string storeName = !string.IsNullOrWhiteSpace(sysSettings.StoreName) ? sysSettings.StoreName : "نظام نقاط البيع والسوبرماركت";
+                string receiptHeader = !string.IsNullOrWhiteSpace(sysSettings.ReceiptHeader) ? sysSettings.ReceiptHeader : "فاتورة مبيعات ضريبية مبسطة";
+                string storeContact = $"هاتف: {sysSettings.StorePhone} • {sysSettings.StoreAddress}" + (string.IsNullOrWhiteSpace(sysSettings.TaxNumber) ? "" : $" • س.ت: {sysSettings.TaxNumber}");
+                string currency = !string.IsNullOrWhiteSpace(sysSettings.CurrencySymbol) ? sysSettings.CurrencySymbol : "ج.م";
+                string footerNote = !string.IsNullOrWhiteSpace(sysSettings.ReceiptFooter) ? sysSettings.ReceiptFooter : "الأسعار تشمل ضريبة القيمة المضافة • البضاعة المباعة ترد وتستبدل خلال 14 يوماً بالفاتورة";
+
                 int y = 6;
 
                 // 1. رأس الفاتورة
-                TextRenderer.DrawText(g, "نظام نقاط البيع والسوبرماركت", titleFont,
+                TextRenderer.DrawText(g, storeName, titleFont,
                     new Rectangle(startX, y, pageWidth, 28), textColor, flagsCenter);
                 y += 28;
 
-                TextRenderer.DrawText(g, "فاتورة مبيعات ضريبية مبسطة", headerFont,
+                TextRenderer.DrawText(g, receiptHeader, headerFont,
                     new Rectangle(startX, y, pageWidth, 18), textColor, flagsCenter);
                 y += 18;
 
-                TextRenderer.DrawText(g, "هاتف: 01001234567 • القاهرة، مصر", smallFont,
+                TextRenderer.DrawText(g, storeContact, smallFont,
                     new Rectangle(startX, y, pageWidth, 16), textColor, flagsCenter);
                 y += 20;
 
@@ -255,37 +282,29 @@ namespace POS
                 y += 8;
 
                 // 5. الحسابات والإجماليات
-                TextRenderer.DrawText(g, $"المجموع: {sale.TotalAmount:N2} ج.م", headerFont,
+                TextRenderer.DrawText(g, $"المجموع: {sale.TotalAmount:N2} {currency}", headerFont,
                     new Rectangle(startX, y, pageWidth, 18), textColor, flagsRight);
                 y += 18;
 
                 if (sale.Discount > 0)
                 {
-                    TextRenderer.DrawText(g, $"الخصم: -{sale.Discount:N2} ج.م", headerFont,
+                    TextRenderer.DrawText(g, $"الخصم: -{sale.Discount:N2} {currency}", headerFont,
                         new Rectangle(startX, y, pageWidth, 18), textColor, flagsRight);
-                    y += 18;
-                }
-
-                if (sale.TotalRefunded > 0)
-                {
-                    TextRenderer.DrawText(g, $"المسترد (مرتجع): -{sale.TotalRefunded:N2} ج.م", headerFont,
-                        new Rectangle(startX, y, pageWidth, 18), Color.FromArgb(220, 38, 38), flagsRight);
                     y += 18;
                 }
 
                 g.DrawLine(Pens.Black, startX, y, startX + pageWidth, y);
                 y += 6;
 
-                string finalLabel = sale.TotalRefunded > 0 ? $"صافي المستحق: {sale.NetFinalAmount:N2} ج.م" : $"الإجمالي المستحق: {sale.FinalAmount:N2} ج.م";
-                TextRenderer.DrawText(g, finalLabel, largeBoldFont,
+                TextRenderer.DrawText(g, $"الإجمالي المستحق: {sale.FinalAmount:N2} {currency}", largeBoldFont,
                     new Rectangle(startX, y, pageWidth, 24), textColor, flagsRight);
                 y += 24;
 
-                TextRenderer.DrawText(g, $"المدفوع: {sale.PaidAmount:N2} ج.م", headerFont,
+                TextRenderer.DrawText(g, $"المدفوع: {sale.PaidAmount:N2} {currency}", headerFont,
                     new Rectangle(startX, y, pageWidth, 18), textColor, flagsRight);
                 y += 18;
 
-                TextRenderer.DrawText(g, $"الباقي: {sale.ChangeAmount:N2} ج.م", boldFont,
+                TextRenderer.DrawText(g, $"الباقي: {sale.ChangeAmount:N2} {currency}", boldFont,
                     new Rectangle(startX, y, pageWidth, 18), textColor, flagsRight);
                 y += 24;
 
@@ -297,23 +316,23 @@ namespace POS
                     new Rectangle(startX, y, pageWidth, 18), textColor, flagsCenter);
                 y += 18;
 
-                string footerText = "الأسعار تشمل ضريبة القيمة المضافة • البضاعة المباعة ترد وتستبدل خلال 14 يوماً بالفاتورة";
-                int footerHeight = MeasureRowHeight(g, footerText, smallFont, pageWidth);
+                int footerHeight = MeasureRowHeight(g, footerNote, smallFont, pageWidth);
 
-                TextRenderer.DrawText(g, footerText, smallFont,
+                TextRenderer.DrawText(g, footerNote, smallFont,
                     new Rectangle(startX, y, pageWidth, footerHeight), textColor, flagsCenterWrapped);
             }
         }
 
-        // بيحسب ارتفاع الصف حسب عدد الأسطر اللي النص هياخدها لو طويل
+        // بيحسب ارتفاع الصف بنفس محرك القياس اللي بيرسم بيه TextRenderer.DrawText فعلياً
         private static int MeasureRowHeight(Graphics g, string text, Font font, int width)
         {
-            SizeF size = g.MeasureString(text, font, width);
-            int lines = Math.Max(1, (int)Math.Ceiling(size.Height / font.GetHeight(g)));
-            return Math.Max(18, lines * 16);
+            TextFormatFlags flags = TextFormatFlags.WordBreak | TextFormatFlags.RightToLeft;
+            Size proposed = new Size(width, int.MaxValue);
+            Size actual = TextRenderer.MeasureText(g, text, font, proposed, flags);
+            return Math.Max(18, actual.Height);
         }
 
-        // بيحسب الطول الكلي المتوقع للفاتورة قبل الطباعة/التصدير
+        // بيحسب الطول الكلي المتوقع للفاتورة، بنفس دقة (DPI) الصورة/الطباعة الفعلية
         private static int CalculateContentHeight(SaleModel sale, List<CartItemModel> items, int pageWidth)
         {
             int height = 6;
@@ -324,12 +343,17 @@ namespace POS
             height += 20 + 6;
 
             using (Bitmap bmp = new Bitmap(1, 1))
-            using (Graphics g = Graphics.FromImage(bmp))
-            using (Font smallFont = new Font(ArabicFamily, 8))
             {
-                int colProdW = pageWidth - 34 - 50 - 58;
-                foreach (var item in items)
-                    height += MeasureRowHeight(g, item.ProductName, smallFont, colProdW);
+                bmp.SetResolution(ThermalDpi, ThermalDpi);
+                using (Graphics g = Graphics.FromImage(bmp))
+                using (Font smallFont = CreateFont(8, bold: false))
+                {
+                    g.PageUnit = GraphicsUnit.Display;
+
+                    int colProdW = pageWidth - 34 - 50 - 58;
+                    foreach (var item in items)
+                        height += MeasureRowHeight(g, item.ProductName, smallFont, colProdW);
+                }
             }
 
             height += 6 + 8;

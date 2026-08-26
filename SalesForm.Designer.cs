@@ -252,9 +252,11 @@ namespace POS
             this.btnRefresh.Location = new System.Drawing.Point(0, 3);
             this.btnRefresh.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnRefresh.Size = new System.Drawing.Size(120, 32);
             this.btnRefresh.TabIndex = 4;
             this.btnRefresh.Text = "🔄 تحديث";
+            this.btnRefresh.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnRefresh.UseVisualStyleBackColor = false;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
@@ -490,9 +492,11 @@ namespace POS
             this.btnReturn.ForeColor = System.Drawing.Color.White;
             this.btnReturn.Location = new System.Drawing.Point(377, 3);
             this.btnReturn.Name = "btnReturn";
+            this.btnReturn.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnReturn.Size = new System.Drawing.Size(170, 36);
             this.btnReturn.TabIndex = 2;
             this.btnReturn.Text = "🔄 عمل إرجاع / مرتجع";
+            this.btnReturn.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnReturn.UseVisualStyleBackColor = false;
             this.btnReturn.Click += new System.EventHandler(this.btnReturn_Click);
             // 
@@ -506,9 +510,11 @@ namespace POS
             this.btnPrintReceipt.ForeColor = System.Drawing.Color.White;
             this.btnPrintReceipt.Location = new System.Drawing.Point(197, 3);
             this.btnPrintReceipt.Name = "btnPrintReceipt";
+            this.btnPrintReceipt.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnPrintReceipt.Size = new System.Drawing.Size(174, 36);
             this.btnPrintReceipt.TabIndex = 0;
             this.btnPrintReceipt.Text = "🖨️ طباعة إيصال الفاتورة";
+            this.btnPrintReceipt.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnPrintReceipt.UseVisualStyleBackColor = false;
             this.btnPrintReceipt.Click += new System.EventHandler(this.btnPrintReceipt_Click);
             // 
@@ -522,9 +528,11 @@ namespace POS
             this.btnExportImage.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this.btnExportImage.Location = new System.Drawing.Point(27, 3);
             this.btnExportImage.Name = "btnExportImage";
+            this.btnExportImage.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnExportImage.Size = new System.Drawing.Size(164, 36);
             this.btnExportImage.TabIndex = 1;
             this.btnExportImage.Text = "🖼️ تصدير كصورة PNG";
+            this.btnExportImage.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnExportImage.UseVisualStyleBackColor = false;
             this.btnExportImage.Click += new System.EventHandler(this.btnExportImage_Click);
             // 

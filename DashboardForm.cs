@@ -16,7 +16,15 @@ namespace POS
 
         private void DashboardForm_Load(object sender, EventArgs e)
         {
-            FontManager.ApplyCairoFont(this);
+            UIStyler.ApplyTheme(this);
+            UIStyler.SetFilterButtonActive(btnFilterToday, true);
+            UIStyler.SetFilterButtonActive(btnFilterWeek, false);
+            UIStyler.SetFilterButtonActive(btnFilterMonth, false);
+            UIStyler.SetFilterButtonActive(btnFilterAll, false);
+            UIStyler.StyleSecondaryButton(btnRefresh);
+            UIStyler.StyleDataGrid(dgvTopProducts);
+            UIStyler.StyleDataGrid(dgvRecentSales);
+            UIStyler.StyleDataGrid(dgvLowStock);
             RefreshData();
         }
 
@@ -226,17 +234,10 @@ namespace POS
             Button btn = sender as Button;
             if (btn == null) return;
 
-            btnFilterToday.BackColor = Color.FromArgb(241, 245, 249);
-            btnFilterToday.ForeColor = Color.FromArgb(51, 65, 85);
-            btnFilterWeek.BackColor = Color.FromArgb(241, 245, 249);
-            btnFilterWeek.ForeColor = Color.FromArgb(51, 65, 85);
-            btnFilterMonth.BackColor = Color.FromArgb(241, 245, 249);
-            btnFilterMonth.ForeColor = Color.FromArgb(51, 65, 85);
-            btnFilterAll.BackColor = Color.FromArgb(241, 245, 249);
-            btnFilterAll.ForeColor = Color.FromArgb(51, 65, 85);
-
-            btn.BackColor = Color.FromArgb(14, 165, 233);
-            btn.ForeColor = Color.White;
+            UIStyler.SetFilterButtonActive(btnFilterToday, btn == btnFilterToday);
+            UIStyler.SetFilterButtonActive(btnFilterWeek, btn == btnFilterWeek);
+            UIStyler.SetFilterButtonActive(btnFilterMonth, btn == btnFilterMonth);
+            UIStyler.SetFilterButtonActive(btnFilterAll, btn == btnFilterAll);
 
             if (btn == btnFilterToday) _activeFilter = "اليوم";
             else if (btn == btnFilterWeek) _activeFilter = "الأسبوع";

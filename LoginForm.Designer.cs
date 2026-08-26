@@ -152,9 +152,13 @@ namespace POS
             this.btnExit.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this.btnExit.Location = new System.Drawing.Point(40, 436);
             this.btnExit.Name = "btnExit";
+            this.btnExit.Padding = new System.Windows.Forms.Padding(0);
+            this.btnExit.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnExit.Size = new System.Drawing.Size(460, 38);
             this.btnExit.TabIndex = 9;
             this.btnExit.Text = "🚪 إغلاق التطبيق";
+            this.btnExit.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnExit.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnExit.UseVisualStyleBackColor = true;
             this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
@@ -192,9 +196,13 @@ namespace POS
             this.btnLogin.ForeColor = System.Drawing.Color.White;
             this.btnLogin.Location = new System.Drawing.Point(40, 376);
             this.btnLogin.Name = "btnLogin";
+            this.btnLogin.Padding = new System.Windows.Forms.Padding(0);
+            this.btnLogin.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnLogin.Size = new System.Drawing.Size(460, 48);
             this.btnLogin.TabIndex = 6;
             this.btnLogin.Text = "🔓 تسجيل الدخول";
+            this.btnLogin.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnLogin.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnLogin.UseVisualStyleBackColor = false;
             this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
             // 

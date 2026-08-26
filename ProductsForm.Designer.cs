@@ -72,7 +72,7 @@ namespace POS
             // tlpMain
             // 
             this.tlpMain.ColumnCount = 2;
-            this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 340F));
+            this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 420F));
             this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tlpMain.Controls.Add(this.pnlEditor, 0, 0);
             this.tlpMain.Controls.Add(this.pnlList, 1, 0);
@@ -90,11 +90,11 @@ namespace POS
             this.pnlEditor.BackColor = System.Drawing.Color.White;
             this.pnlEditor.Controls.Add(this.tlpEditor);
             this.pnlEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlEditor.Location = new System.Drawing.Point(832, 3);
+            this.pnlEditor.Location = new System.Drawing.Point(752, 3);
             this.pnlEditor.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
             this.pnlEditor.Name = "pnlEditor";
             this.pnlEditor.Padding = new System.Windows.Forms.Padding(14);
-            this.pnlEditor.Size = new System.Drawing.Size(337, 686);
+            this.pnlEditor.Size = new System.Drawing.Size(417, 686);
             this.pnlEditor.TabIndex = 0;
             // 
             // tlpEditor
@@ -141,7 +141,7 @@ namespace POS
             this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 46F));
             this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48F));
             this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 46F));
-            this.tlpEditor.Size = new System.Drawing.Size(309, 580);
+            this.tlpEditor.Size = new System.Drawing.Size(389, 580);
             this.tlpEditor.TabIndex = 0;
             // 
             // lblEditorTitle
@@ -151,10 +151,10 @@ namespace POS
             this.lblEditorTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this.lblEditorTitle.Location = new System.Drawing.Point(3, 0);
             this.lblEditorTitle.Name = "lblEditorTitle";
-            this.lblEditorTitle.Size = new System.Drawing.Size(303, 34);
+            this.lblEditorTitle.Size = new System.Drawing.Size(383, 34);
             this.lblEditorTitle.TabIndex = 0;
             this.lblEditorTitle.Text = "📝 بيانات الصنف / المنتج";
-            this.lblEditorTitle.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblEditorTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblBarcode
             // 
@@ -163,7 +163,7 @@ namespace POS
             this.lblBarcode.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this.lblBarcode.Location = new System.Drawing.Point(3, 34);
             this.lblBarcode.Name = "lblBarcode";
-            this.lblBarcode.Size = new System.Drawing.Size(303, 20);
+            this.lblBarcode.Size = new System.Drawing.Size(383, 20);
             this.lblBarcode.TabIndex = 1;
             this.lblBarcode.Text = "الباركود:";
             this.lblBarcode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -176,7 +176,7 @@ namespace POS
             this.pnlBarcodeRow.Location = new System.Drawing.Point(0, 54);
             this.pnlBarcodeRow.Margin = new System.Windows.Forms.Padding(0, 0, 0, 6);
             this.pnlBarcodeRow.Name = "pnlBarcodeRow";
-            this.pnlBarcodeRow.Size = new System.Drawing.Size(309, 28);
+            this.pnlBarcodeRow.Size = new System.Drawing.Size(389, 28);
             this.pnlBarcodeRow.TabIndex = 2;
             // 
             // txtBarcode
@@ -187,7 +187,7 @@ namespace POS
             this.txtBarcode.Font = new System.Drawing.Font("Tahoma", 10F);
             this.txtBarcode.Location = new System.Drawing.Point(86, 2);
             this.txtBarcode.Name = "txtBarcode";
-            this.txtBarcode.Size = new System.Drawing.Size(220, 28);
+            this.txtBarcode.Size = new System.Drawing.Size(300, 28);
             this.txtBarcode.TabIndex = 0;
             // 
             // btnGenBarcode
@@ -199,9 +199,13 @@ namespace POS
             this.btnGenBarcode.Font = new System.Drawing.Font("Tahoma", 8.5F);
             this.btnGenBarcode.Location = new System.Drawing.Point(3, 1);
             this.btnGenBarcode.Name = "btnGenBarcode";
+            this.btnGenBarcode.Padding = new System.Windows.Forms.Padding(0);
+            this.btnGenBarcode.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnGenBarcode.Size = new System.Drawing.Size(77, 26);
             this.btnGenBarcode.TabIndex = 1;
             this.btnGenBarcode.Text = "⚡ باركود";
+            this.btnGenBarcode.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnGenBarcode.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnGenBarcode.UseVisualStyleBackColor = false;
             this.btnGenBarcode.Click += new System.EventHandler(this.btnGenBarcode_Click);
             // 
@@ -212,7 +216,7 @@ namespace POS
             this.lblProductName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this.lblProductName.Location = new System.Drawing.Point(3, 88);
             this.lblProductName.Name = "lblProductName";
-            this.lblProductName.Size = new System.Drawing.Size(303, 20);
+            this.lblProductName.Size = new System.Drawing.Size(383, 20);
             this.lblProductName.TabIndex = 3;
             this.lblProductName.Text = "اسم المنتج:";
             this.lblProductName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -225,7 +229,7 @@ namespace POS
             this.txtProductName.Location = new System.Drawing.Point(3, 111);
             this.txtProductName.Margin = new System.Windows.Forms.Padding(3, 3, 3, 6);
             this.txtProductName.Name = "txtProductName";
-            this.txtProductName.Size = new System.Drawing.Size(303, 28);
+            this.txtProductName.Size = new System.Drawing.Size(383, 28);
             this.txtProductName.TabIndex = 4;
             // 
             // lblCategory
@@ -235,7 +239,7 @@ namespace POS
             this.lblCategory.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this.lblCategory.Location = new System.Drawing.Point(3, 142);
             this.lblCategory.Name = "lblCategory";
-            this.lblCategory.Size = new System.Drawing.Size(303, 20);
+            this.lblCategory.Size = new System.Drawing.Size(383, 20);
             this.lblCategory.TabIndex = 5;
             this.lblCategory.Text = "القسم:";
             this.lblCategory.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -248,7 +252,7 @@ namespace POS
             this.pnlCategoryRow.Location = new System.Drawing.Point(0, 162);
             this.pnlCategoryRow.Margin = new System.Windows.Forms.Padding(0, 0, 0, 6);
             this.pnlCategoryRow.Name = "pnlCategoryRow";
-            this.pnlCategoryRow.Size = new System.Drawing.Size(309, 28);
+            this.pnlCategoryRow.Size = new System.Drawing.Size(389, 28);
             this.pnlCategoryRow.TabIndex = 6;
             // 
             // cmbCategory
@@ -260,7 +264,7 @@ namespace POS
             this.cmbCategory.FormattingEnabled = true;
             this.cmbCategory.Location = new System.Drawing.Point(86, 2);
             this.cmbCategory.Name = "cmbCategory";
-            this.cmbCategory.Size = new System.Drawing.Size(220, 29);
+            this.cmbCategory.Size = new System.Drawing.Size(300, 29);
             this.cmbCategory.TabIndex = 0;
             // 
             // btnManageCategories
@@ -272,9 +276,13 @@ namespace POS
             this.btnManageCategories.Font = new System.Drawing.Font("Tahoma", 8.5F);
             this.btnManageCategories.Location = new System.Drawing.Point(3, 1);
             this.btnManageCategories.Name = "btnManageCategories";
+            this.btnManageCategories.Padding = new System.Windows.Forms.Padding(0);
+            this.btnManageCategories.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnManageCategories.Size = new System.Drawing.Size(77, 26);
             this.btnManageCategories.TabIndex = 1;
             this.btnManageCategories.Text = "⚙️ الأقسام";
+            this.btnManageCategories.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnManageCategories.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnManageCategories.UseVisualStyleBackColor = false;
             this.btnManageCategories.Click += new System.EventHandler(this.btnManageCategories_Click);
             // 
@@ -285,7 +293,7 @@ namespace POS
             this.lblBuyPrice.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this.lblBuyPrice.Location = new System.Drawing.Point(3, 196);
             this.lblBuyPrice.Name = "lblBuyPrice";
-            this.lblBuyPrice.Size = new System.Drawing.Size(303, 20);
+            this.lblBuyPrice.Size = new System.Drawing.Size(383, 20);
             this.lblBuyPrice.TabIndex = 7;
             this.lblBuyPrice.Text = "سعر الشراء (التكلفة):";
             this.lblBuyPrice.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -303,7 +311,7 @@ namespace POS
             0,
             0});
             this.numBuyPrice.Name = "numBuyPrice";
-            this.numBuyPrice.Size = new System.Drawing.Size(303, 28);
+            this.numBuyPrice.Size = new System.Drawing.Size(383, 28);
             this.numBuyPrice.TabIndex = 8;
             // 
             // lblSellPrice
@@ -313,7 +321,7 @@ namespace POS
             this.lblSellPrice.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this.lblSellPrice.Location = new System.Drawing.Point(3, 250);
             this.lblSellPrice.Name = "lblSellPrice";
-            this.lblSellPrice.Size = new System.Drawing.Size(303, 20);
+            this.lblSellPrice.Size = new System.Drawing.Size(383, 20);
             this.lblSellPrice.TabIndex = 9;
             this.lblSellPrice.Text = "سعر البيع للجمهور:";
             this.lblSellPrice.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -331,7 +339,7 @@ namespace POS
             0,
             0});
             this.numSellPrice.Name = "numSellPrice";
-            this.numSellPrice.Size = new System.Drawing.Size(303, 28);
+            this.numSellPrice.Size = new System.Drawing.Size(383, 28);
             this.numSellPrice.TabIndex = 10;
             // 
             // lblStockQuantity
@@ -341,7 +349,7 @@ namespace POS
             this.lblStockQuantity.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this.lblStockQuantity.Location = new System.Drawing.Point(3, 304);
             this.lblStockQuantity.Name = "lblStockQuantity";
-            this.lblStockQuantity.Size = new System.Drawing.Size(303, 20);
+            this.lblStockQuantity.Size = new System.Drawing.Size(383, 20);
             this.lblStockQuantity.TabIndex = 11;
             this.lblStockQuantity.Text = "الكمية المتاحة بالمخزن:";
             this.lblStockQuantity.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -358,7 +366,7 @@ namespace POS
             0,
             0});
             this.numStockQuantity.Name = "numStockQuantity";
-            this.numStockQuantity.Size = new System.Drawing.Size(303, 28);
+            this.numStockQuantity.Size = new System.Drawing.Size(383, 28);
             this.numStockQuantity.TabIndex = 12;
             // 
             // lblMinStockAlert
@@ -368,7 +376,7 @@ namespace POS
             this.lblMinStockAlert.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this.lblMinStockAlert.Location = new System.Drawing.Point(3, 358);
             this.lblMinStockAlert.Name = "lblMinStockAlert";
-            this.lblMinStockAlert.Size = new System.Drawing.Size(303, 20);
+            this.lblMinStockAlert.Size = new System.Drawing.Size(383, 20);
             this.lblMinStockAlert.TabIndex = 13;
             this.lblMinStockAlert.Text = "حد التنبيه (أدنى مخزون):";
             this.lblMinStockAlert.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -385,7 +393,7 @@ namespace POS
             0,
             0});
             this.numMinStockAlert.Name = "numMinStockAlert";
-            this.numMinStockAlert.Size = new System.Drawing.Size(303, 28);
+            this.numMinStockAlert.Size = new System.Drawing.Size(383, 28);
             this.numMinStockAlert.TabIndex = 14;
             this.numMinStockAlert.Value = new decimal(new int[] {
             5,
@@ -405,9 +413,13 @@ namespace POS
             this.btnNewProduct.Location = new System.Drawing.Point(3, 415);
             this.btnNewProduct.Margin = new System.Windows.Forms.Padding(3, 3, 3, 5);
             this.btnNewProduct.Name = "btnNewProduct";
-            this.btnNewProduct.Size = new System.Drawing.Size(303, 38);
+            this.btnNewProduct.Padding = new System.Windows.Forms.Padding(0);
+            this.btnNewProduct.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btnNewProduct.Size = new System.Drawing.Size(383, 38);
             this.btnNewProduct.TabIndex = 15;
             this.btnNewProduct.Text = "➕ صنف جديد (تفريغ الحقول)";
+            this.btnNewProduct.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnNewProduct.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNewProduct.UseVisualStyleBackColor = false;
             this.btnNewProduct.Click += new System.EventHandler(this.btnNewProduct_Click);
             // 
@@ -423,9 +435,13 @@ namespace POS
             this.btnSaveProduct.Location = new System.Drawing.Point(3, 461);
             this.btnSaveProduct.Margin = new System.Windows.Forms.Padding(3, 3, 3, 5);
             this.btnSaveProduct.Name = "btnSaveProduct";
-            this.btnSaveProduct.Size = new System.Drawing.Size(303, 40);
+            this.btnSaveProduct.Padding = new System.Windows.Forms.Padding(0);
+            this.btnSaveProduct.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btnSaveProduct.Size = new System.Drawing.Size(383, 40);
             this.btnSaveProduct.TabIndex = 16;
             this.btnSaveProduct.Text = "💾 حفظ بيانات المنتج";
+            this.btnSaveProduct.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnSaveProduct.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnSaveProduct.UseVisualStyleBackColor = false;
             this.btnSaveProduct.Click += new System.EventHandler(this.btnSaveProduct_Click);
             // 
@@ -442,9 +458,13 @@ namespace POS
             this.btnDeleteProduct.Location = new System.Drawing.Point(3, 509);
             this.btnDeleteProduct.Margin = new System.Windows.Forms.Padding(3, 3, 3, 5);
             this.btnDeleteProduct.Name = "btnDeleteProduct";
-            this.btnDeleteProduct.Size = new System.Drawing.Size(303, 66);
+            this.btnDeleteProduct.Padding = new System.Windows.Forms.Padding(0);
+            this.btnDeleteProduct.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btnDeleteProduct.Size = new System.Drawing.Size(383, 66);
             this.btnDeleteProduct.TabIndex = 17;
             this.btnDeleteProduct.Text = "🗑️ حذف الصنف المحدد";
+            this.btnDeleteProduct.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnDeleteProduct.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnDeleteProduct.UseVisualStyleBackColor = false;
             this.btnDeleteProduct.Click += new System.EventHandler(this.btnDeleteProduct_Click);
             // 
@@ -458,7 +478,7 @@ namespace POS
             this.pnlList.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
             this.pnlList.Name = "pnlList";
             this.pnlList.Padding = new System.Windows.Forms.Padding(14);
-            this.pnlList.Size = new System.Drawing.Size(829, 686);
+            this.pnlList.Size = new System.Drawing.Size(749, 686);
             this.pnlList.TabIndex = 1;
             // 
             // dgvProducts
@@ -501,7 +521,7 @@ namespace POS
             this.dgvProducts.RowHeadersWidth = 51;
             this.dgvProducts.RowTemplate.Height = 40;
             this.dgvProducts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvProducts.Size = new System.Drawing.Size(801, 596);
+            this.dgvProducts.Size = new System.Drawing.Size(721, 596);
             this.dgvProducts.TabIndex = 1;
             this.dgvProducts.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvProducts_CellFormatting);
             this.dgvProducts.SelectionChanged += new System.EventHandler(this.dgvProducts_SelectionChanged);
@@ -512,7 +532,7 @@ namespace POS
             this.pnlFilters.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlFilters.Location = new System.Drawing.Point(14, 14);
             this.pnlFilters.Name = "pnlFilters";
-            this.pnlFilters.Size = new System.Drawing.Size(801, 62);
+            this.pnlFilters.Size = new System.Drawing.Size(721, 62);
             this.pnlFilters.TabIndex = 0;
             // 
             // tlpFilters
@@ -534,7 +554,7 @@ namespace POS
             this.tlpFilters.RowCount = 2;
             this.tlpFilters.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.tlpFilters.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpFilters.Size = new System.Drawing.Size(801, 62);
+            this.tlpFilters.Size = new System.Drawing.Size(721, 62);
             this.tlpFilters.TabIndex = 0;
             // 
             // lblSearch
@@ -542,21 +562,21 @@ namespace POS
             this.lblSearch.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblSearch.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblSearch.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblSearch.Location = new System.Drawing.Point(468, 0);
+            this.lblSearch.Location = new System.Drawing.Point(422, 0);
             this.lblSearch.Name = "lblSearch";
-            this.lblSearch.Size = new System.Drawing.Size(330, 22);
+            this.lblSearch.Size = new System.Drawing.Size(296, 22);
             this.lblSearch.TabIndex = 0;
             this.lblSearch.Text = "🔍 بحث بالاسم أو الباركود:";
-            this.lblSearch.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblSearch.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtSearch
             // 
             this.txtSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtSearch.Font = new System.Drawing.Font("Tahoma", 10F);
-            this.txtSearch.Location = new System.Drawing.Point(468, 28);
+            this.txtSearch.Location = new System.Drawing.Point(422, 28);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(330, 28);
+            this.txtSearch.Size = new System.Drawing.Size(296, 28);
             this.txtSearch.TabIndex = 1;
             this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
             // 
@@ -565,12 +585,12 @@ namespace POS
             this.lblCategoryFilter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblCategoryFilter.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblCategoryFilter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblCategoryFilter.Location = new System.Drawing.Point(244, 0);
+            this.lblCategoryFilter.Location = new System.Drawing.Point(221, 0);
             this.lblCategoryFilter.Name = "lblCategoryFilter";
-            this.lblCategoryFilter.Size = new System.Drawing.Size(218, 22);
+            this.lblCategoryFilter.Size = new System.Drawing.Size(195, 22);
             this.lblCategoryFilter.TabIndex = 2;
             this.lblCategoryFilter.Text = "القسم:";
-            this.lblCategoryFilter.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblCategoryFilter.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // cmbCategoryFilter
             // 
@@ -578,9 +598,9 @@ namespace POS
             this.cmbCategoryFilter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbCategoryFilter.Font = new System.Drawing.Font("Tahoma", 10F);
             this.cmbCategoryFilter.FormattingEnabled = true;
-            this.cmbCategoryFilter.Location = new System.Drawing.Point(244, 27);
+            this.cmbCategoryFilter.Location = new System.Drawing.Point(221, 27);
             this.cmbCategoryFilter.Name = "cmbCategoryFilter";
-            this.cmbCategoryFilter.Size = new System.Drawing.Size(218, 29);
+            this.cmbCategoryFilter.Size = new System.Drawing.Size(195, 29);
             this.cmbCategoryFilter.TabIndex = 3;
             this.cmbCategoryFilter.SelectedIndexChanged += new System.EventHandler(this.cmbCategoryFilter_SelectedIndexChanged);
             // 
@@ -591,9 +611,9 @@ namespace POS
             this.chkLowStockOnly.Cursor = System.Windows.Forms.Cursors.Hand;
             this.chkLowStockOnly.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.chkLowStockOnly.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this.chkLowStockOnly.Location = new System.Drawing.Point(84, 31);
+            this.chkLowStockOnly.Location = new System.Drawing.Point(77, 31);
             this.chkLowStockOnly.Name = "chkLowStockOnly";
-            this.chkLowStockOnly.Size = new System.Drawing.Size(154, 22);
+            this.chkLowStockOnly.Size = new System.Drawing.Size(138, 22);
             this.chkLowStockOnly.TabIndex = 4;
             this.chkLowStockOnly.Text = "⚠️ عرض النواقص فقط";
             this.chkLowStockOnly.UseVisualStyleBackColor = true;
@@ -609,9 +629,13 @@ namespace POS
             this.btnRefresh.Font = new System.Drawing.Font("Tahoma", 9F);
             this.btnRefresh.Location = new System.Drawing.Point(3, 27);
             this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(75, 30);
+            this.btnRefresh.Padding = new System.Windows.Forms.Padding(0);
+            this.btnRefresh.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btnRefresh.Size = new System.Drawing.Size(68, 30);
             this.btnRefresh.TabIndex = 5;
             this.btnRefresh.Text = "🔄 تحديث";
+            this.btnRefresh.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnRefresh.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnRefresh.UseVisualStyleBackColor = false;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 

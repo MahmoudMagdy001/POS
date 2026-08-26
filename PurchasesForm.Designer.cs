@@ -274,9 +274,13 @@ namespace POS
             this.btnSavePurchase.ForeColor = System.Drawing.Color.White;
             this.btnSavePurchase.Location = new System.Drawing.Point(128, 3);
             this.btnSavePurchase.Name = "btnSavePurchase";
+            this.btnSavePurchase.Padding = new System.Windows.Forms.Padding(0);
+            this.btnSavePurchase.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnSavePurchase.Size = new System.Drawing.Size(254, 38);
             this.btnSavePurchase.TabIndex = 0;
             this.btnSavePurchase.Text = "💾 حفظ الفاتورة وتحديث المخزون";
+            this.btnSavePurchase.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnSavePurchase.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnSavePurchase.UseVisualStyleBackColor = false;
             this.btnSavePurchase.Click += new System.EventHandler(this.btnSavePurchase_Click);
             // 
@@ -290,9 +294,13 @@ namespace POS
             this.btnResetPurchase.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this.btnResetPurchase.Location = new System.Drawing.Point(4, 3);
             this.btnResetPurchase.Name = "btnResetPurchase";
+            this.btnResetPurchase.Padding = new System.Windows.Forms.Padding(0);
+            this.btnResetPurchase.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnResetPurchase.Size = new System.Drawing.Size(118, 38);
             this.btnResetPurchase.TabIndex = 1;
             this.btnResetPurchase.Text = "🗑️ إلغاء الفاتورة";
+            this.btnResetPurchase.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnResetPurchase.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnResetPurchase.UseVisualStyleBackColor = false;
             this.btnResetPurchase.Click += new System.EventHandler(this.btnResetPurchase_Click);
             // 
@@ -428,9 +436,13 @@ namespace POS
             this.btnQuickAddProduct.ForeColor = System.Drawing.Color.White;
             this.btnQuickAddProduct.Location = new System.Drawing.Point(3, 25);
             this.btnQuickAddProduct.Name = "btnQuickAddProduct";
+            this.btnQuickAddProduct.Padding = new System.Windows.Forms.Padding(0);
+            this.btnQuickAddProduct.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnQuickAddProduct.Size = new System.Drawing.Size(192, 28);
             this.btnQuickAddProduct.TabIndex = 6;
             this.btnQuickAddProduct.Text = "➕ إضافة للفاتورة";
+            this.btnQuickAddProduct.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnQuickAddProduct.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnQuickAddProduct.UseVisualStyleBackColor = false;
             this.btnQuickAddProduct.Click += new System.EventHandler(this.btnQuickAddProduct_Click);
             // 
@@ -507,9 +519,13 @@ namespace POS
             this.btnQuickAddSupplier.Font = new System.Drawing.Font("Tahoma", 8.5F);
             this.btnQuickAddSupplier.Location = new System.Drawing.Point(3, 3);
             this.btnQuickAddSupplier.Name = "btnQuickAddSupplier";
+            this.btnQuickAddSupplier.Padding = new System.Windows.Forms.Padding(0);
+            this.btnQuickAddSupplier.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnQuickAddSupplier.Size = new System.Drawing.Size(99, 28);
             this.btnQuickAddSupplier.TabIndex = 1;
             this.btnQuickAddSupplier.Text = "➕ مورد جديد";
+            this.btnQuickAddSupplier.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnQuickAddSupplier.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnQuickAddSupplier.UseVisualStyleBackColor = false;
             this.btnQuickAddSupplier.Click += new System.EventHandler(this.btnQuickAddSupplier_Click);
             // 

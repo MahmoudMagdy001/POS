@@ -18,9 +18,15 @@ namespace POS
 
         private void UsersForm_Load(object sender, EventArgs e)
         {
-            FontManager.ApplyCairoFont(this);
+            UIStyler.ApplyTheme(this);
             lblTitle.Font = FontManager.GetBold(16f);
             lblSubtitle.Font = FontManager.GetRegular(9f);
+            UIStyler.StylePrimaryButton(btnCreateUser, "➕ إضافة مستخدم جديد");
+            UIStyler.StyleSecondaryButton(btnEditUser, "✏️ تعديل");
+            UIStyler.StyleSecondaryButton(btnToggleStatus, "🔄 تفعيل / تعطيل");
+            UIStyler.StyleDangerButton(btnDeleteUser, "🗑️ حذف");
+            UIStyler.StyleSecondaryButton(btnRefresh, "🔄 تحديث");
+            UIStyler.StyleDataGrid(dgvUsers);
             LoadUsers();
         }
 

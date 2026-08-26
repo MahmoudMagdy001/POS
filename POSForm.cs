@@ -20,10 +20,13 @@ namespace POS
 
         private void POSForm_Load(object sender, EventArgs e)
         {
-            FontManager.ApplyCairoFont(this);
+            UIStyler.ApplyTheme(this);
             lblFinalTotalVal.Font = FontManager.GetBold(20f);
             lblFinalTotalTitle.Font = FontManager.GetBold(12f);
-            btnCheckout.Font = FontManager.GetBold(11.5f);
+            UIStyler.StyleSuccessButton(btnCheckout, "💳 إتمام وطباعة الفاتورة [F12]");
+            UIStyler.StyleDangerButton(btnClearCart, "🗑️ تفريغ السلة");
+            UIStyler.StyleDataGrid(dgvProductsCatalog);
+            UIStyler.StyleDataGrid(dgvCart);
             InitCartTable();
             LoadCategories();
             LoadProducts();
@@ -531,14 +534,23 @@ namespace POS
             if (result.Success)
             {
                 sale.SaleId = result.SaleId;
+                var sysSettings = DbHelper.GetSystemSettings();
+                string curr = !string.IsNullOrWhiteSpace(sysSettings.CurrencySymbol) ? sysSettings.CurrencySymbol : "ج.م";
 
-                MessageBox.Show($"تم إتمام الفاتورة بنجاح!\n\nرقم الفاتورة: #{result.SaleId:D5}\nالإجمالي: {finalAmount:N2} ج.م\nالمدفوع: {paidAmount:N2} ج.م\nالمتبقي للعميل: {change:N2} ج.م", "عملية بيع ناجحة", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"تم إتمام الفاتورة بنجاح!\n\nرقم الفاتورة: #{result.SaleId:D5}\nالإجمالي: {finalAmount:N2} {curr}\nالمدفوع: {paidAmount:N2} {curr}\nالمتبقي للعميل: {change:N2} {curr}", "عملية بيع ناجحة", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 // معاينة وطباعة الفاتورة الحرارية 80 مم
-                var printConfirm = MessageBox.Show("هل ترغب في طباعة إيصال الفاتورة الحراري (80mm)؟", "طباعة الفاتورة", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (printConfirm == DialogResult.Yes)
+                if (sysSettings.AutoPrintOnSale)
                 {
-                    ReceiptPrinter.PrintReceipt(sale, new List<CartItemModel>(_cartItems), previewFirst: true);
+                    ReceiptPrinter.PrintReceipt(sale, new List<CartItemModel>(_cartItems), previewFirst: sysSettings.EnablePrintPreview);
+                }
+                else
+                {
+                    var printConfirm = MessageBox.Show("هل ترغب في طباعة إيصال الفاتورة الحراري (80mm)؟", "طباعة الفاتورة", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (printConfirm == DialogResult.Yes)
+                    {
+                        ReceiptPrinter.PrintReceipt(sale, new List<CartItemModel>(_cartItems), previewFirst: sysSettings.EnablePrintPreview);
+                    }
                 }
 
                 ClearCart();

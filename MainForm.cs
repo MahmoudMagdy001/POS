@@ -16,6 +16,7 @@ namespace POS
         private ProductsForm _productsForm;
         private PurchasesForm _purchasesForm;
         private UsersForm _usersForm;
+        private SettingsForm _settingsForm;
 
         public MainForm(UserModel user)
         {
@@ -25,7 +26,8 @@ namespace POS
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            FontManager.ApplyCairoFont(this);
+            UIStyler.ApplyTheme(this);
+            UIStyler.StyleDangerButton(btnLogout, "🚪 خروج");
             SetupUserInfo();
             InitializeChildForms();
             ShowView("Dashboard");
@@ -50,6 +52,17 @@ namespace POS
                 lblUserAvatar.Text = initials;
 
                 btnNavUsers.Visible = isAdmin;
+                btnNavSettings.Visible = isAdmin;
+
+                try
+                {
+                    var sysSettings = DbHelper.GetSystemSettings();
+                    if (!string.IsNullOrWhiteSpace(sysSettings.StoreName))
+                        lblAppBrand.Text = "🛒 " + sysSettings.StoreName;
+                    if (!string.IsNullOrWhiteSpace(sysSettings.StoreSubtitle))
+                        lblAppSubtitle.Text = sysSettings.StoreSubtitle;
+                }
+                catch { }
             }
         }
 
@@ -61,6 +74,7 @@ namespace POS
             _productsForm = new ProductsForm { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
             _purchasesForm = new PurchasesForm { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
             _usersForm = new UsersForm(_currentUser) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+            _settingsForm = new SettingsForm(_currentUser) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
         }
 
         private void ShowView(string viewName)
@@ -68,6 +82,7 @@ namespace POS
             Form targetForm = null;
             Button activeButton = null;
             string sectionTitle = "";
+            bool isAdmin = _currentUser != null && (string.Equals(_currentUser.Role, "Admin", StringComparison.OrdinalIgnoreCase) || _currentUser.Role == "مدير");
 
             switch (viewName)
             {
@@ -102,10 +117,26 @@ namespace POS
                     _purchasesForm?.RefreshData();
                     break;
                 case "Users":
+                    if (!isAdmin)
+                    {
+                        MessageBox.Show("عذراً، هذه الشاشة مخصصة لمدير النظام فقط.", "صلاحية مقيدة", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
                     targetForm = _usersForm;
                     activeButton = btnNavUsers;
                     sectionTitle = "إدارة المستخدمين وصلاحيات الموظفين";
                     _usersForm?.RefreshData();
+                    break;
+                case "Settings":
+                    if (!isAdmin)
+                    {
+                        MessageBox.Show("عذراً، هذه الشاشة مخصصة لمدير النظام فقط.", "صلاحية مقيدة", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    targetForm = _settingsForm;
+                    activeButton = btnNavSettings;
+                    sectionTitle = "إعدادات النظام العامة والتحكم بالصلاحيات والنسخ الاحتياطي";
+                    _settingsForm?.RefreshData();
                     break;
             }
 
@@ -133,7 +164,7 @@ namespace POS
 
         private void ResetNavButtons()
         {
-            Button[] buttons = { btnNavDashboard, btnNavPOS, btnNavSales, btnNavProducts, btnNavPurchases, btnNavUsers };
+            Button[] buttons = { btnNavDashboard, btnNavPOS, btnNavSales, btnNavProducts, btnNavPurchases, btnNavUsers, btnNavSettings };
             foreach (var b in buttons)
             {
                 b.BackColor = Color.Transparent;
@@ -152,6 +183,7 @@ namespace POS
             else if (clicked == btnNavProducts) ShowView("Products");
             else if (clicked == btnNavPurchases) ShowView("Purchases");
             else if (clicked == btnNavUsers) ShowView("Users");
+            else if (clicked == btnNavSettings) ShowView("Settings");
         }
 
         private void timerClock_Tick(object sender, EventArgs e)

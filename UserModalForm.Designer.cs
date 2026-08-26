@@ -275,9 +275,13 @@ namespace POS
             this.btnCancel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
             this.btnCancel.Location = new System.Drawing.Point(28, 13);
             this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Padding = new System.Windows.Forms.Padding(0);
+            this.btnCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnCancel.Size = new System.Drawing.Size(100, 34);
             this.btnCancel.TabIndex = 1;
             this.btnCancel.Text = "إلغاء";
+            this.btnCancel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnCancel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
@@ -291,9 +295,13 @@ namespace POS
             this.btnSave.ForeColor = System.Drawing.Color.White;
             this.btnSave.Location = new System.Drawing.Point(140, 13);
             this.btnSave.Name = "btnSave";
+            this.btnSave.Padding = new System.Windows.Forms.Padding(0);
+            this.btnSave.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnSave.Size = new System.Drawing.Size(120, 34);
             this.btnSave.TabIndex = 0;
             this.btnSave.Text = "💾 حفظ";
+            this.btnSave.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnSave.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnSave.UseVisualStyleBackColor = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 

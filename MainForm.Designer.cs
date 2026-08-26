@@ -20,6 +20,7 @@ namespace POS
             this.components = new System.ComponentModel.Container();
             this.pnlSidebar = new System.Windows.Forms.Panel();
             this.pnlNavContainer = new System.Windows.Forms.Panel();
+            this.btnNavSettings = new System.Windows.Forms.Button();
             this.btnNavUsers = new System.Windows.Forms.Button();
             this.btnNavPurchases = new System.Windows.Forms.Button();
             this.btnNavProducts = new System.Windows.Forms.Button();
@@ -53,14 +54,15 @@ namespace POS
             this.pnlSidebar.Controls.Add(this.pnlUserBadge);
             this.pnlSidebar.Controls.Add(this.pnlBrand);
             this.pnlSidebar.Dock = System.Windows.Forms.DockStyle.Right;
-            this.pnlSidebar.Location = new System.Drawing.Point(1030, 0);
+            this.pnlSidebar.Location = new System.Drawing.Point(1000, 0);
             this.pnlSidebar.Name = "pnlSidebar";
             this.pnlSidebar.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.pnlSidebar.Size = new System.Drawing.Size(250, 780);
+            this.pnlSidebar.Size = new System.Drawing.Size(280, 780);
             this.pnlSidebar.TabIndex = 0;
             // 
             // pnlNavContainer
             // 
+            this.pnlNavContainer.Controls.Add(this.btnNavSettings);
             this.pnlNavContainer.Controls.Add(this.btnNavUsers);
             this.pnlNavContainer.Controls.Add(this.btnNavSales);
             this.pnlNavContainer.Controls.Add(this.btnNavPurchases);
@@ -72,8 +74,29 @@ namespace POS
             this.pnlNavContainer.Name = "pnlNavContainer";
             this.pnlNavContainer.Padding = new System.Windows.Forms.Padding(12, 15, 12, 15);
             this.pnlNavContainer.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.pnlNavContainer.Size = new System.Drawing.Size(250, 620);
+            this.pnlNavContainer.Size = new System.Drawing.Size(280, 620);
             this.pnlNavContainer.TabIndex = 2;
+            // 
+            // btnNavSettings
+            // 
+            this.btnNavSettings.BackColor = System.Drawing.Color.Transparent;
+            this.btnNavSettings.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnNavSettings.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnNavSettings.FlatAppearance.BorderSize = 0;
+            this.btnNavSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnNavSettings.Font = new System.Drawing.Font("Tahoma", 10.5F, System.Drawing.FontStyle.Bold);
+            this.btnNavSettings.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
+            this.btnNavSettings.Location = new System.Drawing.Point(12, 303);
+            this.btnNavSettings.Name = "btnNavSettings";
+            this.btnNavSettings.Padding = new System.Windows.Forms.Padding(0);
+            this.btnNavSettings.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btnNavSettings.Size = new System.Drawing.Size(226, 48);
+            this.btnNavSettings.TabIndex = 6;
+            this.btnNavSettings.Text = "⚙️  إعدادات النظام";
+            this.btnNavSettings.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnNavSettings.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnNavSettings.UseVisualStyleBackColor = false;
+            this.btnNavSettings.Click += new System.EventHandler(this.btnNav_Click);
             // 
             // btnNavUsers
             // 
@@ -86,12 +109,13 @@ namespace POS
             this.btnNavUsers.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
             this.btnNavUsers.Location = new System.Drawing.Point(12, 255);
             this.btnNavUsers.Name = "btnNavUsers";
-            this.btnNavUsers.Padding = new System.Windows.Forms.Padding(0, 0, 15, 0);
+            this.btnNavUsers.Padding = new System.Windows.Forms.Padding(0);
             this.btnNavUsers.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNavUsers.Size = new System.Drawing.Size(226, 48);
             this.btnNavUsers.TabIndex = 5;
             this.btnNavUsers.Text = "👥  المستخدمين والموظفين";
-            this.btnNavUsers.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnNavUsers.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnNavUsers.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavUsers.UseVisualStyleBackColor = false;
             this.btnNavUsers.Click += new System.EventHandler(this.btnNav_Click);
             // 
@@ -106,12 +130,13 @@ namespace POS
             this.btnNavSales.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
             this.btnNavSales.Location = new System.Drawing.Point(12, 207);
             this.btnNavSales.Name = "btnNavSales";
-            this.btnNavSales.Padding = new System.Windows.Forms.Padding(0, 0, 15, 0);
+            this.btnNavSales.Padding = new System.Windows.Forms.Padding(0);
             this.btnNavSales.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNavSales.Size = new System.Drawing.Size(226, 48);
             this.btnNavSales.TabIndex = 4;
             this.btnNavSales.Text = "🧾  فواتير وسجل المبيعات";
-            this.btnNavSales.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnNavSales.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnNavSales.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavSales.UseVisualStyleBackColor = false;
             this.btnNavSales.Click += new System.EventHandler(this.btnNav_Click);
             // 
@@ -126,12 +151,13 @@ namespace POS
             this.btnNavPurchases.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
             this.btnNavPurchases.Location = new System.Drawing.Point(12, 159);
             this.btnNavPurchases.Name = "btnNavPurchases";
-            this.btnNavPurchases.Padding = new System.Windows.Forms.Padding(0, 0, 15, 0);
+            this.btnNavPurchases.Padding = new System.Windows.Forms.Padding(0);
             this.btnNavPurchases.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNavPurchases.Size = new System.Drawing.Size(226, 48);
             this.btnNavPurchases.TabIndex = 3;
             this.btnNavPurchases.Text = "📥  فواتير المشتريات";
-            this.btnNavPurchases.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnNavPurchases.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnNavPurchases.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavPurchases.UseVisualStyleBackColor = false;
             this.btnNavPurchases.Click += new System.EventHandler(this.btnNav_Click);
             // 
@@ -146,12 +172,13 @@ namespace POS
             this.btnNavProducts.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
             this.btnNavProducts.Location = new System.Drawing.Point(12, 111);
             this.btnNavProducts.Name = "btnNavProducts";
-            this.btnNavProducts.Padding = new System.Windows.Forms.Padding(0, 0, 15, 0);
+            this.btnNavProducts.Padding = new System.Windows.Forms.Padding(0);
             this.btnNavProducts.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNavProducts.Size = new System.Drawing.Size(226, 48);
             this.btnNavProducts.TabIndex = 2;
             this.btnNavProducts.Text = "📦  المنتجات والمخزون";
-            this.btnNavProducts.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnNavProducts.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnNavProducts.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavProducts.UseVisualStyleBackColor = false;
             this.btnNavProducts.Click += new System.EventHandler(this.btnNav_Click);
             // 
@@ -166,12 +193,13 @@ namespace POS
             this.btnNavPOS.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
             this.btnNavPOS.Location = new System.Drawing.Point(12, 63);
             this.btnNavPOS.Name = "btnNavPOS";
-            this.btnNavPOS.Padding = new System.Windows.Forms.Padding(0, 0, 15, 0);
+            this.btnNavPOS.Padding = new System.Windows.Forms.Padding(0);
             this.btnNavPOS.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNavPOS.Size = new System.Drawing.Size(226, 48);
             this.btnNavPOS.TabIndex = 1;
             this.btnNavPOS.Text = "🛒  شاشة الكاشير (POS)";
-            this.btnNavPOS.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnNavPOS.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnNavPOS.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavPOS.UseVisualStyleBackColor = false;
             this.btnNavPOS.Click += new System.EventHandler(this.btnNav_Click);
             // 
@@ -186,12 +214,13 @@ namespace POS
             this.btnNavDashboard.ForeColor = System.Drawing.Color.White;
             this.btnNavDashboard.Location = new System.Drawing.Point(12, 15);
             this.btnNavDashboard.Name = "btnNavDashboard";
-            this.btnNavDashboard.Padding = new System.Windows.Forms.Padding(0, 0, 15, 0);
+            this.btnNavDashboard.Padding = new System.Windows.Forms.Padding(0);
             this.btnNavDashboard.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNavDashboard.Size = new System.Drawing.Size(226, 48);
             this.btnNavDashboard.TabIndex = 0;
             this.btnNavDashboard.Text = "📊  لوحة التحكم العامة";
-            this.btnNavDashboard.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnNavDashboard.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnNavDashboard.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavDashboard.UseVisualStyleBackColor = false;
             this.btnNavDashboard.Click += new System.EventHandler(this.btnNav_Click);
             // 
@@ -206,7 +235,7 @@ namespace POS
             this.pnlUserBadge.Name = "pnlUserBadge";
             this.pnlUserBadge.Padding = new System.Windows.Forms.Padding(12);
             this.pnlUserBadge.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.pnlUserBadge.Size = new System.Drawing.Size(250, 80);
+            this.pnlUserBadge.Size = new System.Drawing.Size(280, 80);
             this.pnlUserBadge.TabIndex = 1;
             // 
             // lblUserRole
@@ -216,7 +245,7 @@ namespace POS
             this.lblUserRole.Location = new System.Drawing.Point(15, 44);
             this.lblUserRole.Name = "lblUserRole";
             this.lblUserRole.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lblUserRole.Size = new System.Drawing.Size(170, 22);
+            this.lblUserRole.Size = new System.Drawing.Size(200, 22);
             this.lblUserRole.TabIndex = 2;
             this.lblUserRole.Text = "مدير النظام";
             this.lblUserRole.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -228,7 +257,7 @@ namespace POS
             this.lblUserName.Location = new System.Drawing.Point(15, 18);
             this.lblUserName.Name = "lblUserName";
             this.lblUserName.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lblUserName.Size = new System.Drawing.Size(170, 24);
+            this.lblUserName.Size = new System.Drawing.Size(200, 24);
             this.lblUserName.TabIndex = 1;
             this.lblUserName.Text = "مدير النظام العام";
             this.lblUserName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -238,7 +267,7 @@ namespace POS
             this.lblUserAvatar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(79)))), ((int)(((byte)(70)))), ((int)(((byte)(229)))));
             this.lblUserAvatar.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.lblUserAvatar.ForeColor = System.Drawing.Color.White;
-            this.lblUserAvatar.Location = new System.Drawing.Point(195, 20);
+            this.lblUserAvatar.Location = new System.Drawing.Point(225, 20);
             this.lblUserAvatar.Name = "lblUserAvatar";
             this.lblUserAvatar.Size = new System.Drawing.Size(40, 40);
             this.lblUserAvatar.TabIndex = 0;
@@ -255,7 +284,7 @@ namespace POS
             this.pnlBrand.Name = "pnlBrand";
             this.pnlBrand.Padding = new System.Windows.Forms.Padding(18, 15, 18, 15);
             this.pnlBrand.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.pnlBrand.Size = new System.Drawing.Size(250, 80);
+            this.pnlBrand.Size = new System.Drawing.Size(280, 80);
             this.pnlBrand.TabIndex = 0;
             // 
             // lblAppSubtitle
@@ -263,7 +292,7 @@ namespace POS
             this.lblAppSubtitle.AutoSize = true;
             this.lblAppSubtitle.Font = new System.Drawing.Font("Tahoma", 8F);
             this.lblAppSubtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
-            this.lblAppSubtitle.Location = new System.Drawing.Point(35, 50);
+            this.lblAppSubtitle.Location = new System.Drawing.Point(50, 50);
             this.lblAppSubtitle.Name = "lblAppSubtitle";
             this.lblAppSubtitle.Size = new System.Drawing.Size(197, 17);
             this.lblAppSubtitle.TabIndex = 1;
@@ -274,7 +303,7 @@ namespace POS
             this.lblAppBrand.AutoSize = true;
             this.lblAppBrand.Font = new System.Drawing.Font("Tahoma", 13.5F, System.Drawing.FontStyle.Bold);
             this.lblAppBrand.ForeColor = System.Drawing.Color.White;
-            this.lblAppBrand.Location = new System.Drawing.Point(19, 16);
+            this.lblAppBrand.Location = new System.Drawing.Point(34, 16);
             this.lblAppBrand.Name = "lblAppBrand";
             this.lblAppBrand.Size = new System.Drawing.Size(221, 28);
             this.lblAppBrand.TabIndex = 0;
@@ -291,7 +320,7 @@ namespace POS
             this.pnlTopHeader.Margin = new System.Windows.Forms.Padding(0, 0, 0, 16);
             this.pnlTopHeader.Name = "pnlTopHeader";
             this.pnlTopHeader.Padding = new System.Windows.Forms.Padding(20, 12, 20, 12);
-            this.pnlTopHeader.Size = new System.Drawing.Size(1030, 60);
+            this.pnlTopHeader.Size = new System.Drawing.Size(1000, 60);
             this.pnlTopHeader.TabIndex = 1;
             // 
             // lblCurrentTime
@@ -315,9 +344,12 @@ namespace POS
             this.btnLogout.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.btnLogout.Location = new System.Drawing.Point(20, 14);
             this.btnLogout.Name = "btnLogout";
+            this.btnLogout.Padding = new System.Windows.Forms.Padding(0);
             this.btnLogout.Size = new System.Drawing.Size(115, 32);
             this.btnLogout.TabIndex = 1;
             this.btnLogout.Text = "🚪 خروج";
+            this.btnLogout.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnLogout.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnLogout.UseVisualStyleBackColor = false;
             this.btnLogout.Click += new System.EventHandler(this.btnLogout_Click);
             // 
@@ -327,7 +359,7 @@ namespace POS
             this.lblCurrentSectionTitle.AutoSize = true;
             this.lblCurrentSectionTitle.Font = new System.Drawing.Font("Tahoma", 12.5F, System.Drawing.FontStyle.Bold);
             this.lblCurrentSectionTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            this.lblCurrentSectionTitle.Location = new System.Drawing.Point(820, 14);
+            this.lblCurrentSectionTitle.Location = new System.Drawing.Point(790, 14);
             this.lblCurrentSectionTitle.Name = "lblCurrentSectionTitle";
             this.lblCurrentSectionTitle.Size = new System.Drawing.Size(198, 25);
             this.lblCurrentSectionTitle.TabIndex = 0;
@@ -339,7 +371,7 @@ namespace POS
             this.pnlMainContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlMainContent.Location = new System.Drawing.Point(0, 60);
             this.pnlMainContent.Name = "pnlMainContent";
-            this.pnlMainContent.Size = new System.Drawing.Size(1030, 720);
+            this.pnlMainContent.Size = new System.Drawing.Size(1000, 720);
             this.pnlMainContent.TabIndex = 2;
             // 
             // timerClock
@@ -394,6 +426,7 @@ namespace POS
         private System.Windows.Forms.Button btnNavProducts;
         private System.Windows.Forms.Button btnNavPurchases;
         private System.Windows.Forms.Button btnNavUsers;
+        private System.Windows.Forms.Button btnNavSettings;
         private System.Windows.Forms.Panel pnlTopHeader;
         private System.Windows.Forms.Label lblCurrentSectionTitle;
         private System.Windows.Forms.Button btnLogout;

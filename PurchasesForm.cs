@@ -19,7 +19,14 @@ namespace POS
 
         private void PurchasesForm_Load(object sender, EventArgs e)
         {
-            FontManager.ApplyCairoFont(this);
+            UIStyler.ApplyTheme(this);
+            UIStyler.StylePrimaryButton(btnSavePurchase, "💾 حفظ فاتورة المشتريات");
+            UIStyler.StyleSecondaryButton(btnResetPurchase, "🔄 تفريغ");
+            UIStyler.StyleSecondaryButton(btnQuickAddProduct, "➕ جديد");
+            UIStyler.StyleSecondaryButton(btnQuickAddSupplier, "➕ مورد");
+            UIStyler.StyleDataGrid(dgvPurchaseItems);
+            UIStyler.StyleDataGrid(dgvPurchasesHistory);
+            UIStyler.StyleDataGrid(dgvPurchaseHistoryDetails);
             InitPurchaseItemsTable();
             LoadSuppliers();
             LoadProductDropdown();
@@ -339,6 +346,8 @@ namespace POS
                     }
                 };
 
+                btnSave.TextAlign = ContentAlignment.MiddleCenter;
+
                 modal.Controls.Add(lblName);
                 modal.Controls.Add(txtName);
                 modal.Controls.Add(lblPhone);
@@ -347,6 +356,7 @@ namespace POS
                 modal.Controls.Add(txtAddress);
                 modal.Controls.Add(btnSave);
 
+                FontManager.ApplyCairoFont(modal);
                 if (modal.ShowDialog(this) == DialogResult.OK)
                 {
                     LoadSuppliers();

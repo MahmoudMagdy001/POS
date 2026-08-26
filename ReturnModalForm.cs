@@ -21,7 +21,11 @@ namespace POS
 
         private void ReturnModalForm_Load(object sender, EventArgs e)
         {
-            FontManager.ApplyCairoFont(this);
+            UIStyler.ApplyTheme(this);
+            UIStyler.StyleDangerButton(btnConfirmReturn, "↩️ تأكيد عملية الإرجاع");
+            UIStyler.StyleSecondaryButton(btnReturnAll, "إرجاع الكل");
+            UIStyler.StyleSecondaryButton(btnCancel, "إلغاء");
+            UIStyler.StyleDataGrid(dgvReturnItems);
             LoadSaleData();
         }
 

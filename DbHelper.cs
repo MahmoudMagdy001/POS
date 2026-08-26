@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -316,6 +318,15 @@ namespace POS
                                 [RefundAmount]     DECIMAL(18,2)     NOT NULL,
                                 CONSTRAINT [FK_SalesReturnDetails_SalesReturns] FOREIGN KEY ([ReturnId]) REFERENCES [dbo].[SalesReturns] ([ReturnId]) ON DELETE CASCADE,
                                 CONSTRAINT [FK_SalesReturnDetails_Products] FOREIGN KEY ([ProductId]) REFERENCES [dbo].[Products] ([ProductId])
+                            );
+                        END;
+
+                        -- SystemSettings
+                        IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SystemSettings]') AND type in (N'U'))
+                        BEGIN
+                            CREATE TABLE [dbo].[SystemSettings] (
+                                [SettingKey]   NVARCHAR(50)  NOT NULL PRIMARY KEY,
+                                [SettingValue] NVARCHAR(MAX) NULL
                             );
                         END;
                     ";
@@ -1371,7 +1382,7 @@ namespace POS
 
                     if (!string.IsNullOrWhiteSpace(searchTerm))
                     {
-                        query.Append(" AND (CAST(s.SaleId AS NVARCHAR(20)) LIKE @Search OR u.FullName LIKE @Search OR s.PaymentMethod LIKE @Search OR s.ReturnStatus LIKE @Search) ");
+                        query.Append(" AND (CAST(s.SaleId AS NVARCHAR(20)) LIKE @Search OR RIGHT('00000' + CAST(s.SaleId AS NVARCHAR(10)), 5) LIKE @Search) ");
                     }
 
                     query.Append(" ORDER BY s.SaleId DESC");
@@ -1386,7 +1397,8 @@ namespace POS
 
                         if (!string.IsNullOrWhiteSpace(searchTerm))
                         {
-                            cmd.Parameters.Add("@Search", SqlDbType.NVarChar, 100).Value = "%" + searchTerm.Trim() + "%";
+                            string cleanSearch = searchTerm.Trim().TrimStart('#');
+                            cmd.Parameters.Add("@Search", SqlDbType.NVarChar, 100).Value = "%" + cleanSearch + "%";
                         }
 
                         using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
@@ -2046,6 +2058,242 @@ namespace POS
             }
             catch { }
             return dt;
+        }
+
+        #endregion
+
+        #region System Settings & Database Management
+
+        public static SystemSettingsModel GetSystemSettings()
+        {
+            var settings = new SystemSettingsModel();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    string query = "SELECT SettingKey, SettingValue FROM [dbo].[SystemSettings]";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                        while (reader.Read())
+                        {
+                            string k = reader["SettingKey"].ToString();
+                            string v = reader["SettingValue"] != DBNull.Value ? reader["SettingValue"].ToString() : "";
+                            dict[k] = v;
+                        }
+
+                        if (dict.TryGetValue("StoreName", out var storeName) && !string.IsNullOrWhiteSpace(storeName))
+                            settings.StoreName = storeName;
+                        if (dict.TryGetValue("StoreSubtitle", out var storeSub) && !string.IsNullOrWhiteSpace(storeSub))
+                            settings.StoreSubtitle = storeSub;
+                        if (dict.TryGetValue("StorePhone", out var storePhone))
+                            settings.StorePhone = storePhone;
+                        if (dict.TryGetValue("StoreAddress", out var storeAddr))
+                            settings.StoreAddress = storeAddr;
+                        if (dict.TryGetValue("TaxNumber", out var taxNum))
+                            settings.TaxNumber = taxNum;
+                        if (dict.TryGetValue("ReceiptHeader", out var rHeader) && !string.IsNullOrWhiteSpace(rHeader))
+                            settings.ReceiptHeader = rHeader;
+                        if (dict.TryGetValue("ReceiptFooter", out var rFooter) && !string.IsNullOrWhiteSpace(rFooter))
+                            settings.ReceiptFooter = rFooter;
+                        if (dict.TryGetValue("CurrencySymbol", out var curr) && !string.IsNullOrWhiteSpace(curr))
+                            settings.CurrencySymbol = curr;
+                        if (dict.TryGetValue("VatRate", out var vatStr) && decimal.TryParse(vatStr, NumberStyles.Any, CultureInfo.InvariantCulture, out var vat))
+                            settings.VatRate = vat;
+                        if (dict.TryGetValue("DefaultMinStock", out var minStockStr) && int.TryParse(minStockStr, out var minStock))
+                            settings.DefaultMinStock = minStock;
+                        if (dict.TryGetValue("EnablePrintPreview", out var prevStr) && bool.TryParse(prevStr, out var prev))
+                            settings.EnablePrintPreview = prev;
+                        if (dict.TryGetValue("AutoPrintOnSale", out var autoStr) && bool.TryParse(autoStr, out var autoP))
+                            settings.AutoPrintOnSale = autoP;
+                        if (dict.TryGetValue("AllowNegativeStock", out var negStr) && bool.TryParse(negStr, out var neg))
+                            settings.AllowNegativeStock = neg;
+                    }
+                }
+            }
+            catch { }
+            return settings;
+        }
+
+        public static (bool Success, string Message) SaveSystemSettings(SystemSettingsModel settings)
+        {
+            if (settings == null) return (false, "بيانات الإعدادات غير صالحة.");
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    using (SqlTransaction transaction = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            var pairs = new Dictionary<string, string>
+                            {
+                                { "StoreName", settings.StoreName ?? "" },
+                                { "StoreSubtitle", settings.StoreSubtitle ?? "" },
+                                { "StorePhone", settings.StorePhone ?? "" },
+                                { "StoreAddress", settings.StoreAddress ?? "" },
+                                { "TaxNumber", settings.TaxNumber ?? "" },
+                                { "ReceiptHeader", settings.ReceiptHeader ?? "" },
+                                { "ReceiptFooter", settings.ReceiptFooter ?? "" },
+                                { "CurrencySymbol", settings.CurrencySymbol ?? "ج.م" },
+                                { "VatRate", settings.VatRate.ToString(CultureInfo.InvariantCulture) },
+                                { "DefaultMinStock", settings.DefaultMinStock.ToString() },
+                                { "EnablePrintPreview", settings.EnablePrintPreview.ToString() },
+                                { "AutoPrintOnSale", settings.AutoPrintOnSale.ToString() },
+                                { "AllowNegativeStock", settings.AllowNegativeStock.ToString() }
+                            };
+
+                            foreach (var kvp in pairs)
+                            {
+                                string upsertQuery = @"
+                                    IF EXISTS (SELECT 1 FROM [dbo].[SystemSettings] WHERE SettingKey = @Key)
+                                        UPDATE [dbo].[SystemSettings] SET SettingValue = @Val WHERE SettingKey = @Key
+                                    ELSE
+                                        INSERT INTO [dbo].[SystemSettings] (SettingKey, SettingValue) VALUES (@Key, @Val)";
+
+                                using (SqlCommand cmd = new SqlCommand(upsertQuery, conn, transaction))
+                                {
+                                    cmd.Parameters.Add("@Key", SqlDbType.NVarChar, 50).Value = kvp.Key;
+                                    cmd.Parameters.Add("@Val", SqlDbType.NVarChar, -1).Value = kvp.Value;
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+
+                            transaction.Commit();
+                            return (true, "تم حفظ وتحديث إعدادات النظام بنجاح.");
+                        }
+                        catch (Exception ex)
+                        {
+                            try { transaction.Rollback(); } catch { }
+                            return (false, "فشل حفظ الإعدادات: " + ex.Message);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, "خطأ بالاتصال بقاعدة البيانات: " + ex.Message);
+            }
+        }
+
+        public static (bool Success, string Message) BackupDatabase(string backupFilePath)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(backupFilePath))
+                    return (false, "يرجى تحديد مسار صالح لحفظ ملف النسخة الاحتياطية.");
+
+                string dir = Path.GetDirectoryName(backupFilePath);
+                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    string query = @"
+                        BACKUP DATABASE [POS_DB] 
+                        TO DISK = @BackupPath 
+                        WITH FORMAT, INIT, NAME = N'POS_DB Full Backup', SKIP, NOREWIND, NOUNLOAD, STATS = 10;";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.CommandTimeout = 120;
+                        cmd.Parameters.Add("@BackupPath", SqlDbType.NVarChar).Value = backupFilePath;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                return (true, $"تم إنشاء النسخة الاحتياطية بنجاح وحفظها في:\n{backupFilePath}");
+            }
+            catch (Exception ex)
+            {
+                return (false, "فشل إنشاء النسخة الاحتياطية: " + ex.Message);
+            }
+        }
+
+        public static (bool Success, string Message) RestoreDatabase(string backupFilePath)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(backupFilePath) || !File.Exists(backupFilePath))
+                    return (false, "ملف النسخة الاحتياطية المحدد غير موجود.");
+
+                using (SqlConnection conn = new SqlConnection(DefaultMasterConnectionString))
+                {
+                    conn.Open();
+                    string query = @"
+                        ALTER DATABASE [POS_DB] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+                        RESTORE DATABASE [POS_DB] FROM DISK = @BackupPath WITH REPLACE;
+                        ALTER DATABASE [POS_DB] SET MULTI_USER;";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.CommandTimeout = 180;
+                        cmd.Parameters.Add("@BackupPath", SqlDbType.NVarChar).Value = backupFilePath;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                return (true, "تمت استعادة قاعدة البيانات بنجاح من النسخة الاحتياطية!");
+            }
+            catch (Exception ex)
+            {
+                return (false, "فشلت استعادة قاعدة البيانات: " + ex.Message);
+            }
+        }
+
+        public static (bool Success, string Message) ClearTransactionHistory(string adminUsername, string adminPassword)
+        {
+            try
+            {
+                var auth = Authenticate(adminUsername, adminPassword);
+                if (!auth.Success || auth.User == null || (!string.Equals(auth.User.Role, "Admin", StringComparison.OrdinalIgnoreCase) && auth.User.Role != "مدير"))
+                {
+                    return (false, "كلمة مرور المشرف غير صحيحة أو ليس لديك صلاحية مدير النظام.");
+                }
+
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    using (SqlTransaction tx = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            string sql = @"
+                                DELETE FROM [dbo].[SalesReturnDetails];
+                                DELETE FROM [dbo].[SalesReturns];
+                                DELETE FROM [dbo].[SaleDetails];
+                                DELETE FROM [dbo].[Sales];
+                                DELETE FROM [dbo].[PurchaseDetails];
+                                DELETE FROM [dbo].[Purchases];
+                                DBCC CHECKIDENT ('[dbo].[Sales]', RESEED, 0);
+                                DBCC CHECKIDENT ('[dbo].[SaleDetails]', RESEED, 0);
+                                DBCC CHECKIDENT ('[dbo].[Purchases]', RESEED, 0);
+                                DBCC CHECKIDENT ('[dbo].[PurchaseDetails]', RESEED, 0);
+                                DBCC CHECKIDENT ('[dbo].[SalesReturns]', RESEED, 0);
+                                DBCC CHECKIDENT ('[dbo].[SalesReturnDetails]', RESEED, 0);";
+
+                            using (SqlCommand cmd = new SqlCommand(sql, conn, tx))
+                            {
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            tx.Commit();
+                            return (true, "تم تصفير سجلات المبيعات والمشتريات والمرتجعات بالكامل وبدء الترقيم من 1.");
+                        }
+                        catch (Exception ex)
+                        {
+                            try { tx.Rollback(); } catch { }
+                            return (false, "فشلت عملية التصفير: " + ex.Message);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, "خطأ أثناء التنفيذ: " + ex.Message);
+            }
         }
 
         #endregion

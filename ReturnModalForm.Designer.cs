@@ -102,9 +102,13 @@ namespace POS
             this.btnReturnAll.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(185)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
             this.btnReturnAll.Location = new System.Drawing.Point(16, 10);
             this.btnReturnAll.Name = "btnReturnAll";
+            this.btnReturnAll.Padding = new System.Windows.Forms.Padding(0);
+            this.btnReturnAll.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnReturnAll.Size = new System.Drawing.Size(160, 32);
             this.btnReturnAll.TabIndex = 4;
             this.btnReturnAll.Text = "↩️ إرجاع كل الأصناف";
+            this.btnReturnAll.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnReturnAll.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnReturnAll.UseVisualStyleBackColor = false;
             this.btnReturnAll.Click += new System.EventHandler(this.btnReturnAll_Click);
             // 
@@ -226,9 +230,13 @@ namespace POS
             this.btnCancel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this.btnCancel.Location = new System.Drawing.Point(16, 60);
             this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Padding = new System.Windows.Forms.Padding(0);
+            this.btnCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnCancel.Size = new System.Drawing.Size(120, 38);
             this.btnCancel.TabIndex = 5;
             this.btnCancel.Text = "❌ إلغاء";
+            this.btnCancel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnCancel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnCancel.UseVisualStyleBackColor = false;
             // 
             // btnConfirmReturn
@@ -241,9 +249,13 @@ namespace POS
             this.btnConfirmReturn.ForeColor = System.Drawing.Color.White;
             this.btnConfirmReturn.Location = new System.Drawing.Point(145, 60);
             this.btnConfirmReturn.Name = "btnConfirmReturn";
+            this.btnConfirmReturn.Padding = new System.Windows.Forms.Padding(0);
+            this.btnConfirmReturn.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnConfirmReturn.Size = new System.Drawing.Size(220, 38);
             this.btnConfirmReturn.TabIndex = 4;
             this.btnConfirmReturn.Text = "✅ تأكيد إرجاع الأصناف";
+            this.btnConfirmReturn.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnConfirmReturn.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnConfirmReturn.UseVisualStyleBackColor = false;
             this.btnConfirmReturn.Click += new System.EventHandler(this.btnConfirmReturn_Click);
             // 

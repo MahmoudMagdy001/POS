@@ -17,10 +17,10 @@ namespace POS
 
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             this.pnlBarcodeTop = new System.Windows.Forms.Panel();
             this.tlpBarcodeHeader = new System.Windows.Forms.TableLayoutPanel();
             this.lblBarcodeTitle = new System.Windows.Forms.Label();
@@ -178,26 +178,26 @@ namespace POS
             this.dgvProductsCatalog.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgvProductsCatalog.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.dgvProductsCatalog.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Tahoma", 9.5F);
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            dataGridViewCellStyle5.Padding = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvProductsCatalog.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            dataGridViewCellStyle11.Font = new System.Drawing.Font("Tahoma", 9.5F);
+            dataGridViewCellStyle11.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            dataGridViewCellStyle11.Padding = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            dataGridViewCellStyle11.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvProductsCatalog.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle11;
             this.dgvProductsCatalog.ColumnHeadersHeight = 38;
             this.dgvProductsCatalog.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Tahoma", 9.5F);
-            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle6.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvProductsCatalog.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle12.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle12.Font = new System.Drawing.Font("Tahoma", 9.5F);
+            dataGridViewCellStyle12.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle12.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
+            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
+            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvProductsCatalog.DefaultCellStyle = dataGridViewCellStyle12;
             this.dgvProductsCatalog.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvProductsCatalog.EnableHeadersVisualStyles = false;
             this.dgvProductsCatalog.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
@@ -311,26 +311,26 @@ namespace POS
             this.dgvCart.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgvCart.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.dgvCart.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Tahoma", 9.5F);
-            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            dataGridViewCellStyle7.Padding = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvCart.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("Tahoma", 9.5F);
+            dataGridViewCellStyle9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            dataGridViewCellStyle9.Padding = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvCart.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle9;
             this.dgvCart.ColumnHeadersHeight = 38;
             this.dgvCart.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle8.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Tahoma", 9.5F);
-            dataGridViewCellStyle8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle8.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
-            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvCart.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle10.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("Tahoma", 9.5F);
+            dataGridViewCellStyle10.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle10.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
+            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
+            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvCart.DefaultCellStyle = dataGridViewCellStyle10;
             this.dgvCart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvCart.EnableHeadersVisualStyles = false;
             this.dgvCart.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
@@ -385,9 +385,13 @@ namespace POS
             this.btnCheckout.ForeColor = System.Drawing.Color.White;
             this.btnCheckout.Location = new System.Drawing.Point(170, 3);
             this.btnCheckout.Name = "btnCheckout";
+            this.btnCheckout.Padding = new System.Windows.Forms.Padding(0);
+            this.btnCheckout.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnCheckout.Size = new System.Drawing.Size(421, 44);
             this.btnCheckout.TabIndex = 0;
             this.btnCheckout.Text = "💳 إتمام البيع وطباعة الفاتورة (F5)";
+            this.btnCheckout.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnCheckout.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnCheckout.UseVisualStyleBackColor = false;
             this.btnCheckout.Click += new System.EventHandler(this.btnCheckout_Click);
             // 
@@ -402,9 +406,13 @@ namespace POS
             this.btnClearCart.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
             this.btnClearCart.Location = new System.Drawing.Point(3, 3);
             this.btnClearCart.Name = "btnClearCart";
+            this.btnClearCart.Padding = new System.Windows.Forms.Padding(0);
+            this.btnClearCart.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnClearCart.Size = new System.Drawing.Size(161, 44);
             this.btnClearCart.TabIndex = 1;
             this.btnClearCart.Text = "🗑️ تفريغ السلة (F4)";
+            this.btnClearCart.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnClearCart.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnClearCart.UseVisualStyleBackColor = false;
             this.btnClearCart.Click += new System.EventHandler(this.btnClearCart_Click);
             // 
@@ -599,19 +607,19 @@ namespace POS
             this.lblFinalTotalVal.Size = new System.Drawing.Size(280, 50);
             this.lblFinalTotalVal.TabIndex = 1;
             this.lblFinalTotalVal.Text = "0.00 ج.م";
-            this.lblFinalTotalVal.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblFinalTotalVal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lblFinalTotalTitle
             // 
             this.lblFinalTotalTitle.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblFinalTotalTitle.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.lblFinalTotalTitle.ForeColor = System.Drawing.Color.White;
-            this.lblFinalTotalTitle.Location = new System.Drawing.Point(299, 6);
+            this.lblFinalTotalTitle.Location = new System.Drawing.Point(279, 6);
             this.lblFinalTotalTitle.Name = "lblFinalTotalTitle";
-            this.lblFinalTotalTitle.Size = new System.Drawing.Size(280, 50);
+            this.lblFinalTotalTitle.Size = new System.Drawing.Size(300, 50);
             this.lblFinalTotalTitle.TabIndex = 0;
             this.lblFinalTotalTitle.Text = "الإجمالي النهائي المستحق:";
-            this.lblFinalTotalTitle.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblFinalTotalTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblCartTitle
             // 
@@ -651,13 +659,13 @@ namespace POS
             ((System.ComponentModel.ISupportInitialize)(this.dgvProductsCatalog)).EndInit();
             this.pnlProductSearch.ResumeLayout(false);
             this.tlpSearch.ResumeLayout(false);
+            this.tlpSearch.PerformLayout();
             this.pnlCart.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvCart)).EndInit();
             this.pnlCartSummary.ResumeLayout(false);
             this.tlpCartActions.ResumeLayout(false);
             this.pnlPaymentDetails.ResumeLayout(false);
             this.tlpPaymentGrid.ResumeLayout(false);
-            this.tlpPaymentGrid.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numDiscount)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numCashPaid)).EndInit();
             this.pnlFinalTotal.ResumeLayout(false);

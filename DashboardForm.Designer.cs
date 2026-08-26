@@ -129,9 +129,13 @@ namespace POS
             this.btnFilterToday.ForeColor = System.Drawing.Color.White;
             this.btnFilterToday.Location = new System.Drawing.Point(117, 11);
             this.btnFilterToday.Name = "btnFilterToday";
+            this.btnFilterToday.Padding = new System.Windows.Forms.Padding(0);
+            this.btnFilterToday.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnFilterToday.Size = new System.Drawing.Size(75, 30);
             this.btnFilterToday.TabIndex = 1;
             this.btnFilterToday.Text = "اليوم";
+            this.btnFilterToday.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnFilterToday.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnFilterToday.UseVisualStyleBackColor = false;
             this.btnFilterToday.Click += new System.EventHandler(this.btnFilter_Click);
             // 
@@ -145,9 +149,13 @@ namespace POS
             this.btnFilterWeek.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
             this.btnFilterWeek.Location = new System.Drawing.Point(198, 11);
             this.btnFilterWeek.Name = "btnFilterWeek";
+            this.btnFilterWeek.Padding = new System.Windows.Forms.Padding(0);
+            this.btnFilterWeek.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnFilterWeek.Size = new System.Drawing.Size(85, 30);
             this.btnFilterWeek.TabIndex = 2;
             this.btnFilterWeek.Text = "الأسبوع";
+            this.btnFilterWeek.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnFilterWeek.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnFilterWeek.UseVisualStyleBackColor = false;
             this.btnFilterWeek.Click += new System.EventHandler(this.btnFilter_Click);
             // 
@@ -161,9 +169,13 @@ namespace POS
             this.btnFilterMonth.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
             this.btnFilterMonth.Location = new System.Drawing.Point(289, 11);
             this.btnFilterMonth.Name = "btnFilterMonth";
+            this.btnFilterMonth.Padding = new System.Windows.Forms.Padding(0);
+            this.btnFilterMonth.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnFilterMonth.Size = new System.Drawing.Size(85, 30);
             this.btnFilterMonth.TabIndex = 3;
             this.btnFilterMonth.Text = "الشهر";
+            this.btnFilterMonth.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnFilterMonth.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnFilterMonth.UseVisualStyleBackColor = false;
             this.btnFilterMonth.Click += new System.EventHandler(this.btnFilter_Click);
             // 
@@ -177,9 +189,13 @@ namespace POS
             this.btnFilterAll.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
             this.btnFilterAll.Location = new System.Drawing.Point(380, 11);
             this.btnFilterAll.Name = "btnFilterAll";
+            this.btnFilterAll.Padding = new System.Windows.Forms.Padding(0);
+            this.btnFilterAll.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnFilterAll.Size = new System.Drawing.Size(85, 30);
             this.btnFilterAll.TabIndex = 4;
             this.btnFilterAll.Text = "الكل";
+            this.btnFilterAll.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnFilterAll.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnFilterAll.UseVisualStyleBackColor = false;
             this.btnFilterAll.Click += new System.EventHandler(this.btnFilter_Click);
             // 
@@ -193,9 +209,13 @@ namespace POS
             this.btnRefresh.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
             this.btnRefresh.Location = new System.Drawing.Point(471, 11);
             this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Padding = new System.Windows.Forms.Padding(0);
+            this.btnRefresh.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnRefresh.Size = new System.Drawing.Size(95, 30);
             this.btnRefresh.TabIndex = 5;
             this.btnRefresh.Text = "🔄 تحديث";
+            this.btnRefresh.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnRefresh.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnRefresh.UseVisualStyleBackColor = false;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 

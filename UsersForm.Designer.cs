@@ -185,9 +185,13 @@ namespace POS
             this.btnCreateUser.ForeColor = System.Drawing.Color.White;
             this.btnCreateUser.Location = new System.Drawing.Point(591, 9);
             this.btnCreateUser.Name = "btnCreateUser";
+            this.btnCreateUser.Padding = new System.Windows.Forms.Padding(0);
+            this.btnCreateUser.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnCreateUser.Size = new System.Drawing.Size(150, 32);
             this.btnCreateUser.TabIndex = 0;
             this.btnCreateUser.Text = "➕ مستخدم جديد";
+            this.btnCreateUser.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnCreateUser.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnCreateUser.UseVisualStyleBackColor = false;
             this.btnCreateUser.Click += new System.EventHandler(this.btnCreateUser_Click);
             // 
@@ -202,9 +206,13 @@ namespace POS
             this.btnEditUser.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
             this.btnEditUser.Location = new System.Drawing.Point(475, 9);
             this.btnEditUser.Name = "btnEditUser";
+            this.btnEditUser.Padding = new System.Windows.Forms.Padding(0);
+            this.btnEditUser.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnEditUser.Size = new System.Drawing.Size(110, 32);
             this.btnEditUser.TabIndex = 1;
             this.btnEditUser.Text = "✏️ تعديل البيانات";
+            this.btnEditUser.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnEditUser.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnEditUser.UseVisualStyleBackColor = false;
             this.btnEditUser.Click += new System.EventHandler(this.btnEditUser_Click);
             // 
@@ -219,9 +227,13 @@ namespace POS
             this.btnToggleStatus.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
             this.btnToggleStatus.Location = new System.Drawing.Point(340, 9);
             this.btnToggleStatus.Name = "btnToggleStatus";
+            this.btnToggleStatus.Padding = new System.Windows.Forms.Padding(0);
+            this.btnToggleStatus.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnToggleStatus.Size = new System.Drawing.Size(129, 32);
             this.btnToggleStatus.TabIndex = 2;
             this.btnToggleStatus.Text = "🔄 تنشيط / تعطيل";
+            this.btnToggleStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnToggleStatus.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnToggleStatus.UseVisualStyleBackColor = false;
             this.btnToggleStatus.Click += new System.EventHandler(this.btnToggleStatus_Click);
             // 
@@ -236,9 +248,13 @@ namespace POS
             this.btnDeleteUser.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.btnDeleteUser.Location = new System.Drawing.Point(215, 9);
             this.btnDeleteUser.Name = "btnDeleteUser";
+            this.btnDeleteUser.Padding = new System.Windows.Forms.Padding(0);
+            this.btnDeleteUser.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnDeleteUser.Size = new System.Drawing.Size(119, 32);
             this.btnDeleteUser.TabIndex = 3;
             this.btnDeleteUser.Text = "🗑️ حذف المستخدم";
+            this.btnDeleteUser.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnDeleteUser.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnDeleteUser.UseVisualStyleBackColor = false;
             this.btnDeleteUser.Click += new System.EventHandler(this.btnDeleteUser_Click);
             // 
@@ -252,9 +268,13 @@ namespace POS
             this.btnRefresh.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
             this.btnRefresh.Location = new System.Drawing.Point(124, 9);
             this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Padding = new System.Windows.Forms.Padding(0);
+            this.btnRefresh.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnRefresh.Size = new System.Drawing.Size(85, 32);
             this.btnRefresh.TabIndex = 4;
             this.btnRefresh.Text = "🔄 تحديث";
+            this.btnRefresh.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnRefresh.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnRefresh.UseVisualStyleBackColor = false;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 

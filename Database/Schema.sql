@@ -359,3 +359,16 @@ BEGIN
 END
 GO
 
+-- ============================================================================
+-- 12. جدول إعدادات النظام العامة (SystemSettings)
+-- ============================================================================
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SystemSettings]') AND type in (N'U'))
+BEGIN
+    CREATE TABLE [dbo].[SystemSettings] (
+        [SettingKey]   NVARCHAR(50)  NOT NULL PRIMARY KEY,
+        [SettingValue] NVARCHAR(MAX) NULL
+    );
+END
+GO
+
+
