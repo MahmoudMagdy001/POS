@@ -55,7 +55,7 @@ namespace POS
             SetControlsEnabled(false);
             SetStatus("جاري تسجيل الدخول والتحقق، يرجى الانتظار...", isError: false);
 
-            var authResult = await Task.Run(() => DbHelper.Authenticate(username, password));
+            var authResult = await DbHelper.AuthenticateAsync(username, password);
 
             SetControlsEnabled(true);
 

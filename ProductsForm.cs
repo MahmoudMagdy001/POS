@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace POS
@@ -9,13 +10,19 @@ namespace POS
     {
         private int _selectedProductId = 0;
         private DataTable _productsTable;
+        private Timer _searchDebounceTimer;
+        private bool _isLoading = false;
 
         public ProductsForm()
         {
             InitializeComponent();
+
+            _searchDebounceTimer = new Timer();
+            _searchDebounceTimer.Interval = 250;
+            _searchDebounceTimer.Tick += OnSearchDebounceTick;
         }
 
-        private void ProductsForm_Load(object sender, EventArgs e)
+        private async void ProductsForm_Load(object sender, EventArgs e)
         {
             UIStyler.ApplyTheme(this);
             lblEditorTitle.Font = FontManager.GetBold(11.5f);
@@ -26,21 +33,22 @@ namespace POS
             UIStyler.StyleDangerButton(btnDeleteProduct, "🗑️ حذف الصنف المحدد");
             UIStyler.StyleSecondaryButton(btnRefresh, "🔄 تحديث");
             UIStyler.StyleDataGrid(dgvProducts);
-            LoadCategories();
-            LoadProducts();
+
+            await LoadCategoriesAsync();
+            await LoadProductsAsync();
         }
 
-        public void RefreshData()
+        public async void RefreshData()
         {
-            LoadCategories();
-            LoadProducts();
+            await LoadCategoriesAsync();
+            await LoadProductsAsync();
         }
 
-        private void LoadCategories()
+        private async Task LoadCategoriesAsync()
         {
             try
             {
-                var categories = DbHelper.GetAllCategories();
+                var categories = await DbHelper.GetAllCategoriesAsync();
 
                 // Dropdown in Editor
                 cmbCategory.DataSource = null;
@@ -59,10 +67,13 @@ namespace POS
             catch { }
         }
 
-        private void LoadProducts()
+        private async Task LoadProductsAsync()
         {
+            if (_isLoading) return;
+
             try
             {
+                _isLoading = true;
                 string search = txtSearch.Text.Trim();
                 int? catId = null;
                 if (cmbCategoryFilter.SelectedValue != null && int.TryParse(cmbCategoryFilter.SelectedValue.ToString(), out int id) && id > 0)
@@ -71,13 +82,17 @@ namespace POS
                 }
                 bool lowStock = chkLowStockOnly.Checked;
 
-                _productsTable = DbHelper.GetAllProductsDataTable(search, catId, lowStock);
+                _productsTable = await DbHelper.GetAllProductsDataTableAsync(search, catId, lowStock);
                 dgvProducts.DataSource = _productsTable;
                 FormatProductsGrid();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("خطأ في تحميل المنتجات: " + ex.Message, "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                _isLoading = false;
             }
         }
 
@@ -215,7 +230,7 @@ namespace POS
             txtProductName.Focus();
         }
 
-        private void btnSaveProduct_Click(object sender, EventArgs e)
+        private async void btnSaveProduct_Click(object sender, EventArgs e)
         {
             string barcode = txtBarcode.Text.Trim();
             string name = txtProductName.Text.Trim();
@@ -262,7 +277,7 @@ namespace POS
             if (res.Success)
             {
                 MessageBox.Show(res.Message, "تم الحفظ بنجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LoadProducts();
+                await LoadProductsAsync();
                 ClearEditor();
             }
             else
@@ -271,7 +286,7 @@ namespace POS
             }
         }
 
-        private void btnDeleteProduct_Click(object sender, EventArgs e)
+        private async void btnDeleteProduct_Click(object sender, EventArgs e)
         {
             if (_selectedProductId <= 0) return;
 
@@ -287,7 +302,7 @@ namespace POS
                 if (res.Success)
                 {
                     MessageBox.Show(res.Message, "تم الحذف بنجاح", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadProducts();
+                    await LoadProductsAsync();
                     ClearEditor();
                 }
                 else
@@ -297,7 +312,7 @@ namespace POS
             }
         }
 
-        private void btnManageCategories_Click(object sender, EventArgs e)
+        private async void btnManageCategories_Click(object sender, EventArgs e)
         {
             using (Form catForm = new Form())
             {
@@ -376,32 +391,39 @@ namespace POS
                 FontManager.ApplyCairoFont(catForm);
                 catForm.ShowDialog(this);
 
-                LoadCategories();
-                LoadProducts();
+                await LoadCategoriesAsync();
+                await LoadProductsAsync();
             }
         }
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            LoadProducts();
+            _searchDebounceTimer.Stop();
+            _searchDebounceTimer.Start();
         }
 
-        private void cmbCategoryFilter_SelectedIndexChanged(object sender, EventArgs e)
+        private async void OnSearchDebounceTick(object sender, EventArgs e)
         {
-            LoadProducts();
+            _searchDebounceTimer.Stop();
+            await LoadProductsAsync();
         }
 
-        private void chkLowStockOnly_CheckedChanged(object sender, EventArgs e)
+        private async void cmbCategoryFilter_SelectedIndexChanged(object sender, EventArgs e)
         {
-            LoadProducts();
+            await LoadProductsAsync();
         }
 
-        private void btnRefresh_Click(object sender, EventArgs e)
+        private async void chkLowStockOnly_CheckedChanged(object sender, EventArgs e)
+        {
+            await LoadProductsAsync();
+        }
+
+        private async void btnRefresh_Click(object sender, EventArgs e)
         {
             txtSearch.Clear();
             chkLowStockOnly.Checked = false;
             if (cmbCategoryFilter.Items.Count > 0) cmbCategoryFilter.SelectedIndex = 0;
-            LoadProducts();
+            await LoadProductsAsync();
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace POS
@@ -12,14 +13,20 @@ namespace POS
         private List<CartItemModel> _cartItems = new List<CartItemModel>();
         private DataTable _cartTable;
         private SystemSettingsModel _sysSettings;
+        private Timer _searchDebounceTimer;
+        private bool _isCheckingOut = false;
 
         public POSForm(UserModel currentUser)
         {
             InitializeComponent();
             _currentUser = currentUser;
+
+            _searchDebounceTimer = new Timer();
+            _searchDebounceTimer.Interval = 250;
+            _searchDebounceTimer.Tick += OnSearchDebounceTick;
         }
 
-        private void POSForm_Load(object sender, EventArgs e)
+        private async void POSForm_Load(object sender, EventArgs e)
         {
             UIStyler.ApplyTheme(this);
             lblFinalTotalVal.Font = FontManager.GetBold(20f);
@@ -28,19 +35,20 @@ namespace POS
             UIStyler.StyleDangerButton(btnClearCart, "🗑️ تفريغ السلة");
             UIStyler.StyleDataGrid(dgvProductsCatalog);
             UIStyler.StyleDataGrid(dgvCart);
-            LoadSettings();
             InitCartTable();
-            LoadCategories();
-            LoadProducts();
             cmbPaymentMethod.SelectedIndex = 0; // نقدي
+
+            LoadSettings();
+            await LoadCategoriesAsync();
+            await LoadProductsAsync();
             txtBarcodeScan.Focus();
         }
 
-        public void RefreshData()
+        public async void RefreshData()
         {
             LoadSettings();
-            LoadCategories();
-            LoadProducts();
+            await LoadCategoriesAsync();
+            await LoadProductsAsync();
             CalculateTotals();
             txtBarcodeScan.Focus();
         }
@@ -60,11 +68,11 @@ namespace POS
 
         #region Cashier & POS Sales Functions
 
-        private void LoadCategories()
+        private async Task LoadCategoriesAsync()
         {
             try
             {
-                var categories = DbHelper.GetAllCategories();
+                var categories = await DbHelper.GetAllCategoriesAsync();
                 categories.Insert(0, new CategoryModel { CategoryId = 0, CategoryName = "جميع الأقسام" });
 
                 cmbCategoryFilter.DataSource = null;
@@ -75,7 +83,7 @@ namespace POS
             catch { }
         }
 
-        private void LoadProducts()
+        private async Task LoadProductsAsync()
         {
             try
             {
@@ -86,7 +94,7 @@ namespace POS
                     catId = id;
                 }
 
-                DataTable dt = DbHelper.GetAllProductsDataTable(search, catId, false);
+                DataTable dt = await DbHelper.GetAllProductsDataTableAsync(search, catId, false);
                 dgvProductsCatalog.DataSource = dt;
                 FormatCatalogGrid();
             }
@@ -308,6 +316,7 @@ namespace POS
 
         private void SyncCartTable()
         {
+            _cartTable.BeginLoadData();
             _cartTable.Rows.Clear();
             foreach (var item in _cartItems)
             {
@@ -321,6 +330,7 @@ namespace POS
                     item.AvailableStock
                 );
             }
+            _cartTable.EndLoadData();
 
             CalculateTotals();
         }
@@ -362,7 +372,7 @@ namespace POS
             lblChangeDueVal.Text = $"{change:N2} {curr}";
         }
 
-        private void txtBarcodeScan_KeyDown(object sender, KeyEventArgs e)
+        private async void txtBarcodeScan_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
@@ -370,7 +380,7 @@ namespace POS
                 string barcode = txtBarcodeScan.Text.Trim();
                 if (!string.IsNullOrWhiteSpace(barcode))
                 {
-                    ProductModel product = DbHelper.GetProductByBarcode(barcode);
+                    ProductModel product = await DbHelper.GetProductByBarcodeAsync(barcode);
                     if (product != null)
                     {
                         AddProductToCart(product, 1);
@@ -406,11 +416,21 @@ namespace POS
 
             var row = dgvProductsCatalog.Rows[rowIndex];
             int prodId = Convert.ToInt32(row.Cells["ProductId"].Value);
-            ProductModel product = DbHelper.GetProductById(prodId);
-            if (product != null)
+            string barcode = row.Cells["Barcode"].Value?.ToString() ?? "";
+            string pName = row.Cells["ProductName"].Value?.ToString() ?? "";
+            decimal sellPrice = Convert.ToDecimal(row.Cells["SellPrice"].Value);
+            int stockQty = Convert.ToInt32(row.Cells["StockQuantity"].Value);
+
+            ProductModel product = new ProductModel
             {
-                AddProductToCart(product, 1);
-            }
+                ProductId = prodId,
+                Barcode = barcode,
+                ProductName = pName,
+                SellPrice = sellPrice,
+                StockQuantity = stockQty
+            };
+
+            AddProductToCart(product, 1);
         }
 
         private void dgvCart_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -488,12 +508,19 @@ namespace POS
 
         private void txtSearchProduct_TextChanged(object sender, EventArgs e)
         {
-            LoadProducts();
+            _searchDebounceTimer.Stop();
+            _searchDebounceTimer.Start();
         }
 
-        private void cmbCategoryFilter_SelectedIndexChanged(object sender, EventArgs e)
+        private async void OnSearchDebounceTick(object sender, EventArgs e)
         {
-            LoadProducts();
+            _searchDebounceTimer.Stop();
+            await LoadProductsAsync();
+        }
+
+        private async void cmbCategoryFilter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            await LoadProductsAsync();
         }
 
         private void btnClearCart_Click(object sender, EventArgs e)
@@ -516,13 +543,15 @@ namespace POS
             txtBarcodeScan.Focus();
         }
 
-        private void btnCheckout_Click(object sender, EventArgs e)
+        private async void btnCheckout_Click(object sender, EventArgs e)
         {
-            ProcessCheckout();
+            await ProcessCheckoutAsync();
         }
 
-        private void ProcessCheckout()
+        private async Task ProcessCheckoutAsync()
         {
+            if (_isCheckingOut) return;
+
             if (_cartItems.Count == 0)
             {
                 MessageBox.Show("سلة المشتريات فارغة! يرجى مسح أو اختيار منتجات أولاً.", "سلة فارغة", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -571,49 +600,62 @@ namespace POS
                 PaymentMethod = paymentMethod
             };
 
-            var result = DbHelper.ProcessSaleTransaction(sale, _cartItems);
-
-            if (result.Success)
+            try
             {
-                sale.SaleId = result.SaleId;
-                var sysSettings = _sysSettings ?? DbHelper.GetSystemSettings();
+                _isCheckingOut = true;
+                btnCheckout.Enabled = false;
+                Cursor = Cursors.WaitCursor;
 
-                string msg = $"تم إتمام الفاتورة بنجاح!\n\nرقم الفاتورة: #{result.SaleId:D5}\nالمجموع: {subtotal:N2} {curr}";
-                if (discount > 0) msg += $"\nالخصم: {discount:N2} {curr}";
-                if (vatAmount > 0) msg += $"\nالضريبة ({vatRate:0.##}%): {vatAmount:N2} {curr}";
-                msg += $"\nالإجمالي النهائي: {finalAmount:N2} {curr}\nالمدفوع: {paidAmount:N2} {curr}\nالمتبقي للعميل: {change:N2} {curr}";
+                var result = await DbHelper.ProcessSaleTransactionAsync(sale, _cartItems);
 
-                MessageBox.Show(msg, "عملية بيع ناجحة", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // معاينة وطباعة الفاتورة الحرارية 80 مم
-                if (sysSettings.AutoPrintOnSale)
+                if (result.Success)
                 {
-                    ReceiptPrinter.PrintReceipt(sale, new List<CartItemModel>(_cartItems), previewFirst: sysSettings.EnablePrintPreview);
-                }
-                else
-                {
-                    var printConfirm = MessageBox.Show("هل ترغب في طباعة إيصال الفاتورة الحراري (80mm)؟", "طباعة الفاتورة", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    if (printConfirm == DialogResult.Yes)
+                    sale.SaleId = result.SaleId;
+                    var sysSettings = _sysSettings ?? DbHelper.GetSystemSettings();
+
+                    string msg = $"تم إتمام الفاتورة بنجاح!\n\nرقم الفاتورة: #{result.SaleId:D5}\nالمجموع: {subtotal:N2} {curr}";
+                    if (discount > 0) msg += $"\nالخصم: {discount:N2} {curr}";
+                    if (vatAmount > 0) msg += $"\nالضريبة ({vatRate:0.##}%): {vatAmount:N2} {curr}";
+                    msg += $"\nالإجمالي النهائي: {finalAmount:N2} {curr}\nالمدفوع: {paidAmount:N2} {curr}\nالمتبقي للعميل: {change:N2} {curr}";
+
+                    MessageBox.Show(msg, "عملية بيع ناجحة", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // معاينة وطباعة الفاتورة الحرارية 80 مم
+                    if (sysSettings.AutoPrintOnSale)
                     {
                         ReceiptPrinter.PrintReceipt(sale, new List<CartItemModel>(_cartItems), previewFirst: sysSettings.EnablePrintPreview);
                     }
-                }
+                    else
+                    {
+                        var printConfirm = MessageBox.Show("هل ترغب في طباعة إيصال الفاتورة الحراري (80mm)؟", "طباعة الفاتورة", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        if (printConfirm == DialogResult.Yes)
+                        {
+                            ReceiptPrinter.PrintReceipt(sale, new List<CartItemModel>(_cartItems), previewFirst: sysSettings.EnablePrintPreview);
+                        }
+                    }
 
-                ClearCart();
-                LoadProducts(); // تحديث أرقام المخزون في الكتالوج
+                    ClearCart();
+                    await LoadProductsAsync(); // تحديث أرقام المخزون في الكتالوج
+                }
+                else
+                {
+                    MessageBox.Show(result.Message, "فشل عملية البيع", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            else
+            finally
             {
-                MessageBox.Show(result.Message, "فشل عملية البيع", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                _isCheckingOut = false;
+                btnCheckout.Enabled = true;
+                Cursor = Cursors.Default;
             }
         }
 
-        private void POSForm_KeyDown(object sender, KeyEventArgs e)
+        private async void POSForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.F5)
+            if (e.KeyCode == Keys.F12 || e.KeyCode == Keys.F5)
             {
                 e.SuppressKeyPress = true;
-                ProcessCheckout();
+                await ProcessCheckoutAsync();
             }
             else if (e.KeyCode == Keys.F4)
             {
@@ -632,7 +674,6 @@ namespace POS
 
         private void lblBarcodeTitle_Click(object sender, EventArgs e)
         {
-
         }
     }
 }

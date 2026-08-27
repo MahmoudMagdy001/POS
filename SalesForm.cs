@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace POS
@@ -9,14 +10,21 @@ namespace POS
     public partial class SalesForm : Form
     {
         private readonly UserModel _currentUser;
+        private Timer _searchDebounceTimer;
+        private int _currentSelectionSequence = 0;
+        private bool _isLoadingList = false;
 
         public SalesForm(UserModel currentUser = null)
         {
             _currentUser = currentUser;
             InitializeComponent();
+
+            _searchDebounceTimer = new Timer();
+            _searchDebounceTimer.Interval = 250;
+            _searchDebounceTimer.Tick += OnSearchDebounceTick;
         }
 
-        private void SalesForm_Load(object sender, EventArgs e)
+        private async void SalesForm_Load(object sender, EventArgs e)
         {
             UIStyler.ApplyTheme(this);
             lblCardRevenueVal.Font = FontManager.GetBold(15f);
@@ -29,22 +37,27 @@ namespace POS
             UIStyler.StyleDataGrid(dgvSalesList);
             UIStyler.StyleDataGrid(dgvSaleDetails);
             cmbPeriod.SelectedIndex = 0; // اليوم
-            RefreshData();
+            await LoadSalesListAsync();
         }
 
-        public void RefreshData()
+        public async void RefreshData()
         {
-            LoadSalesList();
+            await LoadSalesListAsync();
         }
 
-        private void LoadSalesList()
+        private async Task LoadSalesListAsync()
         {
+            if (_isLoadingList) return;
+
             try
             {
+                _isLoadingList = true;
+                btnRefresh.Enabled = false;
+
                 string period = cmbPeriod.SelectedItem?.ToString() ?? "اليوم";
                 string search = txtSearch.Text.Trim();
 
-                DataTable dt = DbHelper.GetAllSalesDataTable(period, null, null, search);
+                DataTable dt = await DbHelper.GetAllSalesDataTableAsync(period, null, null, search);
                 dgvSalesList.DataSource = dt;
                 FormatSalesGrid();
 
@@ -77,6 +90,11 @@ namespace POS
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("Error in LoadSalesList: " + ex.Message);
+            }
+            finally
+            {
+                _isLoadingList = false;
+                btnRefresh.Enabled = true;
             }
         }
 
@@ -199,20 +217,26 @@ namespace POS
             }
         }
 
-        private void dgvSalesList_SelectionChanged(object sender, EventArgs e)
+        private async void dgvSalesList_SelectionChanged(object sender, EventArgs e)
         {
             if (dgvSalesList.SelectedRows.Count > 0)
             {
-                int saleId = Convert.ToInt32(dgvSalesList.SelectedRows[0].Cells["SaleId"].Value);
-                LoadSaleDetails(saleId);
+                int seq = ++_currentSelectionSequence;
+                var cellVal = dgvSalesList.SelectedRows[0].Cells["SaleId"].Value;
+                if (cellVal != null && int.TryParse(cellVal.ToString(), out int saleId))
+                {
+                    await LoadSaleDetailsAsync(saleId, seq);
+                }
             }
         }
 
-        private void LoadSaleDetails(int saleId)
+        private async Task LoadSaleDetailsAsync(int saleId, int sequence)
         {
             try
             {
-                DataTable dt = DbHelper.GetSaleDetailsDataTable(saleId);
+                DataTable dt = await DbHelper.GetSaleDetailsDataTableAsync(saleId);
+                if (sequence != _currentSelectionSequence) return; // Discard stale response
+
                 dgvSaleDetails.DataSource = dt;
                 FormatSaleDetailsGrid();
                 lblSaleDetailsTitle.Text = $"📦 تفاصيل وأصناف الفاتورة #{saleId:D5}";
@@ -282,22 +306,29 @@ namespace POS
             }
         }
 
-        private void cmbPeriod_SelectedIndexChanged(object sender, EventArgs e)
+        private async void cmbPeriod_SelectedIndexChanged(object sender, EventArgs e)
         {
-            LoadSalesList();
+            await LoadSalesListAsync();
         }
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            LoadSalesList();
+            _searchDebounceTimer.Stop();
+            _searchDebounceTimer.Start();
         }
 
-        private void btnRefresh_Click(object sender, EventArgs e)
+        private async void OnSearchDebounceTick(object sender, EventArgs e)
         {
-            LoadSalesList();
+            _searchDebounceTimer.Stop();
+            await LoadSalesListAsync();
         }
 
-        private void btnReturn_Click(object sender, EventArgs e)
+        private async void btnRefresh_Click(object sender, EventArgs e)
+        {
+            await LoadSalesListAsync();
+        }
+
+        private async void btnReturn_Click(object sender, EventArgs e)
         {
             if (dgvSalesList.SelectedRows.Count == 0)
             {
@@ -310,7 +341,7 @@ namespace POS
             {
                 if (returnForm.ShowDialog(this) == DialogResult.OK)
                 {
-                    LoadSalesList();
+                    await LoadSalesListAsync();
                 }
             }
         }

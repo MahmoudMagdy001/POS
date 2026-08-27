@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace POS
@@ -9,14 +10,20 @@ namespace POS
     {
         private readonly UserModel _currentUser;
         private DataTable _usersTable;
+        private Timer _searchDebounceTimer;
+        private bool _isLoading = false;
 
         public UsersForm(UserModel currentUser)
         {
             InitializeComponent();
             _currentUser = currentUser;
+
+            _searchDebounceTimer = new Timer();
+            _searchDebounceTimer.Interval = 250;
+            _searchDebounceTimer.Tick += OnSearchDebounceTick;
         }
 
-        private void UsersForm_Load(object sender, EventArgs e)
+        private async void UsersForm_Load(object sender, EventArgs e)
         {
             UIStyler.ApplyTheme(this);
             lblTitle.Font = FontManager.GetBold(16f);
@@ -27,19 +34,23 @@ namespace POS
             UIStyler.StyleDangerButton(btnDeleteUser, "🗑️ حذف");
             UIStyler.StyleSecondaryButton(btnRefresh, "🔄 تحديث");
             UIStyler.StyleDataGrid(dgvUsers);
-            LoadUsers();
+
+            await LoadUsersAsync();
         }
 
-        public void RefreshData()
+        public async void RefreshData()
         {
-            LoadUsers(txtSearch.Text.Trim());
+            await LoadUsersAsync(txtSearch.Text.Trim());
         }
 
-        private void LoadUsers(string searchTerm = "")
+        private async Task LoadUsersAsync(string searchTerm = "")
         {
+            if (_isLoading) return;
+
             try
             {
-                _usersTable = DbHelper.GetAllUsers(searchTerm);
+                _isLoading = true;
+                _usersTable = await DbHelper.GetAllUsersAsync(searchTerm);
                 dgvUsers.DataSource = _usersTable;
                 FormatUsersGrid();
                 UpdateActionButtonsState();
@@ -47,6 +58,10 @@ namespace POS
             catch (Exception ex)
             {
                 MessageBox.Show("خطأ في تحميل قائمة المستخدمين: " + ex.Message, "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                _isLoading = false;
             }
         }
 
@@ -122,31 +137,31 @@ namespace POS
             };
         }
 
-        private void btnCreateUser_Click(object sender, EventArgs e)
+        private async void btnCreateUser_Click(object sender, EventArgs e)
         {
             using (UserModalForm modal = new UserModalForm())
             {
                 if (modal.ShowDialog(this) == DialogResult.OK)
                 {
-                    LoadUsers(txtSearch.Text.Trim());
+                    await LoadUsersAsync(txtSearch.Text.Trim());
                 }
             }
         }
 
-        private void btnEditUser_Click(object sender, EventArgs e)
+        private async void btnEditUser_Click(object sender, EventArgs e)
         {
-            EditSelectedUser();
+            await EditSelectedUserAsync();
         }
 
-        private void dgvUsers_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private async void dgvUsers_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
             {
-                EditSelectedUser();
+                await EditSelectedUserAsync();
             }
         }
 
-        private void EditSelectedUser()
+        private async Task EditSelectedUserAsync()
         {
             UserModel selectedUser = GetSelectedUser();
             if (selectedUser == null)
@@ -159,12 +174,12 @@ namespace POS
             {
                 if (modal.ShowDialog(this) == DialogResult.OK)
                 {
-                    LoadUsers(txtSearch.Text.Trim());
+                    await LoadUsersAsync(txtSearch.Text.Trim());
                 }
             }
         }
 
-        private void btnToggleStatus_Click(object sender, EventArgs e)
+        private async void btnToggleStatus_Click(object sender, EventArgs e)
         {
             UserModel selectedUser = GetSelectedUser();
             if (selectedUser == null) return;
@@ -184,7 +199,7 @@ namespace POS
                 if (result.Success)
                 {
                     MessageBox.Show(result.Message, "تم التحديث", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadUsers(txtSearch.Text.Trim());
+                    await LoadUsersAsync(txtSearch.Text.Trim());
                 }
                 else
                 {
@@ -193,7 +208,7 @@ namespace POS
             }
         }
 
-        private void btnDeleteUser_Click(object sender, EventArgs e)
+        private async void btnDeleteUser_Click(object sender, EventArgs e)
         {
             UserModel selectedUser = GetSelectedUser();
             if (selectedUser == null) return;
@@ -216,7 +231,7 @@ namespace POS
                 if (result.Success)
                 {
                     MessageBox.Show(result.Message, "تم الحذف", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    LoadUsers(txtSearch.Text.Trim());
+                    await LoadUsersAsync(txtSearch.Text.Trim());
                 }
                 else
                 {
@@ -225,15 +240,22 @@ namespace POS
             }
         }
 
-        private void btnRefresh_Click(object sender, EventArgs e)
+        private async void btnRefresh_Click(object sender, EventArgs e)
         {
             txtSearch.Clear();
-            LoadUsers();
+            await LoadUsersAsync();
         }
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
-            LoadUsers(txtSearch.Text.Trim());
+            _searchDebounceTimer.Stop();
+            _searchDebounceTimer.Start();
+        }
+
+        private async void OnSearchDebounceTick(object sender, EventArgs e)
+        {
+            _searchDebounceTimer.Stop();
+            await LoadUsersAsync(txtSearch.Text.Trim());
         }
 
         private void dgvUsers_SelectionChanged(object sender, EventArgs e)

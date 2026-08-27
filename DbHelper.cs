@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -7,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace POS
 {
@@ -35,7 +37,7 @@ namespace POS
             using (SHA256 sha256 = SHA256.Create())
             {
                 byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(rawData));
-                StringBuilder builder = new StringBuilder();
+                StringBuilder builder = new StringBuilder(bytes.Length * 2);
                 for (int i = 0; i < bytes.Length; i++)
                 {
                     builder.Append(bytes[i].ToString("x2"));
@@ -44,7 +46,64 @@ namespace POS
             }
         }
 
+        #region In-Memory Fast Caching Layer
+
+        private static readonly object _settingsLock = new object();
+        private static SystemSettingsModel _cachedSettings = null;
+
+        private static readonly object _categoriesLock = new object();
+        private static List<CategoryModel> _cachedCategories = null;
+
+        private static readonly ConcurrentDictionary<string, ProductModel> _productBarcodeCache =
+            new ConcurrentDictionary<string, ProductModel>(StringComparer.OrdinalIgnoreCase);
+
+        private static readonly ConcurrentDictionary<int, ProductModel> _productIdCache =
+            new ConcurrentDictionary<int, ProductModel>();
+
+        public static void InvalidateSettingsCache()
+        {
+            lock (_settingsLock)
+            {
+                _cachedSettings = null;
+            }
+        }
+
+        public static void InvalidateCategoriesCache()
+        {
+            lock (_categoriesLock)
+            {
+                _cachedCategories = null;
+            }
+        }
+
+        public static void InvalidateProductsCache(string barcode = null, int? productId = null)
+        {
+            if (barcode != null)
+                _productBarcodeCache.TryRemove(barcode, out _);
+            if (productId.HasValue)
+                _productIdCache.TryRemove(productId.Value, out _);
+
+            if (barcode == null && !productId.HasValue)
+            {
+                _productBarcodeCache.Clear();
+                _productIdCache.Clear();
+            }
+        }
+
+        public static void CacheProduct(ProductModel prod)
+        {
+            if (prod == null) return;
+            if (!string.IsNullOrWhiteSpace(prod.Barcode))
+                _productBarcodeCache[prod.Barcode] = prod;
+            if (prod.ProductId > 0)
+                _productIdCache[prod.ProductId] = prod;
+        }
+
+        #endregion
+
         #region Database Initialization
+
+        private const int CurrentSchemaVersion = 2;
 
         public static void InitializeDatabase()
         {
@@ -61,10 +120,31 @@ namespace POS
                     }
                 }
 
-                // 2. Ensure all tables, indexes, constraints & Arabic seed data exist
+                // 2. Fast check schema version before executing full DDL script
                 using (SqlConnection appConn = new SqlConnection(GetConnectionString()))
                 {
                     appConn.Open();
+
+                    string versionCheck = @"
+                        IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[__SchemaVersion]') AND type in (N'U'))
+                            SELECT TOP 1 VersionNumber FROM [dbo].[__SchemaVersion] ORDER BY AppliedAt DESC;
+                        ELSE
+                            SELECT 0;";
+
+                    int existingVersion = 0;
+                    using (SqlCommand cmd = new SqlCommand(versionCheck, appConn))
+                    {
+                        object res = cmd.ExecuteScalar();
+                        if (res != null && res != DBNull.Value)
+                            existingVersion = Convert.ToInt32(res);
+                    }
+
+                    if (existingVersion >= CurrentSchemaVersion)
+                    {
+                        return; // Database schema and indexes are already up-to-date!
+                    }
+
+                    // Execute full schema, migrations, seed data, and indexes
                     string schemaQuery = @"
                         -- Users
                         IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Users]') AND type in (N'U'))
@@ -85,11 +165,6 @@ namespace POS
 
                             INSERT INTO [dbo].[Users] ([Username], [PasswordHash], [FullName], [Role], [IsActive])
                             VALUES (N'cashier', N'8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', N'كاشير الصالة الرئيسي', N'Cashier', 1);
-                        END
-                        ELSE
-                        BEGIN
-                            UPDATE [dbo].[Users] SET [FullName] = N'مدير النظام العام' WHERE [Username] = 'admin' AND [FullName] LIKE '%Administrator%';
-                            UPDATE [dbo].[Users] SET [FullName] = N'كاشير الصالة الرئيسي' WHERE [Username] = 'cashier' AND [FullName] LIKE '%Cashier%';
                         END;
 
                         IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Users_Username' AND object_id = OBJECT_ID(N'[dbo].[Users]'))
@@ -104,27 +179,13 @@ namespace POS
                                 [CategoryId]   INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
                                 [CategoryName] NVARCHAR(100)     NOT NULL UNIQUE
                             );
-                        END;
 
-                        -- Translate any previous english categories
-                        UPDATE [dbo].[Categories] SET [CategoryName] = N'مشروبات ومياه' WHERE [CategoryName] = 'Beverages' OR [CategoryName] LIKE '%Beverage%';
-                        UPDATE [dbo].[Categories] SET [CategoryName] = N'سناكس ومقرمشات' WHERE [CategoryName] = 'Snacks & Confectionery' OR [CategoryName] LIKE '%Snack%';
-                        UPDATE [dbo].[Categories] SET [CategoryName] = N'ألبان وجبن' WHERE [CategoryName] = 'Dairy & Eggs' OR [CategoryName] LIKE '%Dairy%';
-                        UPDATE [dbo].[Categories] SET [CategoryName] = N'إلكترونيات وإكسسوارات' WHERE [CategoryName] = 'Electronics & Accessories' OR [CategoryName] LIKE '%Electron%';
-
-                        -- Remove duplicate categories if created with english names
-                        DELETE FROM [dbo].[Categories] WHERE [CategoryName] IN ('Beverages', 'Snacks & Confectionery', 'Dairy & Eggs', 'Electronics & Accessories');
-
-                        IF NOT EXISTS (SELECT 1 FROM [dbo].[Categories] WHERE [CategoryName] = N'مشروبات ومياه')
                             INSERT INTO [dbo].[Categories] ([CategoryName]) VALUES (N'مشروبات ومياه');
-                        IF NOT EXISTS (SELECT 1 FROM [dbo].[Categories] WHERE [CategoryName] = N'سناكس ومقرمشات')
                             INSERT INTO [dbo].[Categories] ([CategoryName]) VALUES (N'سناكس ومقرمشات');
-                        IF NOT EXISTS (SELECT 1 FROM [dbo].[Categories] WHERE [CategoryName] = N'ألبان وجبن')
                             INSERT INTO [dbo].[Categories] ([CategoryName]) VALUES (N'ألبان وجبن');
-                        IF NOT EXISTS (SELECT 1 FROM [dbo].[Categories] WHERE [CategoryName] = N'إلكترونيات وإكسسوارات')
                             INSERT INTO [dbo].[Categories] ([CategoryName]) VALUES (N'إلكترونيات وإكسسوارات');
-                        IF NOT EXISTS (SELECT 1 FROM [dbo].[Categories] WHERE [CategoryName] = N'منظفات وعناية منزلية')
                             INSERT INTO [dbo].[Categories] ([CategoryName]) VALUES (N'منظفات وعناية منزلية');
+                        END;
 
                         -- Products
                         IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Products]') AND type in (N'U'))
@@ -142,47 +203,39 @@ namespace POS
                                 CONSTRAINT [FK_Products_Categories] FOREIGN KEY ([CategoryId]) 
                                     REFERENCES [dbo].[Categories] ([CategoryId]) ON DELETE SET NULL
                             );
-                        END;
 
-                        IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [Barcode] = N'6221001001')
                             INSERT INTO [dbo].[Products] ([Barcode], [ProductName], [CategoryId], [BuyPrice], [SellPrice], [StockQuantity], [MinStockAlert])
                             VALUES (N'6221001001', N'مياه معدنية 1.5 لتر', 1, 8.00, 12.00, 50, 10);
-                        ELSE
-                            UPDATE [dbo].[Products] SET [ProductName] = N'مياه معدنية 1.5 لتر' WHERE [Barcode] = N'6221001001' AND [ProductName] LIKE '%Mineral%';
-
-                        IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [Barcode] = N'6221001002')
                             INSERT INTO [dbo].[Products] ([Barcode], [ProductName], [CategoryId], [BuyPrice], [SellPrice], [StockQuantity], [MinStockAlert])
                             VALUES (N'6221001002', N'كانز كولا 330 مل', 1, 12.00, 18.00, 40, 10);
-                        ELSE
-                            UPDATE [dbo].[Products] SET [ProductName] = N'كانز كولا 330 مل' WHERE [Barcode] = N'6221001002' AND [ProductName] LIKE '%Cola%';
-
-                        IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [Barcode] = N'6221001003')
                             INSERT INTO [dbo].[Products] ([Barcode], [ProductName], [CategoryId], [BuyPrice], [SellPrice], [StockQuantity], [MinStockAlert])
                             VALUES (N'6221001003', N'شيبسي عائلي بالجبنة المتبلة', 2, 10.00, 15.00, 25, 8);
-                        ELSE
-                            UPDATE [dbo].[Products] SET [ProductName] = N'شيبسي عائلي بالجبنة المتبلة' WHERE [Barcode] = N'6221001003' AND [ProductName] LIKE '%Chips%';
-
-                        IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [Barcode] = N'6221001004')
                             INSERT INTO [dbo].[Products] ([Barcode], [ProductName], [CategoryId], [BuyPrice], [SellPrice], [StockQuantity], [MinStockAlert])
                             VALUES (N'6221001004', N'حليب طازج كامل الدسم 1 لتر', 3, 30.00, 42.00, 4, 10);
-                        ELSE
-                            UPDATE [dbo].[Products] SET [ProductName] = N'حليب طازج كامل الدسم 1 لتر' WHERE [Barcode] = N'6221001004' AND [ProductName] LIKE '%Milk%';
-
-                        IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [Barcode] = N'6221001005')
                             INSERT INTO [dbo].[Products] ([Barcode], [ProductName], [CategoryId], [BuyPrice], [SellPrice], [StockQuantity], [MinStockAlert])
                             VALUES (N'6221001005', N'كابل شحن سريع Type-C', 4, 45.00, 75.00, 3, 5);
-                        ELSE
-                            UPDATE [dbo].[Products] SET [ProductName] = N'كابل شحن سريع Type-C' WHERE [Barcode] = N'6221001005' AND [ProductName] LIKE '%Cable%';
-
-                        -- Map products to Arabic category IDs
-                        UPDATE [dbo].[Products] SET [CategoryId] = (SELECT TOP 1 CategoryId FROM [dbo].[Categories] WHERE CategoryName = N'مشروبات ومياه') WHERE [Barcode] IN ('6221001001', '6221001002');
-                        UPDATE [dbo].[Products] SET [CategoryId] = (SELECT TOP 1 CategoryId FROM [dbo].[Categories] WHERE CategoryName = N'سناكس ومقرمشات') WHERE [Barcode] = '6221001003';
-                        UPDATE [dbo].[Products] SET [CategoryId] = (SELECT TOP 1 CategoryId FROM [dbo].[Categories] WHERE CategoryName = N'ألبان وجبن') WHERE [Barcode] = '6221001004';
-                        UPDATE [dbo].[Products] SET [CategoryId] = (SELECT TOP 1 CategoryId FROM [dbo].[Categories] WHERE CategoryName = N'إلكترونيات وإكسسوارات') WHERE [Barcode] = '6221001005';
+                        END;
 
                         IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Products_Barcode' AND object_id = OBJECT_ID(N'[dbo].[Products]'))
                         BEGIN
                             CREATE NONCLUSTERED INDEX [IX_Products_Barcode] ON [dbo].[Products] ([Barcode]);
+                        END;
+
+                        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Products_ProductName' AND object_id = OBJECT_ID(N'[dbo].[Products]'))
+                        BEGIN
+                            CREATE NONCLUSTERED INDEX [IX_Products_ProductName] ON [dbo].[Products] ([ProductName]);
+                        END;
+
+                        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Products_CategoryId' AND object_id = OBJECT_ID(N'[dbo].[Products]'))
+                        BEGIN
+                            CREATE NONCLUSTERED INDEX [IX_Products_CategoryId] ON [dbo].[Products] ([CategoryId]) 
+                            INCLUDE ([ProductName], [SellPrice], [StockQuantity], [Barcode]);
+                        END;
+
+                        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Products_StockAlert' AND object_id = OBJECT_ID(N'[dbo].[Products]'))
+                        BEGIN
+                            CREATE NONCLUSTERED INDEX [IX_Products_StockAlert] ON [dbo].[Products] ([StockQuantity], [MinStockAlert]) 
+                            INCLUDE ([ProductName], [Barcode], [BuyPrice], [SellPrice], [CategoryId]);
                         END;
 
                         -- Suppliers
@@ -200,11 +253,6 @@ namespace POS
                             VALUES (N'شركة الأهرام للتوزيع والتوريدات', N'01001234567', N'المنطقة الصناعية - القاهرة');
                             INSERT INTO [dbo].[Suppliers] ([SupplierName], [Phone], [Address]) 
                             VALUES (N'مؤسسة الدلتا للمواد الغذائية', N'01129876543', N'مجمع المخازن اللوجستية - الإسكندرية');
-                        END
-                        ELSE
-                        BEGIN
-                            UPDATE [dbo].[Suppliers] SET [SupplierName] = N'شركة الأهرام للتوزيع والتوريدات', [Phone] = N'01001234567', [Address] = N'المنطقة الصناعية - القاهرة' WHERE [SupplierName] LIKE '%Ahram%' OR [SupplierName] LIKE '%الأهرام%';
-                            UPDATE [dbo].[Suppliers] SET [SupplierName] = N'مؤسسة الدلتا للمواد الغذائية', [Phone] = N'01129876543', [Address] = N'مجمع المخازن اللوجستية - الإسكندرية' WHERE [SupplierName] LIKE '%Delta%' OR [SupplierName] LIKE '%الدلتا%';
                         END;
 
                         -- Purchases
@@ -219,6 +267,17 @@ namespace POS
                                 CONSTRAINT [FK_Purchases_Suppliers] FOREIGN KEY ([SupplierId]) 
                                     REFERENCES [dbo].[Suppliers] ([SupplierId]) ON DELETE SET NULL
                             );
+                        END;
+
+                        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Purchases_SupplierId' AND object_id = OBJECT_ID(N'[dbo].[Purchases]'))
+                        BEGIN
+                            CREATE NONCLUSTERED INDEX [IX_Purchases_SupplierId] ON [dbo].[Purchases] ([SupplierId]);
+                        END;
+
+                        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Purchases_PurchaseDate' AND object_id = OBJECT_ID(N'[dbo].[Purchases]'))
+                        BEGIN
+                            CREATE NONCLUSTERED INDEX [IX_Purchases_PurchaseDate] ON [dbo].[Purchases] ([PurchaseDate]) 
+                            INCLUDE ([TotalAmount], [SupplierId]);
                         END;
 
                         -- PurchaseDetails
@@ -238,6 +297,11 @@ namespace POS
                             );
                         END;
 
+                        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_PurchaseDetails_PurchaseId' AND object_id = OBJECT_ID(N'[dbo].[PurchaseDetails]'))
+                        BEGIN
+                            CREATE NONCLUSTERED INDEX [IX_PurchaseDetails_PurchaseId] ON [dbo].[PurchaseDetails] ([PurchaseId]);
+                        END;
+
                         -- Sales
                         IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Sales]') AND type in (N'U'))
                         BEGIN
@@ -252,22 +316,40 @@ namespace POS
                                 [PaidAmount]    DECIMAL(18,2)     NOT NULL DEFAULT 0.00,
                                 [ChangeAmount]  DECIMAL(18,2)     NOT NULL DEFAULT 0.00,
                                 [PaymentMethod] NVARCHAR(50)      NOT NULL DEFAULT N'نقدي',
+                                [ReturnStatus]  NVARCHAR(50)      NOT NULL DEFAULT N'مكتملة',
+                                [TotalRefunded] DECIMAL(18,2)     NOT NULL DEFAULT 0.00,
                                 CONSTRAINT [FK_Sales_Users] FOREIGN KEY ([UserId]) 
                                     REFERENCES [dbo].[Users] ([UserId]) ON DELETE SET NULL
                             );
+                        END;
+
+                        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Sales_SaleDate' AND object_id = OBJECT_ID(N'[dbo].[Sales]'))
+                        BEGIN
+                            CREATE NONCLUSTERED INDEX [IX_Sales_SaleDate] ON [dbo].[Sales] ([SaleDate]);
+                        END;
+
+                        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Sales_SaleDate_Covering' AND object_id = OBJECT_ID(N'[dbo].[Sales]'))
+                        BEGIN
+                            CREATE NONCLUSTERED INDEX [IX_Sales_SaleDate_Covering] ON [dbo].[Sales] ([SaleDate]) 
+                            INCLUDE ([SaleId], [UserId], [FinalAmount], [TotalRefunded], [ReturnStatus], [PaymentMethod]);
+                        END;
+
+                        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Sales_UserId' AND object_id = OBJECT_ID(N'[dbo].[Sales]'))
+                        BEGIN
+                            CREATE NONCLUSTERED INDEX [IX_Sales_UserId] ON [dbo].[Sales] ([UserId]);
                         END;
 
                         -- SaleDetails
                         IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SaleDetails]') AND type in (N'U'))
                         BEGIN
                             CREATE TABLE [dbo].[SaleDetails] (
-                                [DetailId]  INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
-                                [SaleId]    INT               NOT NULL,
-                                [ProductId] INT               NOT NULL,
-                                [Quantity]  INT               NOT NULL,
-                                [ReturnedQuantity] INT        NOT NULL DEFAULT 0,
-                                [UnitPrice] DECIMAL(18,2)     NOT NULL,
-                                [LineTotal] DECIMAL(18,2)     NOT NULL,
+                                [DetailId]         INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                                [SaleId]           INT               NOT NULL,
+                                [ProductId]        INT               NOT NULL,
+                                [Quantity]         INT               NOT NULL,
+                                [ReturnedQuantity] INT               NOT NULL DEFAULT 0,
+                                [UnitPrice]        DECIMAL(18,2)     NOT NULL,
+                                [LineTotal]        DECIMAL(18,2)     NOT NULL,
                                 CONSTRAINT [FK_SaleDetails_Sales] FOREIGN KEY ([SaleId]) 
                                     REFERENCES [dbo].[Sales] ([SaleId]) ON DELETE CASCADE,
                                 CONSTRAINT [FK_SaleDetails_Products] FOREIGN KEY ([ProductId]) 
@@ -275,25 +357,14 @@ namespace POS
                             );
                         END;
 
-                        -- Migrations for Tax and Returns
-                        IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[Sales]') AND name = 'TaxAmount')
+                        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_SaleDetails_SaleId' AND object_id = OBJECT_ID(N'[dbo].[SaleDetails]'))
                         BEGIN
-                            ALTER TABLE [dbo].[Sales] ADD [TaxAmount] DECIMAL(18,2) NOT NULL DEFAULT 0.00;
+                            CREATE NONCLUSTERED INDEX [IX_SaleDetails_SaleId] ON [dbo].[SaleDetails] ([SaleId]);
                         END;
 
-                        IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[Sales]') AND name = 'ReturnStatus')
+                        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_SaleDetails_ProductId' AND object_id = OBJECT_ID(N'[dbo].[SaleDetails]'))
                         BEGIN
-                            ALTER TABLE [dbo].[Sales] ADD [ReturnStatus] NVARCHAR(50) NOT NULL DEFAULT N'مكتملة';
-                        END;
-
-                        IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[Sales]') AND name = 'TotalRefunded')
-                        BEGIN
-                            ALTER TABLE [dbo].[Sales] ADD [TotalRefunded] DECIMAL(18,2) NOT NULL DEFAULT 0.00;
-                        END;
-
-                        IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[SaleDetails]') AND name = 'ReturnedQuantity')
-                        BEGIN
-                            ALTER TABLE [dbo].[SaleDetails] ADD [ReturnedQuantity] INT NOT NULL DEFAULT 0;
+                            CREATE NONCLUSTERED INDEX [IX_SaleDetails_ProductId] ON [dbo].[SaleDetails] ([ProductId]);
                         END;
 
                         -- SalesReturns
@@ -309,6 +380,11 @@ namespace POS
                                 CONSTRAINT [FK_SalesReturns_Sales] FOREIGN KEY ([SaleId]) REFERENCES [dbo].[Sales] ([SaleId]) ON DELETE CASCADE,
                                 CONSTRAINT [FK_SalesReturns_Users] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users] ([UserId]) ON DELETE SET NULL
                             );
+                        END;
+
+                        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_SalesReturns_SaleId' AND object_id = OBJECT_ID(N'[dbo].[SalesReturns]'))
+                        BEGIN
+                            CREATE NONCLUSTERED INDEX [IX_SalesReturns_SaleId] ON [dbo].[SalesReturns] ([SaleId]);
                         END;
 
                         -- SalesReturnDetails
@@ -327,6 +403,16 @@ namespace POS
                             );
                         END;
 
+                        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_SalesReturnDetails_ReturnId' AND object_id = OBJECT_ID(N'[dbo].[SalesReturnDetails]'))
+                        BEGIN
+                            CREATE NONCLUSTERED INDEX [IX_SalesReturnDetails_ReturnId] ON [dbo].[SalesReturnDetails] ([ReturnId]);
+                        END;
+
+                        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_SalesReturnDetails_ProductId' AND object_id = OBJECT_ID(N'[dbo].[SalesReturnDetails]'))
+                        BEGIN
+                            CREATE NONCLUSTERED INDEX [IX_SalesReturnDetails_ProductId] ON [dbo].[SalesReturnDetails] ([ProductId]);
+                        END;
+
                         -- SystemSettings
                         IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SystemSettings]') AND type in (N'U'))
                         BEGIN
@@ -334,6 +420,20 @@ namespace POS
                                 [SettingKey]   NVARCHAR(50)  NOT NULL PRIMARY KEY,
                                 [SettingValue] NVARCHAR(MAX) NULL
                             );
+                        END;
+
+                        -- Schema Version Tracker
+                        IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[__SchemaVersion]') AND type in (N'U'))
+                        BEGIN
+                            CREATE TABLE [dbo].[__SchemaVersion] (
+                                [VersionNumber] INT NOT NULL PRIMARY KEY,
+                                [AppliedAt]     DATETIME NOT NULL DEFAULT GETDATE()
+                            );
+                        END;
+
+                        IF NOT EXISTS (SELECT 1 FROM [dbo].[__SchemaVersion] WHERE VersionNumber = 2)
+                        BEGIN
+                            INSERT INTO [dbo].[__SchemaVersion] (VersionNumber, AppliedAt) VALUES (2, GETDATE());
                         END;
                     ";
 
@@ -367,6 +467,40 @@ namespace POS
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
+                            {
+                                return new UserModel
+                                {
+                                    UserId = Convert.ToInt32(reader["UserId"]),
+                                    Username = reader["Username"].ToString(),
+                                    FullName = reader["FullName"].ToString(),
+                                    Role = reader["Role"].ToString(),
+                                    IsActive = Convert.ToBoolean(reader["IsActive"]),
+                                    CreatedAt = reader["CreatedAt"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(reader["CreatedAt"]) : null,
+                                    LastLogin = reader["LastLogin"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(reader["LastLogin"]) : null
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        public static async Task<UserModel> GetUserByIdAsync(int userId)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    string query = "SELECT UserId, Username, FullName, Role, IsActive, CreatedAt, LastLogin FROM [dbo].[Users] WHERE UserId = @UserId";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            if (await reader.ReadAsync().ConfigureAwait(false))
                             {
                                 return new UserModel
                                 {
@@ -434,11 +568,83 @@ namespace POS
 
                                 reader.Close();
 
-                                // Update LastLogin
                                 using (SqlCommand updateCmd = new SqlCommand("UPDATE [dbo].[Users] SET LastLogin = GETDATE() WHERE UserId = @UserId", conn))
                                 {
                                     updateCmd.Parameters.Add("@UserId", SqlDbType.Int).Value = user.UserId;
                                     updateCmd.ExecuteNonQuery();
+                                }
+
+                                return (true, "تم تسجيل الدخول بنجاح.", user);
+                            }
+                            else
+                            {
+                                return (false, "اسم المستخدم أو كلمة المرور غير صحيحة.", null);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                return (false, "خطأ في الاتصال بقاعدة البيانات: " + ex.Message, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, "حدث خطأ غير متوقع: " + ex.Message, null);
+            }
+        }
+
+        public static async Task<(bool Success, string Message, UserModel User)> AuthenticateAsync(string username, string password)
+        {
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                return (false, "يرجى إدخال اسم المستخدم وكلمة المرور.", null);
+            }
+
+            string passwordHash = ComputeSha256Hash(password);
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    string query = @"
+                        SELECT UserId, Username, FullName, Role, IsActive, CreatedAt, LastLogin 
+                        FROM [dbo].[Users] 
+                        WHERE Username = @Username AND PasswordHash = @PasswordHash";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@Username", SqlDbType.NVarChar, 50).Value = username.Trim();
+                        cmd.Parameters.Add("@PasswordHash", SqlDbType.NVarChar, 256).Value = passwordHash;
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            if (await reader.ReadAsync().ConfigureAwait(false))
+                            {
+                                bool isActive = Convert.ToBoolean(reader["IsActive"]);
+                                if (!isActive)
+                                {
+                                    return (false, "هذا الحساب موقوف حالياً. يرجى مراجعة مدير النظام.", null);
+                                }
+
+                                UserModel user = new UserModel
+                                {
+                                    UserId = Convert.ToInt32(reader["UserId"]),
+                                    Username = reader["Username"].ToString(),
+                                    FullName = reader["FullName"].ToString(),
+                                    Role = reader["Role"].ToString(),
+                                    IsActive = isActive,
+                                    CreatedAt = reader["CreatedAt"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(reader["CreatedAt"]) : null,
+                                    LastLogin = reader["LastLogin"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(reader["LastLogin"]) : null
+                                };
+
+                                reader.Close();
+
+                                using (SqlCommand updateCmd = new SqlCommand("UPDATE [dbo].[Users] SET LastLogin = GETDATE() WHERE UserId = @UserId", conn))
+                                {
+                                    updateCmd.Parameters.Add("@UserId", SqlDbType.Int).Value = user.UserId;
+                                    await updateCmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                                 }
 
                                 return (true, "تم تسجيل الدخول بنجاح.", user);
@@ -484,7 +690,7 @@ namespace POS
                 {
                     conn.Open();
 
-                    string checkQuery = "SELECT COUNT(1) FROM [dbo].[Users] WHERE LOWER(Username) = LOWER(@Username)";
+                    string checkQuery = "SELECT COUNT(1) FROM [dbo].[Users] WHERE Username = @Username";
                     using (SqlCommand checkCmd = new SqlCommand(checkQuery, conn))
                     {
                         checkCmd.Parameters.Add("@Username", SqlDbType.NVarChar, 50).Value = trimmedUsername;
@@ -550,6 +756,41 @@ namespace POS
                         using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
                         {
                             adapter.Fill(dt);
+                        }
+                    }
+                }
+            }
+            catch { }
+            return dt;
+        }
+
+        public static async Task<DataTable> GetAllUsersAsync(string searchTerm = "")
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    string query = "SELECT UserId, Username, FullName, Role, IsActive, CreatedAt, LastLogin FROM [dbo].[Users]";
+
+                    if (!string.IsNullOrWhiteSpace(searchTerm))
+                    {
+                        query += " WHERE Username LIKE @Search OR FullName LIKE @Search OR Role LIKE @Search";
+                    }
+
+                    query += " ORDER BY UserId ASC";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        if (!string.IsNullOrWhiteSpace(searchTerm))
+                        {
+                            cmd.Parameters.Add("@Search", SqlDbType.NVarChar, 100).Value = "%" + searchTerm.Trim() + "%";
+                        }
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            dt.Load(reader);
                         }
                     }
                 }
@@ -672,6 +913,12 @@ namespace POS
 
         public static List<CategoryModel> GetAllCategories()
         {
+            lock (_categoriesLock)
+            {
+                if (_cachedCategories != null)
+                    return new List<CategoryModel>(_cachedCategories);
+            }
+
             List<CategoryModel> categories = new List<CategoryModel>();
             try
             {
@@ -691,6 +938,49 @@ namespace POS
                             });
                         }
                     }
+                }
+
+                lock (_categoriesLock)
+                {
+                    _cachedCategories = new List<CategoryModel>(categories);
+                }
+            }
+            catch { }
+            return categories;
+        }
+
+        public static async Task<List<CategoryModel>> GetAllCategoriesAsync()
+        {
+            lock (_categoriesLock)
+            {
+                if (_cachedCategories != null)
+                    return new List<CategoryModel>(_cachedCategories);
+            }
+
+            List<CategoryModel> categories = new List<CategoryModel>();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    string query = "SELECT CategoryId, CategoryName FROM [dbo].[Categories] ORDER BY CategoryName ASC";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                    {
+                        while (await reader.ReadAsync().ConfigureAwait(false))
+                        {
+                            categories.Add(new CategoryModel
+                            {
+                                CategoryId = Convert.ToInt32(reader["CategoryId"]),
+                                CategoryName = reader["CategoryName"].ToString()
+                            });
+                        }
+                    }
+                }
+
+                lock (_categoriesLock)
+                {
+                    _cachedCategories = new List<CategoryModel>(categories);
                 }
             }
             catch { }
@@ -712,7 +1002,7 @@ namespace POS
 
                     if (!categoryId.HasValue || categoryId.Value <= 0)
                     {
-                        string check = "SELECT COUNT(1) FROM [dbo].[Categories] WHERE LOWER(CategoryName) = LOWER(@CategoryName)";
+                        string check = "SELECT COUNT(1) FROM [dbo].[Categories] WHERE CategoryName = @CategoryName";
                         using (SqlCommand chkCmd = new SqlCommand(check, conn))
                         {
                             chkCmd.Parameters.Add("@CategoryName", SqlDbType.NVarChar, 100).Value = name;
@@ -725,6 +1015,7 @@ namespace POS
                         {
                             cmd.Parameters.Add("@CategoryName", SqlDbType.NVarChar, 100).Value = name;
                             int newId = (int)cmd.ExecuteScalar();
+                            InvalidateCategoriesCache();
                             return (true, "تمت إضافة القسم بنجاح.", newId);
                         }
                     }
@@ -736,6 +1027,7 @@ namespace POS
                             cmd.Parameters.Add("@CategoryName", SqlDbType.NVarChar, 100).Value = name;
                             cmd.Parameters.Add("@CategoryId", SqlDbType.Int).Value = categoryId.Value;
                             cmd.ExecuteNonQuery();
+                            InvalidateCategoriesCache();
                             return (true, "تم تعديل القسم بنجاح.", categoryId.Value);
                         }
                     }
@@ -760,7 +1052,10 @@ namespace POS
                         cmd.Parameters.Add("@CategoryId", SqlDbType.Int).Value = categoryId;
                         int rows = cmd.ExecuteNonQuery();
                         if (rows > 0)
+                        {
+                            InvalidateCategoriesCache();
                             return (true, "تم حذف القسم بنجاح.");
+                        }
                         return (false, "القسم غير موجود.");
                     }
                 }
@@ -839,9 +1134,79 @@ namespace POS
             return dt;
         }
 
+        public static async Task<DataTable> GetAllProductsDataTableAsync(string searchTerm = "", int? categoryId = null, bool lowStockOnly = false)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    StringBuilder query = new StringBuilder(@"
+                        SELECT 
+                            p.ProductId, 
+                            p.Barcode, 
+                            p.ProductName, 
+                            p.CategoryId, 
+                            ISNULL(c.CategoryName, N'عام / غير مصنف') AS CategoryName, 
+                            p.BuyPrice, 
+                            p.SellPrice, 
+                            p.StockQuantity, 
+                            p.MinStockAlert, 
+                            p.CreatedAt,
+                            CASE WHEN p.StockQuantity <= p.MinStockAlert THEN 1 ELSE 0 END AS IsLowStock
+                        FROM [dbo].[Products] p
+                        LEFT JOIN [dbo].[Categories] c ON p.CategoryId = c.CategoryId
+                        WHERE 1=1 ");
+
+                    if (!string.IsNullOrWhiteSpace(searchTerm))
+                    {
+                        query.Append(" AND (p.Barcode LIKE @Search OR p.ProductName LIKE @Search) ");
+                    }
+
+                    if (categoryId.HasValue && categoryId.Value > 0)
+                    {
+                        query.Append(" AND p.CategoryId = @CategoryId ");
+                    }
+
+                    if (lowStockOnly)
+                    {
+                        query.Append(" AND p.StockQuantity <= p.MinStockAlert ");
+                    }
+
+                    query.Append(" ORDER BY p.ProductName ASC");
+
+                    using (SqlCommand cmd = new SqlCommand(query.ToString(), conn))
+                    {
+                        if (!string.IsNullOrWhiteSpace(searchTerm))
+                        {
+                            cmd.Parameters.Add("@Search", SqlDbType.NVarChar, 150).Value = "%" + searchTerm.Trim() + "%";
+                        }
+                        if (categoryId.HasValue && categoryId.Value > 0)
+                        {
+                            cmd.Parameters.Add("@CategoryId", SqlDbType.Int).Value = categoryId.Value;
+                        }
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            dt.Load(reader);
+                        }
+                    }
+                }
+            }
+            catch { }
+            return dt;
+        }
+
         public static ProductModel GetProductByBarcode(string barcode)
         {
             if (string.IsNullOrWhiteSpace(barcode)) return null;
+
+            string cleanBarcode = barcode.Trim();
+            if (_productBarcodeCache.TryGetValue(cleanBarcode, out ProductModel cached))
+            {
+                return cached;
+            }
 
             try
             {
@@ -857,12 +1222,12 @@ namespace POS
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
-                        cmd.Parameters.Add("@Barcode", SqlDbType.NVarChar, 50).Value = barcode.Trim();
+                        cmd.Parameters.Add("@Barcode", SqlDbType.NVarChar, 50).Value = cleanBarcode;
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
                             {
-                                return new ProductModel
+                                var prod = new ProductModel
                                 {
                                     ProductId = Convert.ToInt32(reader["ProductId"]),
                                     Barcode = reader["Barcode"].ToString(),
@@ -875,6 +1240,61 @@ namespace POS
                                     MinStockAlert = Convert.ToInt32(reader["MinStockAlert"]),
                                     CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
                                 };
+                                CacheProduct(prod);
+                                return prod;
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        public static async Task<ProductModel> GetProductByBarcodeAsync(string barcode)
+        {
+            if (string.IsNullOrWhiteSpace(barcode)) return null;
+
+            string cleanBarcode = barcode.Trim();
+            if (_productBarcodeCache.TryGetValue(cleanBarcode, out ProductModel cached))
+            {
+                return cached;
+            }
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    string query = @"
+                        SELECT p.ProductId, p.Barcode, p.ProductName, p.CategoryId, ISNULL(c.CategoryName, '') AS CategoryName, 
+                               p.BuyPrice, p.SellPrice, p.StockQuantity, p.MinStockAlert, p.CreatedAt
+                        FROM [dbo].[Products] p
+                        LEFT JOIN [dbo].[Categories] c ON p.CategoryId = c.CategoryId
+                        WHERE p.Barcode = @Barcode";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@Barcode", SqlDbType.NVarChar, 50).Value = cleanBarcode;
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            if (await reader.ReadAsync().ConfigureAwait(false))
+                            {
+                                var prod = new ProductModel
+                                {
+                                    ProductId = Convert.ToInt32(reader["ProductId"]),
+                                    Barcode = reader["Barcode"].ToString(),
+                                    ProductName = reader["ProductName"].ToString(),
+                                    CategoryId = reader["CategoryId"] != DBNull.Value ? (int?)Convert.ToInt32(reader["CategoryId"]) : null,
+                                    CategoryName = reader["CategoryName"].ToString(),
+                                    BuyPrice = Convert.ToDecimal(reader["BuyPrice"]),
+                                    SellPrice = Convert.ToDecimal(reader["SellPrice"]),
+                                    StockQuantity = Convert.ToInt32(reader["StockQuantity"]),
+                                    MinStockAlert = Convert.ToInt32(reader["MinStockAlert"]),
+                                    CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
+                                };
+                                CacheProduct(prod);
+                                return prod;
                             }
                         }
                     }
@@ -886,6 +1306,11 @@ namespace POS
 
         public static ProductModel GetProductById(int productId)
         {
+            if (_productIdCache.TryGetValue(productId, out ProductModel cached))
+            {
+                return cached;
+            }
+
             try
             {
                 using (SqlConnection conn = new SqlConnection(GetConnectionString()))
@@ -905,7 +1330,7 @@ namespace POS
                         {
                             if (reader.Read())
                             {
-                                return new ProductModel
+                                var prod = new ProductModel
                                 {
                                     ProductId = Convert.ToInt32(reader["ProductId"]),
                                     Barcode = reader["Barcode"].ToString(),
@@ -918,6 +1343,58 @@ namespace POS
                                     MinStockAlert = Convert.ToInt32(reader["MinStockAlert"]),
                                     CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
                                 };
+                                CacheProduct(prod);
+                                return prod;
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        public static async Task<ProductModel> GetProductByIdAsync(int productId)
+        {
+            if (_productIdCache.TryGetValue(productId, out ProductModel cached))
+            {
+                return cached;
+            }
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    string query = @"
+                        SELECT p.ProductId, p.Barcode, p.ProductName, p.CategoryId, ISNULL(c.CategoryName, '') AS CategoryName, 
+                               p.BuyPrice, p.SellPrice, p.StockQuantity, p.MinStockAlert, p.CreatedAt
+                        FROM [dbo].[Products] p
+                        LEFT JOIN [dbo].[Categories] c ON p.CategoryId = c.CategoryId
+                        WHERE p.ProductId = @ProductId";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = productId;
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            if (await reader.ReadAsync().ConfigureAwait(false))
+                            {
+                                var prod = new ProductModel
+                                {
+                                    ProductId = Convert.ToInt32(reader["ProductId"]),
+                                    Barcode = reader["Barcode"].ToString(),
+                                    ProductName = reader["ProductName"].ToString(),
+                                    CategoryId = reader["CategoryId"] != DBNull.Value ? (int?)Convert.ToInt32(reader["CategoryId"]) : null,
+                                    CategoryName = reader["CategoryName"].ToString(),
+                                    BuyPrice = Convert.ToDecimal(reader["BuyPrice"]),
+                                    SellPrice = Convert.ToDecimal(reader["SellPrice"]),
+                                    StockQuantity = Convert.ToInt32(reader["StockQuantity"]),
+                                    MinStockAlert = Convert.ToInt32(reader["MinStockAlert"]),
+                                    CreatedAt = Convert.ToDateTime(reader["CreatedAt"])
+                                };
+                                CacheProduct(prod);
+                                return prod;
                             }
                         }
                     }
@@ -973,6 +1450,8 @@ namespace POS
                             cmd.Parameters.Add("@MinStockAlert", SqlDbType.Int).Value = product.MinStockAlert;
 
                             int newId = (int)cmd.ExecuteScalar();
+                            product.ProductId = newId;
+                            CacheProduct(product);
                             return (true, "تم حفظ المنتج الجديد بنجاح.", newId);
                         }
                     }
@@ -1011,7 +1490,11 @@ namespace POS
 
                             int rows = cmd.ExecuteNonQuery();
                             if (rows > 0)
+                            {
+                                InvalidateProductsCache(product.Barcode, product.ProductId);
+                                CacheProduct(product);
                                 return (true, "تم تحديث بيانات المنتج بنجاح.", product.ProductId);
+                            }
                             return (false, "المنتج غير موجود.", 0);
                         }
                     }
@@ -1051,7 +1534,10 @@ namespace POS
                         cmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = productId;
                         int rows = cmd.ExecuteNonQuery();
                         if (rows > 0)
+                        {
+                            InvalidateProductsCache(null, productId);
                             return (true, "تم حذف المنتج بنجاح.");
+                        }
                         return (false, "المنتج غير موجود.");
                     }
                 }
@@ -1225,7 +1711,7 @@ namespace POS
 
         #endregion
 
-        #region Sales Management & POS Checkout Transaction
+        #region Sales Management & POS Checkout Transaction (Single Round-Trip Batched)
 
         public static (bool Success, string Message, int SaleId) ProcessSaleTransaction(SaleModel sale, List<CartItemModel> items)
         {
@@ -1238,108 +1724,234 @@ namespace POS
             if (sale.PaidAmount < sale.FinalAmount)
                 return (false, $"المبلغ المدفوع ({sale.PaidAmount:N2} ج.م) أقل من إجمالي الفاتورة المطلوب ({sale.FinalAmount:N2} ج.م).", 0);
 
-            using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+            try
             {
-                conn.Open();
-                using (SqlTransaction transaction = conn.BeginTransaction(IsolationLevel.ReadCommitted))
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
                 {
-                    try
-                    {
-                        // 1. التحقق من توفر الكمية الكافية لكل منتج في المخزون
-                        foreach (var item in items)
-                        {
-                            string checkStockSql = "SELECT StockQuantity, ProductName FROM [dbo].[Products] WITH (UPDLOCK, ROWLOCK) WHERE ProductId = @ProductId";
-                            using (SqlCommand cmd = new SqlCommand(checkStockSql, conn, transaction))
-                            {
-                                cmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = item.ProductId;
-                                using (SqlDataReader reader = cmd.ExecuteReader())
-                                {
-                                    if (reader.Read())
-                                    {
-                                        int currentStock = Convert.ToInt32(reader["StockQuantity"]);
-                                        string productName = reader["ProductName"].ToString();
+                    conn.Open();
 
-                                        if (currentStock < item.Quantity)
-                                        {
-                                            reader.Close();
-                                            transaction.Rollback();
-                                            return (false, $"الكمية غير متوفرة في المخزن للمنتج '{productName}'. المتاح: {currentStock}، المطلوب: {item.Quantity}.", 0);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        reader.Close();
-                                        transaction.Rollback();
-                                        return (false, $"المنتج ذو الرقم {item.ProductId} غير موجود في قاعدة البيانات.", 0);
-                                    }
+                    StringBuilder batchSql = new StringBuilder();
+                    batchSql.AppendLine("BEGIN TRANSACTION;");
+                    batchSql.AppendLine("DECLARE @AvailStock INT = 0;");
+                    batchSql.AppendLine("DECLARE @InsuffProduct NVARCHAR(150) = NULL;");
+
+                    for (int i = 0; i < items.Count; i++)
+                    {
+                        batchSql.AppendLine($"SELECT @AvailStock = StockQuantity, @InsuffProduct = ProductName FROM [dbo].[Products] WITH (UPDLOCK, ROWLOCK) WHERE ProductId = @PId_{i};");
+                        batchSql.AppendLine($"IF @AvailStock IS NULL BEGIN ROLLBACK TRANSACTION; SELECT -2 AS ResultStatus, @PId_{i} AS MissingId, 0 AS AvailableStock, 0 AS RequestedQty, '' AS ProductName; RETURN; END;");
+                        batchSql.AppendLine($"IF @AvailStock < @Qty_{i} BEGIN ROLLBACK TRANSACTION; SELECT -1 AS ResultStatus, 0 AS MissingId, @AvailStock AS AvailableStock, @Qty_{i} AS RequestedQty, @InsuffProduct AS ProductName; RETURN; END;");
+                    }
+
+                    batchSql.AppendLine(@"
+                        INSERT INTO [dbo].[Sales] 
+                            (UserId, SaleDate, TotalAmount, Discount, TaxAmount, FinalAmount, PaidAmount, ChangeAmount, PaymentMethod)
+                        VALUES 
+                            (@UserId, @SaleDate, @TotalAmount, @Discount, @TaxAmount, @FinalAmount, @PaidAmount, @ChangeAmount, @PaymentMethod);
+                        DECLARE @NewSaleId INT = CAST(SCOPE_IDENTITY() AS INT);");
+
+                    batchSql.AppendLine("INSERT INTO [dbo].[SaleDetails] (SaleId, ProductId, Quantity, UnitPrice, LineTotal) VALUES ");
+                    for (int i = 0; i < items.Count; i++)
+                    {
+                        if (i > 0) batchSql.Append(", ");
+                        batchSql.Append($"(@NewSaleId, @PId_{i}, @Qty_{i}, @Price_{i}, @LineTotal_{i})");
+                    }
+                    batchSql.AppendLine(";");
+
+                    for (int i = 0; i < items.Count; i++)
+                    {
+                        batchSql.AppendLine($"UPDATE [dbo].[Products] SET StockQuantity = StockQuantity - @Qty_{i} WHERE ProductId = @PId_{i};");
+                    }
+
+                    batchSql.AppendLine("COMMIT TRANSACTION;");
+                    batchSql.AppendLine("SELECT @NewSaleId AS ResultStatus, 0 AS MissingId, 0 AS AvailableStock, 0 AS RequestedQty, '' AS ProductName;");
+
+                    using (SqlCommand cmd = new SqlCommand(batchSql.ToString(), conn))
+                    {
+                        cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = sale.UserId.HasValue ? (object)sale.UserId.Value : DBNull.Value;
+                        cmd.Parameters.Add("@SaleDate", SqlDbType.DateTime).Value = sale.SaleDate == default ? DateTime.Now : sale.SaleDate;
+                        cmd.Parameters.Add("@TotalAmount", SqlDbType.Decimal).Value = sale.TotalAmount;
+                        cmd.Parameters.Add("@Discount", SqlDbType.Decimal).Value = sale.Discount;
+                        cmd.Parameters.Add("@TaxAmount", SqlDbType.Decimal).Value = sale.TaxAmount;
+                        cmd.Parameters.Add("@FinalAmount", SqlDbType.Decimal).Value = sale.FinalAmount;
+                        cmd.Parameters.Add("@PaidAmount", SqlDbType.Decimal).Value = sale.PaidAmount;
+                        cmd.Parameters.Add("@ChangeAmount", SqlDbType.Decimal).Value = sale.ChangeAmount;
+                        cmd.Parameters.Add("@PaymentMethod", SqlDbType.NVarChar, 50).Value = string.IsNullOrWhiteSpace(sale.PaymentMethod) ? "نقدي" : sale.PaymentMethod;
+
+                        for (int i = 0; i < items.Count; i++)
+                        {
+                            cmd.Parameters.Add($"@PId_{i}", SqlDbType.Int).Value = items[i].ProductId;
+                            cmd.Parameters.Add($"@Qty_{i}", SqlDbType.Int).Value = items[i].Quantity;
+                            cmd.Parameters.Add($"@Price_{i}", SqlDbType.Decimal).Value = items[i].UnitPrice;
+                            cmd.Parameters.Add($"@LineTotal_{i}", SqlDbType.Decimal).Value = items[i].LineTotal;
+                        }
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                int status = Convert.ToInt32(reader["ResultStatus"]);
+                                if (status > 0)
+                                {
+                                    InvalidateProductsCache();
+                                    return (true, $"تم إتمام الفاتورة #{status:D5} وخصم المخزون بنجاح.", status);
+                                }
+                                else if (status == -1)
+                                {
+                                    string pName = reader["ProductName"].ToString();
+                                    int avail = Convert.ToInt32(reader["AvailableStock"]);
+                                    int req = Convert.ToInt32(reader["RequestedQty"]);
+                                    return (false, $"الكمية غير متوفرة في المخزن للمنتج '{pName}'. المتاح: {avail}، المطلوب: {req}.", 0);
+                                }
+                                else
+                                {
+                                    int missingId = Convert.ToInt32(reader["MissingId"]);
+                                    return (false, $"المنتج ذو الرقم {missingId} غير موجود في قاعدة البيانات.", 0);
                                 }
                             }
                         }
-
-                        // 2. إدراج رأس الفاتورة
-                        string insertSaleSql = @"
-                            INSERT INTO [dbo].[Sales] 
-                                (UserId, SaleDate, TotalAmount, Discount, TaxAmount, FinalAmount, PaidAmount, ChangeAmount, PaymentMethod)
-                            VALUES 
-                                (@UserId, @SaleDate, @TotalAmount, @Discount, @TaxAmount, @FinalAmount, @PaidAmount, @ChangeAmount, @PaymentMethod);
-                            SELECT CAST(SCOPE_IDENTITY() AS INT);";
-
-                        int saleId;
-                        using (SqlCommand cmd = new SqlCommand(insertSaleSql, conn, transaction))
-                        {
-                            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = sale.UserId.HasValue ? (object)sale.UserId.Value : DBNull.Value;
-                            cmd.Parameters.Add("@SaleDate", SqlDbType.DateTime).Value = sale.SaleDate == default ? DateTime.Now : sale.SaleDate;
-                            cmd.Parameters.Add("@TotalAmount", SqlDbType.Decimal).Value = sale.TotalAmount;
-                            cmd.Parameters.Add("@Discount", SqlDbType.Decimal).Value = sale.Discount;
-                            cmd.Parameters.Add("@TaxAmount", SqlDbType.Decimal).Value = sale.TaxAmount;
-                            cmd.Parameters.Add("@FinalAmount", SqlDbType.Decimal).Value = sale.FinalAmount;
-                            cmd.Parameters.Add("@PaidAmount", SqlDbType.Decimal).Value = sale.PaidAmount;
-                            cmd.Parameters.Add("@ChangeAmount", SqlDbType.Decimal).Value = sale.ChangeAmount;
-                            cmd.Parameters.Add("@PaymentMethod", SqlDbType.NVarChar, 50).Value = string.IsNullOrWhiteSpace(sale.PaymentMethod) ? "نقدي" : sale.PaymentMethod;
-
-                            saleId = (int)cmd.ExecuteScalar();
-                        }
-
-                        // 3. إدراج تفاصيل الفاتورة وخصم الكميات من المخزون
-                        string insertDetailSql = @"
-                            INSERT INTO [dbo].[SaleDetails] (SaleId, ProductId, Quantity, UnitPrice, LineTotal)
-                            VALUES (@SaleId, @ProductId, @Quantity, @UnitPrice, @LineTotal);";
-
-                        string deductStockSql = @"
-                            UPDATE [dbo].[Products]
-                            SET StockQuantity = StockQuantity - @Quantity
-                            WHERE ProductId = @ProductId;";
-
-                        foreach (var item in items)
-                        {
-                            using (SqlCommand cmd = new SqlCommand(insertDetailSql, conn, transaction))
-                            {
-                                cmd.Parameters.Add("@SaleId", SqlDbType.Int).Value = saleId;
-                                cmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = item.ProductId;
-                                cmd.Parameters.Add("@Quantity", SqlDbType.Int).Value = item.Quantity;
-                                cmd.Parameters.Add("@UnitPrice", SqlDbType.Decimal).Value = item.UnitPrice;
-                                cmd.Parameters.Add("@LineTotal", SqlDbType.Decimal).Value = item.LineTotal;
-                                cmd.ExecuteNonQuery();
-                            }
-
-                            using (SqlCommand cmd = new SqlCommand(deductStockSql, conn, transaction))
-                            {
-                                cmd.Parameters.Add("@Quantity", SqlDbType.Int).Value = item.Quantity;
-                                cmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = item.ProductId;
-                                cmd.ExecuteNonQuery();
-                            }
-                        }
-
-                        // تأكيد المعاملة
-                        transaction.Commit();
-                        return (true, $"تم إتمام الفاتورة #{saleId:D5} وخصم المخزون بنجاح.", saleId);
-                    }
-                    catch (Exception ex)
-                    {
-                        try { transaction.Rollback(); } catch { }
-                        return (false, "فشلت عملية البيع: " + ex.Message, 0);
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                return (false, "فشلت عملية البيع: " + ex.Message, 0);
+            }
+            return (false, "فشلت عملية البيع لسبب غير معروف.", 0);
+        }
+
+        public static async Task<(bool Success, string Message, int SaleId)> ProcessSaleTransactionAsync(SaleModel sale, List<CartItemModel> items)
+        {
+            if (sale == null)
+                return (false, "بيانات الفاتورة مفقودة.", 0);
+
+            if (items == null || items.Count == 0)
+                return (false, "سلة المشتريات فارغة، يرجى إضافة منتجات لإتمام البيع.", 0);
+
+            if (sale.PaidAmount < sale.FinalAmount)
+                return (false, $"المبلغ المدفوع ({sale.PaidAmount:N2} ج.م) أقل من إجمالي الفاتورة المطلوب ({sale.FinalAmount:N2} ج.م).", 0);
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+
+                    StringBuilder batchSql = new StringBuilder();
+                    batchSql.AppendLine("BEGIN TRANSACTION;");
+                    batchSql.AppendLine("DECLARE @AvailStock INT = 0;");
+                    batchSql.AppendLine("DECLARE @InsuffProduct NVARCHAR(150) = NULL;");
+
+                    for (int i = 0; i < items.Count; i++)
+                    {
+                        batchSql.AppendLine($"SELECT @AvailStock = StockQuantity, @InsuffProduct = ProductName FROM [dbo].[Products] WITH (UPDLOCK, ROWLOCK) WHERE ProductId = @PId_{i};");
+                        batchSql.AppendLine($"IF @AvailStock IS NULL BEGIN ROLLBACK TRANSACTION; SELECT -2 AS ResultStatus, @PId_{i} AS MissingId, 0 AS AvailableStock, 0 AS RequestedQty, '' AS ProductName; RETURN; END;");
+                        batchSql.AppendLine($"IF @AvailStock < @Qty_{i} BEGIN ROLLBACK TRANSACTION; SELECT -1 AS ResultStatus, 0 AS MissingId, @AvailStock AS AvailableStock, @Qty_{i} AS RequestedQty, @InsuffProduct AS ProductName; RETURN; END;");
+                    }
+
+                    batchSql.AppendLine(@"
+                        INSERT INTO [dbo].[Sales] 
+                            (UserId, SaleDate, TotalAmount, Discount, TaxAmount, FinalAmount, PaidAmount, ChangeAmount, PaymentMethod)
+                        VALUES 
+                            (@UserId, @SaleDate, @TotalAmount, @Discount, @TaxAmount, @FinalAmount, @PaidAmount, @ChangeAmount, @PaymentMethod);
+                        DECLARE @NewSaleId INT = CAST(SCOPE_IDENTITY() AS INT);");
+
+                    batchSql.AppendLine("INSERT INTO [dbo].[SaleDetails] (SaleId, ProductId, Quantity, UnitPrice, LineTotal) VALUES ");
+                    for (int i = 0; i < items.Count; i++)
+                    {
+                        if (i > 0) batchSql.Append(", ");
+                        batchSql.Append($"(@NewSaleId, @PId_{i}, @Qty_{i}, @Price_{i}, @LineTotal_{i})");
+                    }
+                    batchSql.AppendLine(";");
+
+                    for (int i = 0; i < items.Count; i++)
+                    {
+                        batchSql.AppendLine($"UPDATE [dbo].[Products] SET StockQuantity = StockQuantity - @Qty_{i} WHERE ProductId = @PId_{i};");
+                    }
+
+                    batchSql.AppendLine("COMMIT TRANSACTION;");
+                    batchSql.AppendLine("SELECT @NewSaleId AS ResultStatus, 0 AS MissingId, 0 AS AvailableStock, 0 AS RequestedQty, '' AS ProductName;");
+
+                    using (SqlCommand cmd = new SqlCommand(batchSql.ToString(), conn))
+                    {
+                        cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = sale.UserId.HasValue ? (object)sale.UserId.Value : DBNull.Value;
+                        cmd.Parameters.Add("@SaleDate", SqlDbType.DateTime).Value = sale.SaleDate == default ? DateTime.Now : sale.SaleDate;
+                        cmd.Parameters.Add("@TotalAmount", SqlDbType.Decimal).Value = sale.TotalAmount;
+                        cmd.Parameters.Add("@Discount", SqlDbType.Decimal).Value = sale.Discount;
+                        cmd.Parameters.Add("@TaxAmount", SqlDbType.Decimal).Value = sale.TaxAmount;
+                        cmd.Parameters.Add("@FinalAmount", SqlDbType.Decimal).Value = sale.FinalAmount;
+                        cmd.Parameters.Add("@PaidAmount", SqlDbType.Decimal).Value = sale.PaidAmount;
+                        cmd.Parameters.Add("@ChangeAmount", SqlDbType.Decimal).Value = sale.ChangeAmount;
+                        cmd.Parameters.Add("@PaymentMethod", SqlDbType.NVarChar, 50).Value = string.IsNullOrWhiteSpace(sale.PaymentMethod) ? "نقدي" : sale.PaymentMethod;
+
+                        for (int i = 0; i < items.Count; i++)
+                        {
+                            cmd.Parameters.Add($"@PId_{i}", SqlDbType.Int).Value = items[i].ProductId;
+                            cmd.Parameters.Add($"@Qty_{i}", SqlDbType.Int).Value = items[i].Quantity;
+                            cmd.Parameters.Add($"@Price_{i}", SqlDbType.Decimal).Value = items[i].UnitPrice;
+                            cmd.Parameters.Add($"@LineTotal_{i}", SqlDbType.Decimal).Value = items[i].LineTotal;
+                        }
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            if (await reader.ReadAsync().ConfigureAwait(false))
+                            {
+                                int status = Convert.ToInt32(reader["ResultStatus"]);
+                                if (status > 0)
+                                {
+                                    InvalidateProductsCache();
+                                    return (true, $"تم إتمام الفاتورة #{status:D5} وخصم المخزون بنجاح.", status);
+                                }
+                                else if (status == -1)
+                                {
+                                    string pName = reader["ProductName"].ToString();
+                                    int avail = Convert.ToInt32(reader["AvailableStock"]);
+                                    int req = Convert.ToInt32(reader["RequestedQty"]);
+                                    return (false, $"الكمية غير متوفرة في المخزن للمنتج '{pName}'. المتاح: {avail}، المطلوب: {req}.", 0);
+                                }
+                                else
+                                {
+                                    int missingId = Convert.ToInt32(reader["MissingId"]);
+                                    return (false, $"المنتج ذو الرقم {missingId} غير موجود في قاعدة البيانات.", 0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, "فشلت عملية البيع: " + ex.Message, 0);
+            }
+            return (false, "فشلت عملية البيع لسبب غير معروف.", 0);
+        }
+
+        public static (DateTime Start, DateTime End) GetDateRangeBoundaries(string dateFilter, DateTime? fromDate, DateTime? toDate)
+        {
+            if (fromDate.HasValue && toDate.HasValue)
+            {
+                return (fromDate.Value.Date, toDate.Value.Date.AddDays(1).AddTicks(-1));
+            }
+
+            DateTime now = DateTime.Now;
+            DateTime todayStart = now.Date;
+            DateTime todayEnd = todayStart.AddDays(1).AddTicks(-1);
+
+            if (dateFilter == "اليوم" || string.Equals(dateFilter, "Today", StringComparison.OrdinalIgnoreCase))
+            {
+                return (todayStart, todayEnd);
+            }
+            else if (dateFilter == "هذا الأسبوع" || dateFilter == "الاسبوع" || dateFilter == "الأسبوع" || string.Equals(dateFilter, "This Week", StringComparison.OrdinalIgnoreCase) || string.Equals(dateFilter, "Week", StringComparison.OrdinalIgnoreCase))
+            {
+                return (now.AddDays(-7), now);
+            }
+            else if (dateFilter == "هذا الشهر" || dateFilter == "الشهر" || string.Equals(dateFilter, "This Month", StringComparison.OrdinalIgnoreCase) || string.Equals(dateFilter, "Month", StringComparison.OrdinalIgnoreCase))
+            {
+                return (now.AddMonths(-1), now);
+            }
+            else
+            {
+                // All time
+                return (new DateTime(2000, 1, 1), now.AddDays(1));
             }
         }
 
@@ -1351,6 +1963,10 @@ namespace POS
                 using (SqlConnection conn = new SqlConnection(GetConnectionString()))
                 {
                     conn.Open();
+
+                    var range = GetDateRangeBoundaries(dateFilter, fromDate, toDate);
+                    bool isAllTime = dateFilter == "الكل" || dateFilter == "كل الفترات" || string.Equals(dateFilter, "All Time", StringComparison.OrdinalIgnoreCase) || string.Equals(dateFilter, "All", StringComparison.OrdinalIgnoreCase);
+
                     StringBuilder query = new StringBuilder(@"
                         SELECT 
                             s.SaleId, 
@@ -1366,52 +1982,149 @@ namespace POS
                             s.ChangeAmount, 
                             s.PaymentMethod,
                             ISNULL(s.ReturnStatus, N'مكتملة') AS ReturnStatus,
-                            (SELECT COUNT(1) FROM [dbo].[SaleDetails] sd WHERE sd.SaleId = s.SaleId) AS ItemsCount
+                            ISNULL(itemsSummary.ItemsCount, 0) AS ItemsCount
                         FROM [dbo].[Sales] s
                         LEFT JOIN [dbo].[Users] u ON s.UserId = u.UserId
+                        LEFT JOIN (
+                            SELECT SaleId, COUNT(1) AS ItemsCount
+                            FROM [dbo].[SaleDetails]
+                            GROUP BY SaleId
+                        ) itemsSummary ON s.SaleId = itemsSummary.SaleId
                         WHERE 1=1 ");
 
-                    if (fromDate.HasValue && toDate.HasValue)
+                    if (!isAllTime)
                     {
                         query.Append(" AND s.SaleDate >= @FromDate AND s.SaleDate <= @ToDate ");
-                    }
-                    else if (dateFilter == "اليوم" || string.Equals(dateFilter, "Today", StringComparison.OrdinalIgnoreCase))
-                    {
-                        query.Append(" AND CAST(s.SaleDate AS DATE) = CAST(GETDATE() AS DATE) ");
-                    }
-                    else if (dateFilter == "هذا الأسبوع" || dateFilter == "الاسبوع" || string.Equals(dateFilter, "This Week", StringComparison.OrdinalIgnoreCase) || string.Equals(dateFilter, "Week", StringComparison.OrdinalIgnoreCase))
-                    {
-                        query.Append(" AND s.SaleDate >= DATEADD(day, -7, GETDATE()) ");
-                    }
-                    else if (dateFilter == "هذا الشهر" || dateFilter == "الشهر" || string.Equals(dateFilter, "This Month", StringComparison.OrdinalIgnoreCase) || string.Equals(dateFilter, "Month", StringComparison.OrdinalIgnoreCase))
-                    {
-                        query.Append(" AND s.SaleDate >= DATEADD(month, -1, GETDATE()) ");
                     }
 
                     if (!string.IsNullOrWhiteSpace(searchTerm))
                     {
-                        query.Append(" AND (CAST(s.SaleId AS NVARCHAR(20)) LIKE @Search OR RIGHT('00000' + CAST(s.SaleId AS NVARCHAR(10)), 5) LIKE @Search) ");
+                        string cleanSearch = searchTerm.Trim().TrimStart('#');
+                        if (int.TryParse(cleanSearch, out int searchId))
+                        {
+                            query.Append(" AND s.SaleId = @SearchId ");
+                        }
+                        else
+                        {
+                            query.Append(" AND CAST(s.SaleId AS NVARCHAR(20)) LIKE @Search ");
+                        }
                     }
 
                     query.Append(" ORDER BY s.SaleId DESC");
 
                     using (SqlCommand cmd = new SqlCommand(query.ToString(), conn))
                     {
-                        if (fromDate.HasValue && toDate.HasValue)
+                        if (!isAllTime)
                         {
-                            cmd.Parameters.Add("@FromDate", SqlDbType.DateTime).Value = fromDate.Value;
-                            cmd.Parameters.Add("@ToDate", SqlDbType.DateTime).Value = toDate.Value;
+                            cmd.Parameters.Add("@FromDate", SqlDbType.DateTime).Value = range.Start;
+                            cmd.Parameters.Add("@ToDate", SqlDbType.DateTime).Value = range.End;
                         }
 
                         if (!string.IsNullOrWhiteSpace(searchTerm))
                         {
                             string cleanSearch = searchTerm.Trim().TrimStart('#');
-                            cmd.Parameters.Add("@Search", SqlDbType.NVarChar, 100).Value = "%" + cleanSearch + "%";
+                            if (int.TryParse(cleanSearch, out int searchId))
+                            {
+                                cmd.Parameters.Add("@SearchId", SqlDbType.Int).Value = searchId;
+                            }
+                            else
+                            {
+                                cmd.Parameters.Add("@Search", SqlDbType.NVarChar, 100).Value = "%" + cleanSearch + "%";
+                            }
                         }
 
                         using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
                         {
                             adapter.Fill(dt);
+                        }
+                    }
+                }
+            }
+            catch { }
+            return dt;
+        }
+
+        public static async Task<DataTable> GetAllSalesDataTableAsync(string dateFilter = "اليوم", DateTime? fromDate = null, DateTime? toDate = null, string searchTerm = "")
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+
+                    var range = GetDateRangeBoundaries(dateFilter, fromDate, toDate);
+                    bool isAllTime = dateFilter == "الكل" || dateFilter == "كل الفترات" || string.Equals(dateFilter, "All Time", StringComparison.OrdinalIgnoreCase) || string.Equals(dateFilter, "All", StringComparison.OrdinalIgnoreCase);
+
+                    StringBuilder query = new StringBuilder(@"
+                        SELECT 
+                            s.SaleId, 
+                            s.SaleDate, 
+                            ISNULL(u.FullName, N'مدير النظام') AS CashierName, 
+                            s.TotalAmount, 
+                            s.Discount, 
+                            ISNULL(s.TaxAmount, 0) AS TaxAmount,
+                            s.FinalAmount, 
+                            ISNULL(s.TotalRefunded, 0) AS TotalRefunded,
+                            (s.FinalAmount - ISNULL(s.TotalRefunded, 0)) AS NetFinalAmount,
+                            s.PaidAmount, 
+                            s.ChangeAmount, 
+                            s.PaymentMethod,
+                            ISNULL(s.ReturnStatus, N'مكتملة') AS ReturnStatus,
+                            ISNULL(itemsSummary.ItemsCount, 0) AS ItemsCount
+                        FROM [dbo].[Sales] s
+                        LEFT JOIN [dbo].[Users] u ON s.UserId = u.UserId
+                        LEFT JOIN (
+                            SELECT SaleId, COUNT(1) AS ItemsCount
+                            FROM [dbo].[SaleDetails]
+                            GROUP BY SaleId
+                        ) itemsSummary ON s.SaleId = itemsSummary.SaleId
+                        WHERE 1=1 ");
+
+                    if (!isAllTime)
+                    {
+                        query.Append(" AND s.SaleDate >= @FromDate AND s.SaleDate <= @ToDate ");
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(searchTerm))
+                    {
+                        string cleanSearch = searchTerm.Trim().TrimStart('#');
+                        if (int.TryParse(cleanSearch, out int searchId))
+                        {
+                            query.Append(" AND s.SaleId = @SearchId ");
+                        }
+                        else
+                        {
+                            query.Append(" AND CAST(s.SaleId AS NVARCHAR(20)) LIKE @Search ");
+                        }
+                    }
+
+                    query.Append(" ORDER BY s.SaleId DESC");
+
+                    using (SqlCommand cmd = new SqlCommand(query.ToString(), conn))
+                    {
+                        if (!isAllTime)
+                        {
+                            cmd.Parameters.Add("@FromDate", SqlDbType.DateTime).Value = range.Start;
+                            cmd.Parameters.Add("@ToDate", SqlDbType.DateTime).Value = range.End;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(searchTerm))
+                        {
+                            string cleanSearch = searchTerm.Trim().TrimStart('#');
+                            if (int.TryParse(cleanSearch, out int searchId))
+                            {
+                                cmd.Parameters.Add("@SearchId", SqlDbType.Int).Value = searchId;
+                            }
+                            else
+                            {
+                                cmd.Parameters.Add("@Search", SqlDbType.NVarChar, 100).Value = "%" + cleanSearch + "%";
+                            }
+                        }
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            dt.Load(reader);
                         }
                     }
                 }
@@ -1451,6 +2164,45 @@ namespace POS
                         using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
                         {
                             adapter.Fill(dt);
+                        }
+                    }
+                }
+            }
+            catch { }
+            return dt;
+        }
+
+        public static async Task<DataTable> GetSaleDetailsDataTableAsync(int saleId)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    string query = @"
+                        SELECT 
+                            sd.DetailId,
+                            sd.SaleId,
+                            sd.ProductId,
+                            p.Barcode,
+                            p.ProductName,
+                            sd.Quantity,
+                            ISNULL(sd.ReturnedQuantity, 0) AS ReturnedQuantity,
+                            (sd.Quantity - ISNULL(sd.ReturnedQuantity, 0)) AS ActiveQuantity,
+                            sd.UnitPrice,
+                            sd.LineTotal
+                        FROM [dbo].[SaleDetails] sd
+                        INNER JOIN [dbo].[Products] p ON sd.ProductId = p.ProductId
+                        WHERE sd.SaleId = @SaleId
+                        ORDER BY sd.DetailId ASC";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@SaleId", SqlDbType.Int).Value = saleId;
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            dt.Load(reader);
                         }
                     }
                 }
@@ -1509,6 +2261,56 @@ namespace POS
             return list;
         }
 
+        public static async Task<List<ReturnItemModel>> GetSaleDetailsForReturnAsync(int saleId)
+        {
+            var list = new List<ReturnItemModel>();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    string query = @"
+                        SELECT 
+                            sd.DetailId,
+                            sd.ProductId,
+                            p.Barcode,
+                            p.ProductName,
+                            sd.UnitPrice,
+                            sd.Quantity AS OriginalQuantity,
+                            ISNULL(sd.ReturnedQuantity, 0) AS AlreadyReturnedQuantity
+                        FROM [dbo].[SaleDetails] sd
+                        INNER JOIN [dbo].[Products] p ON sd.ProductId = p.ProductId
+                        WHERE sd.SaleId = @SaleId
+                        ORDER BY sd.DetailId ASC";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@SaleId", SqlDbType.Int).Value = saleId;
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            while (await reader.ReadAsync().ConfigureAwait(false))
+                            {
+                                var item = new ReturnItemModel
+                                {
+                                    DetailId = Convert.ToInt32(reader["DetailId"]),
+                                    ProductId = Convert.ToInt32(reader["ProductId"]),
+                                    Barcode = reader["Barcode"].ToString(),
+                                    ProductName = reader["ProductName"].ToString(),
+                                    UnitPrice = Convert.ToDecimal(reader["UnitPrice"]),
+                                    OriginalQuantity = Convert.ToInt32(reader["OriginalQuantity"]),
+                                    AlreadyReturnedQuantity = Convert.ToInt32(reader["AlreadyReturnedQuantity"]),
+                                    ReturnQuantity = 0
+                                };
+                                list.Add(item);
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+            return list;
+        }
+
         public static (bool Success, string Message, int ReturnId) ProcessSaleReturnTransaction(int saleId, int? userId, string reason, List<ReturnItemModel> returnItems)
         {
             if (returnItems == null || returnItems.Count == 0)
@@ -1528,101 +2330,74 @@ namespace POS
                 totalRefund += it.RefundAmount;
             }
 
-            using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+            try
             {
-                conn.Open();
-                using (SqlTransaction transaction = conn.BeginTransaction())
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
                 {
-                    try
+                    conn.Open();
+
+                    StringBuilder batchSql = new StringBuilder();
+                    batchSql.AppendLine("BEGIN TRANSACTION;");
+                    batchSql.AppendLine(@"
+                        INSERT INTO [dbo].[SalesReturns] (SaleId, UserId, ReturnDate, TotalRefundAmount, Reason)
+                        VALUES (@SaleId, @UserId, GETDATE(), @TotalRefundAmount, @Reason);
+                        DECLARE @NewReturnId INT = CAST(SCOPE_IDENTITY() AS INT);");
+
+                    for (int i = 0; i < itemsToReturn.Count; i++)
                     {
-                        // 1. Insert into SalesReturns
-                        string insertReturnSql = @"
-                            INSERT INTO [dbo].[SalesReturns] (SaleId, UserId, ReturnDate, TotalRefundAmount, Reason)
-                            VALUES (@SaleId, @UserId, GETDATE(), @TotalRefundAmount, @Reason);
-                            SELECT SCOPE_IDENTITY();";
+                        var it = itemsToReturn[i];
+                        batchSql.AppendLine($@"
+                            INSERT INTO [dbo].[SalesReturnDetails] (ReturnId, DetailId, ProductId, ReturnedQuantity, UnitPrice, RefundAmount)
+                            VALUES (@NewReturnId, @DetId_{i}, @ProdId_{i}, @RetQty_{i}, @Price_{i}, @Refund_{i});
 
-                        int returnId = 0;
-                        using (SqlCommand cmd = new SqlCommand(insertReturnSql, conn, transaction))
+                            UPDATE [dbo].[SaleDetails]
+                            SET ReturnedQuantity = ISNULL(ReturnedQuantity, 0) + @RetQty_{i}
+                            WHERE DetailId = @DetId_{i};
+
+                            UPDATE [dbo].[Products]
+                            SET StockQuantity = StockQuantity + @RetQty_{i}
+                            WHERE ProductId = @ProdId_{i};");
+                    }
+
+                    batchSql.AppendLine(@"
+                        UPDATE [dbo].[Sales]
+                        SET TotalRefunded = ISNULL(TotalRefunded, 0) + @TotalRefundAmount,
+                            ReturnStatus = CASE 
+                                WHEN (SELECT ISNULL(SUM(Quantity - ISNULL(ReturnedQuantity, 0)), 0) FROM [dbo].[SaleDetails] WHERE SaleId = @SaleId) <= 0 
+                                THEN N'مرتجع بالكامل' 
+                                ELSE N'مرتجع جزئي' 
+                            END
+                        WHERE SaleId = @SaleId;
+
+                        COMMIT TRANSACTION;
+                        SELECT @NewReturnId;");
+
+                    using (SqlCommand cmd = new SqlCommand(batchSql.ToString(), conn))
+                    {
+                        cmd.Parameters.Add("@SaleId", SqlDbType.Int).Value = saleId;
+                        cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = (object)userId ?? DBNull.Value;
+                        cmd.Parameters.Add("@TotalRefundAmount", SqlDbType.Decimal).Value = totalRefund;
+                        cmd.Parameters.Add("@Reason", SqlDbType.NVarChar, 250).Value = (object)reason ?? DBNull.Value;
+
+                        for (int i = 0; i < itemsToReturn.Count; i++)
                         {
-                            cmd.Parameters.Add("@SaleId", SqlDbType.Int).Value = saleId;
-                            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = (object)userId ?? DBNull.Value;
-                            cmd.Parameters.Add("@TotalRefundAmount", SqlDbType.Decimal).Value = totalRefund;
-                            cmd.Parameters.Add("@Reason", SqlDbType.NVarChar, 250).Value = (object)reason ?? DBNull.Value;
-                            returnId = Convert.ToInt32(cmd.ExecuteScalar());
+                            var it = itemsToReturn[i];
+                            cmd.Parameters.Add($"@DetId_{i}", SqlDbType.Int).Value = it.DetailId > 0 ? (object)it.DetailId : DBNull.Value;
+                            cmd.Parameters.Add($"@ProdId_{i}", SqlDbType.Int).Value = it.ProductId;
+                            cmd.Parameters.Add($"@RetQty_{i}", SqlDbType.Int).Value = it.ReturnQuantity;
+                            cmd.Parameters.Add($"@Price_{i}", SqlDbType.Decimal).Value = it.UnitPrice;
+                            cmd.Parameters.Add($"@Refund_{i}", SqlDbType.Decimal).Value = it.RefundAmount;
                         }
 
-                        // 2. Insert Return Details and Update Stock & SaleDetails
-                        foreach (var item in itemsToReturn)
-                        {
-                            string insertDetailSql = @"
-                                INSERT INTO [dbo].[SalesReturnDetails] (ReturnId, DetailId, ProductId, ReturnedQuantity, UnitPrice, RefundAmount)
-                                VALUES (@ReturnId, @DetailId, @ProductId, @ReturnedQuantity, @UnitPrice, @RefundAmount);";
-
-                            using (SqlCommand cmd = new SqlCommand(insertDetailSql, conn, transaction))
-                            {
-                                cmd.Parameters.Add("@ReturnId", SqlDbType.Int).Value = returnId;
-                                cmd.Parameters.Add("@DetailId", SqlDbType.Int).Value = item.DetailId > 0 ? (object)item.DetailId : DBNull.Value;
-                                cmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = item.ProductId;
-                                cmd.Parameters.Add("@ReturnedQuantity", SqlDbType.Int).Value = item.ReturnQuantity;
-                                cmd.Parameters.Add("@UnitPrice", SqlDbType.Decimal).Value = item.UnitPrice;
-                                cmd.Parameters.Add("@RefundAmount", SqlDbType.Decimal).Value = item.RefundAmount;
-                                cmd.ExecuteNonQuery();
-                            }
-
-                            // Update SaleDetails.ReturnedQuantity
-                            string updateSaleDetailSql = @"
-                                UPDATE [dbo].[SaleDetails]
-                                SET ReturnedQuantity = ISNULL(ReturnedQuantity, 0) + @ReturnedQuantity
-                                WHERE DetailId = @DetailId;";
-
-                            using (SqlCommand cmd = new SqlCommand(updateSaleDetailSql, conn, transaction))
-                            {
-                                cmd.Parameters.Add("@ReturnedQuantity", SqlDbType.Int).Value = item.ReturnQuantity;
-                                cmd.Parameters.Add("@DetailId", SqlDbType.Int).Value = item.DetailId;
-                                cmd.ExecuteNonQuery();
-                            }
-
-                            // Return quantity to Products Stock
-                            string updateStockSql = @"
-                                UPDATE [dbo].[Products]
-                                SET StockQuantity = StockQuantity + @ReturnedQuantity
-                                WHERE ProductId = @ProductId;";
-
-                            using (SqlCommand cmd = new SqlCommand(updateStockSql, conn, transaction))
-                            {
-                                cmd.Parameters.Add("@ReturnedQuantity", SqlDbType.Int).Value = item.ReturnQuantity;
-                                cmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = item.ProductId;
-                                cmd.ExecuteNonQuery();
-                            }
-                        }
-
-                        // 3. Update Sales Header status & TotalRefunded
-                        string updateSaleSql = @"
-                            UPDATE [dbo].[Sales]
-                            SET TotalRefunded = ISNULL(TotalRefunded, 0) + @RefundAmount,
-                                ReturnStatus = CASE 
-                                    WHEN (SELECT ISNULL(SUM(Quantity - ISNULL(ReturnedQuantity, 0)), 0) FROM [dbo].[SaleDetails] WHERE SaleId = @SaleId) <= 0 
-                                    THEN N'مرتجع بالكامل' 
-                                    ELSE N'مرتجع جزئي' 
-                                END
-                            WHERE SaleId = @SaleId;";
-
-                        using (SqlCommand cmd = new SqlCommand(updateSaleSql, conn, transaction))
-                        {
-                            cmd.Parameters.Add("@RefundAmount", SqlDbType.Decimal).Value = totalRefund;
-                            cmd.Parameters.Add("@SaleId", SqlDbType.Int).Value = saleId;
-                            cmd.ExecuteNonQuery();
-                        }
-
-                        transaction.Commit();
+                        int returnId = Convert.ToInt32(cmd.ExecuteScalar());
+                        InvalidateProductsCache();
                         return (true, "تمت عملية إرجاع الأصناف وإعادة البضاعة للمخزن واسترداد المبلغ بنجاح.", returnId);
                     }
-                    catch (Exception ex)
-                    {
-                        try { transaction.Rollback(); } catch { }
-                        return (false, "فشلت عملية الإرجاع: " + ex.Message, 0);
-                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                return (false, "فشلت عملية الإرجاع: " + ex.Message, 0);
             }
         }
 
@@ -1677,7 +2452,7 @@ namespace POS
 
         #endregion
 
-        #region Purchases Management & Transaction
+        #region Purchases Management & Transaction (Single Round-Trip Batched)
 
         public static (bool Success, string Message, int PurchaseId) ProcessPurchaseTransaction(PurchaseModel purchase, List<PurchaseDetailModel> items, bool updateBuyPrice = true)
         {
@@ -1687,72 +2462,64 @@ namespace POS
             if (items == null || items.Count == 0)
                 return (false, "يجب إضافة صنف واحد على الأقل لفاتورة الشراء.", 0);
 
-            using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+            try
             {
-                conn.Open();
-                using (SqlTransaction transaction = conn.BeginTransaction(IsolationLevel.ReadCommitted))
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
                 {
-                    try
+                    conn.Open();
+
+                    StringBuilder batchSql = new StringBuilder();
+                    batchSql.AppendLine("BEGIN TRANSACTION;");
+                    batchSql.AppendLine(@"
+                        INSERT INTO [dbo].[Purchases] (SupplierId, PurchaseDate, TotalAmount, Notes)
+                        VALUES (@SupplierId, @PurchaseDate, @TotalAmount, @Notes);
+                        DECLARE @NewPurchaseId INT = CAST(SCOPE_IDENTITY() AS INT);");
+
+                    batchSql.AppendLine("INSERT INTO [dbo].[PurchaseDetails] (PurchaseId, ProductId, Quantity, UnitPrice, LineTotal) VALUES ");
+                    for (int i = 0; i < items.Count; i++)
                     {
-                        // 1. إدراج رأس فاتورة الشراء
-                        string insertPurchaseSql = @"
-                            INSERT INTO [dbo].[Purchases] (SupplierId, PurchaseDate, TotalAmount, Notes)
-                            VALUES (@SupplierId, @PurchaseDate, @TotalAmount, @Notes);
-                            SELECT CAST(SCOPE_IDENTITY() AS INT);";
+                        if (i > 0) batchSql.Append(", ");
+                        batchSql.Append($"(@NewPurchaseId, @ProdId_{i}, @Qty_{i}, @Price_{i}, @LineTotal_{i})");
+                    }
+                    batchSql.AppendLine(";");
 
-                        int purchaseId;
-                        using (SqlCommand cmd = new SqlCommand(insertPurchaseSql, conn, transaction))
-                        {
-                            cmd.Parameters.Add("@SupplierId", SqlDbType.Int).Value = purchase.SupplierId.HasValue && purchase.SupplierId.Value > 0 ? (object)purchase.SupplierId.Value : DBNull.Value;
-                            cmd.Parameters.Add("@PurchaseDate", SqlDbType.DateTime).Value = purchase.PurchaseDate == default ? DateTime.Now : purchase.PurchaseDate;
-                            cmd.Parameters.Add("@TotalAmount", SqlDbType.Decimal).Value = purchase.TotalAmount;
-                            cmd.Parameters.Add("@Notes", SqlDbType.NVarChar).Value = (object)purchase.Notes ?? DBNull.Value;
-
-                            purchaseId = (int)cmd.ExecuteScalar();
-                        }
-
-                        // 2. إدراج تفاصيل الفاتورة وزيادة رصيد المخزون وتحديث سعر الشراء
-                        string insertDetailSql = @"
-                            INSERT INTO [dbo].[PurchaseDetails] (PurchaseId, ProductId, Quantity, UnitPrice, LineTotal)
-                            VALUES (@PurchaseId, @ProductId, @Quantity, @UnitPrice, @LineTotal);";
-
-                        string incrementStockSql = @"
+                    for (int i = 0; i < items.Count; i++)
+                    {
+                        batchSql.AppendLine($@"
                             UPDATE [dbo].[Products]
-                            SET StockQuantity = StockQuantity + @Quantity,
-                                BuyPrice = CASE WHEN @UpdateBuyPrice = 1 THEN @UnitPrice ELSE BuyPrice END
-                            WHERE ProductId = @ProductId;";
+                            SET StockQuantity = StockQuantity + @Qty_{i},
+                                BuyPrice = CASE WHEN @UpdateBuyPrice = 1 THEN @Price_{i} ELSE BuyPrice END
+                            WHERE ProductId = @ProdId_{i};");
+                    }
 
-                        foreach (var item in items)
+                    batchSql.AppendLine("COMMIT TRANSACTION;");
+                    batchSql.AppendLine("SELECT @NewPurchaseId;");
+
+                    using (SqlCommand cmd = new SqlCommand(batchSql.ToString(), conn))
+                    {
+                        cmd.Parameters.Add("@SupplierId", SqlDbType.Int).Value = purchase.SupplierId.HasValue && purchase.SupplierId.Value > 0 ? (object)purchase.SupplierId.Value : DBNull.Value;
+                        cmd.Parameters.Add("@PurchaseDate", SqlDbType.DateTime).Value = purchase.PurchaseDate == default ? DateTime.Now : purchase.PurchaseDate;
+                        cmd.Parameters.Add("@TotalAmount", SqlDbType.Decimal).Value = purchase.TotalAmount;
+                        cmd.Parameters.Add("@Notes", SqlDbType.NVarChar).Value = (object)purchase.Notes ?? DBNull.Value;
+                        cmd.Parameters.Add("@UpdateBuyPrice", SqlDbType.Bit).Value = updateBuyPrice;
+
+                        for (int i = 0; i < items.Count; i++)
                         {
-                            using (SqlCommand cmd = new SqlCommand(insertDetailSql, conn, transaction))
-                            {
-                                cmd.Parameters.Add("@PurchaseId", SqlDbType.Int).Value = purchaseId;
-                                cmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = item.ProductId;
-                                cmd.Parameters.Add("@Quantity", SqlDbType.Int).Value = item.Quantity;
-                                cmd.Parameters.Add("@UnitPrice", SqlDbType.Decimal).Value = item.UnitPrice;
-                                cmd.Parameters.Add("@LineTotal", SqlDbType.Decimal).Value = item.LineTotal;
-                                cmd.ExecuteNonQuery();
-                            }
-
-                            using (SqlCommand cmd = new SqlCommand(incrementStockSql, conn, transaction))
-                            {
-                                cmd.Parameters.Add("@Quantity", SqlDbType.Int).Value = item.Quantity;
-                                cmd.Parameters.Add("@UnitPrice", SqlDbType.Decimal).Value = item.UnitPrice;
-                                cmd.Parameters.Add("@UpdateBuyPrice", SqlDbType.Bit).Value = updateBuyPrice;
-                                cmd.Parameters.Add("@ProductId", SqlDbType.Int).Value = item.ProductId;
-                                cmd.ExecuteNonQuery();
-                            }
+                            cmd.Parameters.Add($"@ProdId_{i}", SqlDbType.Int).Value = items[i].ProductId;
+                            cmd.Parameters.Add($"@Qty_{i}", SqlDbType.Int).Value = items[i].Quantity;
+                            cmd.Parameters.Add($"@Price_{i}", SqlDbType.Decimal).Value = items[i].UnitPrice;
+                            cmd.Parameters.Add($"@LineTotal_{i}", SqlDbType.Decimal).Value = items[i].LineTotal;
                         }
 
-                        transaction.Commit();
+                        int purchaseId = Convert.ToInt32(cmd.ExecuteScalar());
+                        InvalidateProductsCache();
                         return (true, $"تم حفظ فاتورة المشتريات #{purchaseId:D5} وزيادة رصيد المخزون بنجاح.", purchaseId);
                     }
-                    catch (Exception ex)
-                    {
-                        try { transaction.Rollback(); } catch { }
-                        return (false, "فشلت عملية حفظ فاتورة الشراء: " + ex.Message, 0);
-                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                return (false, "فشلت عملية حفظ فاتورة الشراء: " + ex.Message, 0);
             }
         }
 
@@ -1771,15 +2538,56 @@ namespace POS
                             ISNULL(s.SupplierName, N'مورد عام / نقدي') AS SupplierName, 
                             p.TotalAmount, 
                             p.Notes,
-                            (SELECT COUNT(1) FROM [dbo].[PurchaseDetails] pd WHERE pd.PurchaseId = p.PurchaseId) AS ItemsCount
+                            ISNULL(itemSummary.ItemsCount, 0) AS ItemsCount
                         FROM [dbo].[Purchases] p
                         LEFT JOIN [dbo].[Suppliers] s ON p.SupplierId = s.SupplierId
+                        LEFT JOIN (
+                            SELECT PurchaseId, COUNT(1) AS ItemsCount
+                            FROM [dbo].[PurchaseDetails]
+                            GROUP BY PurchaseId
+                        ) itemSummary ON p.PurchaseId = itemSummary.PurchaseId
                         ORDER BY p.PurchaseId DESC";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
                     {
                         adapter.Fill(dt);
+                    }
+                }
+            }
+            catch { }
+            return dt;
+        }
+
+        public static async Task<DataTable> GetAllPurchasesDataTableAsync()
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    string query = @"
+                        SELECT 
+                            p.PurchaseId, 
+                            p.PurchaseDate, 
+                            ISNULL(s.SupplierName, N'مورد عام / نقدي') AS SupplierName, 
+                            p.TotalAmount, 
+                            p.Notes,
+                            ISNULL(itemSummary.ItemsCount, 0) AS ItemsCount
+                        FROM [dbo].[Purchases] p
+                        LEFT JOIN [dbo].[Suppliers] s ON p.SupplierId = s.SupplierId
+                        LEFT JOIN (
+                            SELECT PurchaseId, COUNT(1) AS ItemsCount
+                            FROM [dbo].[PurchaseDetails]
+                            GROUP BY PurchaseId
+                        ) itemSummary ON p.PurchaseId = itemSummary.PurchaseId
+                        ORDER BY p.PurchaseId DESC";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                    {
+                        dt.Load(reader);
                     }
                 }
             }
@@ -1824,9 +2632,46 @@ namespace POS
             return dt;
         }
 
+        public static async Task<DataTable> GetPurchaseDetailsDataTableAsync(int purchaseId)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    string query = @"
+                        SELECT 
+                            pd.DetailId,
+                            pd.PurchaseId,
+                            pd.ProductId,
+                            p.Barcode,
+                            p.ProductName,
+                            pd.Quantity,
+                            pd.UnitPrice,
+                            pd.LineTotal
+                        FROM [dbo].[PurchaseDetails] pd
+                        INNER JOIN [dbo].[Products] p ON pd.ProductId = p.ProductId
+                        WHERE pd.PurchaseId = @PurchaseId
+                        ORDER BY pd.DetailId ASC";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@PurchaseId", SqlDbType.Int).Value = purchaseId;
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            dt.Load(reader);
+                        }
+                    }
+                }
+            }
+            catch { }
+            return dt;
+        }
+
         #endregion
 
-        #region Executive Dashboard Analytics
+        #region Executive Dashboard Analytics (Consolidated Single Round-Trip Batch)
 
         public static DashboardStatsModel GetDashboardKPIs(string dateFilter = "الأسبوع")
         {
@@ -1836,123 +2681,204 @@ namespace POS
                 using (SqlConnection conn = new SqlConnection(GetConnectionString()))
                 {
                     conn.Open();
+                    var range = GetDateRangeBoundaries(dateFilter, null, null);
+                    bool isAllTime = dateFilter == "الكل" || dateFilter == "كل الفترات" || string.Equals(dateFilter, "All Time", StringComparison.OrdinalIgnoreCase) || string.Equals(dateFilter, "All", StringComparison.OrdinalIgnoreCase);
 
-                    string salesDateCondition = "s.SaleDate >= DATEADD(day, -7, GETDATE())";
-                    string purchasesDateCondition = "p.PurchaseDate >= DATEADD(day, -7, GETDATE())";
+                    string salesDateCond = isAllTime ? "1=1" : "s.SaleDate >= @FromDate AND s.SaleDate <= @ToDate";
+                    string purchasesDateCond = isAllTime ? "1=1" : "p.PurchaseDate >= @FromDate AND p.PurchaseDate <= @ToDate";
 
-                    if (dateFilter == "الأسبوع" || dateFilter == "الاسبوع" || dateFilter == "هذا الأسبوع" || string.Equals(dateFilter, "This Week", StringComparison.OrdinalIgnoreCase) || string.Equals(dateFilter, "Week", StringComparison.OrdinalIgnoreCase))
-                    {
-                        salesDateCondition = "s.SaleDate >= DATEADD(day, -7, GETDATE())";
-                        purchasesDateCondition = "p.PurchaseDate >= DATEADD(day, -7, GETDATE())";
-                    }
-                    else if (dateFilter == "الشهر" || dateFilter == "هذا الشهر" || string.Equals(dateFilter, "This Month", StringComparison.OrdinalIgnoreCase) || string.Equals(dateFilter, "Month", StringComparison.OrdinalIgnoreCase))
-                    {
-                        salesDateCondition = "s.SaleDate >= DATEADD(month, -1, GETDATE())";
-                        purchasesDateCondition = "p.PurchaseDate >= DATEADD(month, -1, GETDATE())";
-                    }
-                    else if (dateFilter == "الكل" || dateFilter == "كل الفترات" || string.Equals(dateFilter, "All Time", StringComparison.OrdinalIgnoreCase) || string.Equals(dateFilter, "All", StringComparison.OrdinalIgnoreCase))
-                    {
-                        salesDateCondition = "1=1";
-                        purchasesDateCondition = "1=1";
-                    }
-                    else if (dateFilter == "اليوم" || string.Equals(dateFilter, "Today", StringComparison.OrdinalIgnoreCase))
-                    {
-                        salesDateCondition = "CAST(s.SaleDate AS DATE) = CAST(GETDATE() AS DATE)";
-                        purchasesDateCondition = "CAST(p.PurchaseDate AS DATE) = CAST(GETDATE() AS DATE)";
-                    }
-
-                    // 1. حساب صافي إجمالي المبيعات وعدد المعاملات
-                    string salesKpiSql = $@"
+                    string batchSql = $@"
+                        -- 1. Sales KPI
                         SELECT 
                             ISNULL(SUM(s.FinalAmount - ISNULL(s.TotalRefunded, 0)), 0) AS TotalRevenue,
                             COUNT(1) AS TotalTransactions
                         FROM [dbo].[Sales] s
-                        WHERE {salesDateCondition}";
+                        WHERE {salesDateCond};
 
-                    using (SqlCommand cmd = new SqlCommand(salesKpiSql, conn))
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            stats.TotalSalesRevenue = Convert.ToDecimal(reader["TotalRevenue"]);
-                            stats.TotalTransactionsCount = Convert.ToInt32(reader["TotalTransactions"]);
-                        }
-                    }
-
-                    // 2. حساب إجمالي المشتريات المنفذة في نفس الفترة
-                    string purchasesKpiSql = $@"
+                        -- 2. Purchases KPI
                         SELECT 
                             ISNULL(SUM(p.TotalAmount), 0) AS TotalPurchases,
                             COUNT(1) AS TotalPurchaseInvoices
                         FROM [dbo].[Purchases] p
-                        WHERE {purchasesDateCondition}";
+                        WHERE {purchasesDateCond};
 
-                    using (SqlCommand cmd = new SqlCommand(purchasesKpiSql, conn))
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            stats.TotalPurchasesAmount = Convert.ToDecimal(reader["TotalPurchases"]);
-                            stats.TotalPurchaseInvoicesCount = Convert.ToInt32(reader["TotalPurchaseInvoices"]);
-                        }
-                    }
-
-                    // 3. حساب تكلفة البضاعة المباعة (Cost of Goods Sold - COGS) بعد استبعاد المرتجع
-                    string cogsKpiSql = $@"
+                        -- 3. COGS
                         SELECT 
                             ISNULL(SUM((sd.Quantity - ISNULL(sd.ReturnedQuantity, 0)) * ISNULL(pr.BuyPrice, 0)), 0) AS CostOfGoodsSold
                         FROM [dbo].[SaleDetails] sd
                         INNER JOIN [dbo].[Sales] s ON sd.SaleId = s.SaleId
                         INNER JOIN [dbo].[Products] pr ON sd.ProductId = pr.ProductId
-                        WHERE {salesDateCondition}";
+                        WHERE {salesDateCond};
 
-                    using (SqlCommand cmd = new SqlCommand(cogsKpiSql, conn))
-                    using (SqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            stats.CostOfGoodsSold = Convert.ToDecimal(reader["CostOfGoodsSold"]);
-                        }
-                    }
-
-                    // 4. حساب صافي الربح والمكسب وهامش الربح
-                    stats.NetProfit = stats.TotalSalesRevenue - stats.CostOfGoodsSold;
-                    if (stats.TotalSalesRevenue > 0)
-                    {
-                        stats.ProfitMarginPct = Math.Round((stats.NetProfit / stats.TotalSalesRevenue) * 100m, 1);
-                    }
-                    else
-                    {
-                        stats.ProfitMarginPct = 0;
-                    }
-
-                    // 5. حساب إحصائيات وقيمة المخزون الإجمالية
-                    string productsKpiSql = @"
+                        -- 4. Inventory Valuation
                         SELECT 
                             ISNULL(SUM(StockQuantity), 0) AS TotalUnitsInStock,
                             ISNULL(SUM(StockQuantity * BuyPrice), 0) AS InventoryCostValue,
                             ISNULL(SUM(StockQuantity * SellPrice), 0) AS InventorySellValue,
                             COUNT(CASE WHEN StockQuantity <= MinStockAlert THEN 1 END) AS LowStockCount
-                        FROM [dbo].[Products]";
+                        FROM [dbo].[Products];
 
-                    using (SqlCommand cmd = new SqlCommand(productsKpiSql, conn))
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                        -- 5. Active Cashiers
+                        SELECT COUNT(1) AS ActiveCashiers FROM [dbo].[Users] WHERE IsActive = 1;
+                    ";
+
+                    using (SqlCommand cmd = new SqlCommand(batchSql, conn))
                     {
-                        if (reader.Read())
+                        if (!isAllTime)
                         {
-                            stats.TotalProductsInStock = Convert.ToInt32(reader["TotalUnitsInStock"]);
-                            stats.InventoryCostValue = Convert.ToDecimal(reader["InventoryCostValue"]);
-                            stats.InventorySellValue = Convert.ToDecimal(reader["InventorySellValue"]);
-                            stats.LowStockItemsCount = Convert.ToInt32(reader["LowStockCount"]);
+                            cmd.Parameters.Add("@FromDate", SqlDbType.DateTime).Value = range.Start;
+                            cmd.Parameters.Add("@ToDate", SqlDbType.DateTime).Value = range.End;
+                        }
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            // Result 1: Sales
+                            if (reader.Read())
+                            {
+                                stats.TotalSalesRevenue = Convert.ToDecimal(reader["TotalRevenue"]);
+                                stats.TotalTransactionsCount = Convert.ToInt32(reader["TotalTransactions"]);
+                            }
+
+                            // Result 2: Purchases
+                            if (reader.NextResult() && reader.Read())
+                            {
+                                stats.TotalPurchasesAmount = Convert.ToDecimal(reader["TotalPurchases"]);
+                                stats.TotalPurchaseInvoicesCount = Convert.ToInt32(reader["TotalPurchaseInvoices"]);
+                            }
+
+                            // Result 3: COGS
+                            if (reader.NextResult() && reader.Read())
+                            {
+                                stats.CostOfGoodsSold = Convert.ToDecimal(reader["CostOfGoodsSold"]);
+                            }
+
+                            // Result 4: Inventory
+                            if (reader.NextResult() && reader.Read())
+                            {
+                                stats.TotalProductsInStock = Convert.ToInt32(reader["TotalUnitsInStock"]);
+                                stats.InventoryCostValue = Convert.ToDecimal(reader["InventoryCostValue"]);
+                                stats.InventorySellValue = Convert.ToDecimal(reader["InventorySellValue"]);
+                                stats.LowStockItemsCount = Convert.ToInt32(reader["LowStockCount"]);
+                            }
+
+                            // Result 5: Cashiers
+                            if (reader.NextResult() && reader.Read())
+                            {
+                                stats.ActiveCashiersCount = Convert.ToInt32(reader["ActiveCashiers"]);
+                            }
                         }
                     }
 
-                    // 6. عدد المستخدمين النشطين
-                    string activeCashiersSql = "SELECT COUNT(1) FROM [dbo].[Users] WHERE IsActive = 1";
-                    using (SqlCommand cmd = new SqlCommand(activeCashiersSql, conn))
+                    stats.NetProfit = stats.TotalSalesRevenue - stats.CostOfGoodsSold;
+                    stats.ProfitMarginPct = stats.TotalSalesRevenue > 0
+                        ? Math.Round((stats.NetProfit / stats.TotalSalesRevenue) * 100m, 1)
+                        : 0;
+                }
+            }
+            catch { }
+            return stats;
+        }
+
+        public static async Task<DashboardStatsModel> GetDashboardKPIsAsync(string dateFilter = "الأسبوع")
+        {
+            DashboardStatsModel stats = new DashboardStatsModel();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    var range = GetDateRangeBoundaries(dateFilter, null, null);
+                    bool isAllTime = dateFilter == "الكل" || dateFilter == "كل الفترات" || string.Equals(dateFilter, "All Time", StringComparison.OrdinalIgnoreCase) || string.Equals(dateFilter, "All", StringComparison.OrdinalIgnoreCase);
+
+                    string salesDateCond = isAllTime ? "1=1" : "s.SaleDate >= @FromDate AND s.SaleDate <= @ToDate";
+                    string purchasesDateCond = isAllTime ? "1=1" : "p.PurchaseDate >= @FromDate AND p.PurchaseDate <= @ToDate";
+
+                    string batchSql = $@"
+                        -- 1. Sales KPI
+                        SELECT 
+                            ISNULL(SUM(s.FinalAmount - ISNULL(s.TotalRefunded, 0)), 0) AS TotalRevenue,
+                            COUNT(1) AS TotalTransactions
+                        FROM [dbo].[Sales] s
+                        WHERE {salesDateCond};
+
+                        -- 2. Purchases KPI
+                        SELECT 
+                            ISNULL(SUM(p.TotalAmount), 0) AS TotalPurchases,
+                            COUNT(1) AS TotalPurchaseInvoices
+                        FROM [dbo].[Purchases] p
+                        WHERE {purchasesDateCond};
+
+                        -- 3. COGS
+                        SELECT 
+                            ISNULL(SUM((sd.Quantity - ISNULL(sd.ReturnedQuantity, 0)) * ISNULL(pr.BuyPrice, 0)), 0) AS CostOfGoodsSold
+                        FROM [dbo].[SaleDetails] sd
+                        INNER JOIN [dbo].[Sales] s ON sd.SaleId = s.SaleId
+                        INNER JOIN [dbo].[Products] pr ON sd.ProductId = pr.ProductId
+                        WHERE {salesDateCond};
+
+                        -- 4. Inventory Valuation
+                        SELECT 
+                            ISNULL(SUM(StockQuantity), 0) AS TotalUnitsInStock,
+                            ISNULL(SUM(StockQuantity * BuyPrice), 0) AS InventoryCostValue,
+                            ISNULL(SUM(StockQuantity * SellPrice), 0) AS InventorySellValue,
+                            COUNT(CASE WHEN StockQuantity <= MinStockAlert THEN 1 END) AS LowStockCount
+                        FROM [dbo].[Products];
+
+                        -- 5. Active Cashiers
+                        SELECT COUNT(1) AS ActiveCashiers FROM [dbo].[Users] WHERE IsActive = 1;
+                    ";
+
+                    using (SqlCommand cmd = new SqlCommand(batchSql, conn))
                     {
-                        stats.ActiveCashiersCount = Convert.ToInt32(cmd.ExecuteScalar());
+                        if (!isAllTime)
+                        {
+                            cmd.Parameters.Add("@FromDate", SqlDbType.DateTime).Value = range.Start;
+                            cmd.Parameters.Add("@ToDate", SqlDbType.DateTime).Value = range.End;
+                        }
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            // Result 1: Sales
+                            if (await reader.ReadAsync().ConfigureAwait(false))
+                            {
+                                stats.TotalSalesRevenue = Convert.ToDecimal(reader["TotalRevenue"]);
+                                stats.TotalTransactionsCount = Convert.ToInt32(reader["TotalTransactions"]);
+                            }
+
+                            // Result 2: Purchases
+                            if (await reader.NextResultAsync().ConfigureAwait(false) && await reader.ReadAsync().ConfigureAwait(false))
+                            {
+                                stats.TotalPurchasesAmount = Convert.ToDecimal(reader["TotalPurchases"]);
+                                stats.TotalPurchaseInvoicesCount = Convert.ToInt32(reader["TotalPurchaseInvoices"]);
+                            }
+
+                            // Result 3: COGS
+                            if (await reader.NextResultAsync().ConfigureAwait(false) && await reader.ReadAsync().ConfigureAwait(false))
+                            {
+                                stats.CostOfGoodsSold = Convert.ToDecimal(reader["CostOfGoodsSold"]);
+                            }
+
+                            // Result 4: Inventory
+                            if (await reader.NextResultAsync().ConfigureAwait(false) && await reader.ReadAsync().ConfigureAwait(false))
+                            {
+                                stats.TotalProductsInStock = Convert.ToInt32(reader["TotalUnitsInStock"]);
+                                stats.InventoryCostValue = Convert.ToDecimal(reader["InventoryCostValue"]);
+                                stats.InventorySellValue = Convert.ToDecimal(reader["InventorySellValue"]);
+                                stats.LowStockItemsCount = Convert.ToInt32(reader["LowStockCount"]);
+                            }
+
+                            // Result 5: Cashiers
+                            if (await reader.NextResultAsync().ConfigureAwait(false) && await reader.ReadAsync().ConfigureAwait(false))
+                            {
+                                stats.ActiveCashiersCount = Convert.ToInt32(reader["ActiveCashiers"]);
+                            }
+                        }
                     }
+
+                    stats.NetProfit = stats.TotalSalesRevenue - stats.CostOfGoodsSold;
+                    stats.ProfitMarginPct = stats.TotalSalesRevenue > 0
+                        ? Math.Round((stats.NetProfit / stats.TotalSalesRevenue) * 100m, 1)
+                        : 0;
                 }
             }
             catch { }
@@ -1968,15 +2894,10 @@ namespace POS
                 {
                     conn.Open();
 
-                    string dateCondition = "s.SaleDate >= DATEADD(day, -7, GETDATE())";
-                    if (dateFilter == "الأسبوع" || dateFilter == "الاسبوع" || dateFilter == "هذا الأسبوع" || string.Equals(dateFilter, "This Week", StringComparison.OrdinalIgnoreCase) || string.Equals(dateFilter, "Week", StringComparison.OrdinalIgnoreCase))
-                        dateCondition = "s.SaleDate >= DATEADD(day, -7, GETDATE())";
-                    else if (dateFilter == "الشهر" || dateFilter == "هذا الشهر" || string.Equals(dateFilter, "This Month", StringComparison.OrdinalIgnoreCase) || string.Equals(dateFilter, "Month", StringComparison.OrdinalIgnoreCase))
-                        dateCondition = "s.SaleDate >= DATEADD(month, -1, GETDATE())";
-                    else if (dateFilter == "الكل" || dateFilter == "كل الفترات" || string.Equals(dateFilter, "All Time", StringComparison.OrdinalIgnoreCase) || string.Equals(dateFilter, "All", StringComparison.OrdinalIgnoreCase))
-                        dateCondition = "1=1";
-                    else if (dateFilter == "اليوم" || string.Equals(dateFilter, "Today", StringComparison.OrdinalIgnoreCase))
-                        dateCondition = "CAST(s.SaleDate AS DATE) = CAST(GETDATE() AS DATE)";
+                    var range = GetDateRangeBoundaries(dateFilter, null, null);
+                    bool isAllTime = dateFilter == "الكل" || dateFilter == "كل الفترات" || string.Equals(dateFilter, "All Time", StringComparison.OrdinalIgnoreCase) || string.Equals(dateFilter, "All", StringComparison.OrdinalIgnoreCase);
+
+                    string dateCondition = isAllTime ? "1=1" : "s.SaleDate >= @FromDate AND s.SaleDate <= @ToDate";
 
                     string query = $@"
                         SELECT TOP ({topN})
@@ -1994,9 +2915,65 @@ namespace POS
                         ORDER BY UnitsSold DESC, TotalRevenue DESC";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
-                    using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
                     {
-                        adapter.Fill(dt);
+                        if (!isAllTime)
+                        {
+                            cmd.Parameters.Add("@FromDate", SqlDbType.DateTime).Value = range.Start;
+                            cmd.Parameters.Add("@ToDate", SqlDbType.DateTime).Value = range.End;
+                        }
+
+                        using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                        {
+                            adapter.Fill(dt);
+                        }
+                    }
+                }
+            }
+            catch { }
+            return dt;
+        }
+
+        public static async Task<DataTable> GetTopSellingProductsAsync(int topN = 5, string dateFilter = "الأسبوع")
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+
+                    var range = GetDateRangeBoundaries(dateFilter, null, null);
+                    bool isAllTime = dateFilter == "الكل" || dateFilter == "كل الفترات" || string.Equals(dateFilter, "All Time", StringComparison.OrdinalIgnoreCase) || string.Equals(dateFilter, "All", StringComparison.OrdinalIgnoreCase);
+
+                    string dateCondition = isAllTime ? "1=1" : "s.SaleDate >= @FromDate AND s.SaleDate <= @ToDate";
+
+                    string query = $@"
+                        SELECT TOP ({topN})
+                            p.ProductName,
+                            p.Barcode,
+                            ISNULL(c.CategoryName, N'عام') AS CategoryName,
+                            SUM(sd.Quantity) AS UnitsSold,
+                            SUM(sd.LineTotal) AS TotalRevenue
+                        FROM [dbo].[SaleDetails] sd
+                        INNER JOIN [dbo].[Sales] s ON sd.SaleId = s.SaleId
+                        INNER JOIN [dbo].[Products] p ON sd.ProductId = p.ProductId
+                        LEFT JOIN [dbo].[Categories] c ON p.CategoryId = c.CategoryId
+                        WHERE {dateCondition}
+                        GROUP BY p.ProductName, p.Barcode, c.CategoryName
+                        ORDER BY UnitsSold DESC, TotalRevenue DESC";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        if (!isAllTime)
+                        {
+                            cmd.Parameters.Add("@FromDate", SqlDbType.DateTime).Value = range.Start;
+                            cmd.Parameters.Add("@ToDate", SqlDbType.DateTime).Value = range.End;
+                        }
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            dt.Load(reader);
+                        }
                     }
                 }
             }
@@ -2019,15 +2996,56 @@ namespace POS
                             ISNULL(u.FullName, N'مدير النظام') AS Cashier,
                             s.FinalAmount,
                             s.PaymentMethod,
-                            (SELECT COUNT(1) FROM [dbo].[SaleDetails] sd WHERE sd.SaleId = s.SaleId) AS ItemsCount
+                            ISNULL(itemSummary.ItemsCount, 0) AS ItemsCount
                         FROM [dbo].[Sales] s
                         LEFT JOIN [dbo].[Users] u ON s.UserId = u.UserId
+                        LEFT JOIN (
+                            SELECT SaleId, COUNT(1) AS ItemsCount
+                            FROM [dbo].[SaleDetails]
+                            GROUP BY SaleId
+                        ) itemSummary ON s.SaleId = itemSummary.SaleId
                         ORDER BY s.SaleId DESC";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
                     {
                         adapter.Fill(dt);
+                    }
+                }
+            }
+            catch { }
+            return dt;
+        }
+
+        public static async Task<DataTable> GetRecentTransactionsAsync(int topN = 10)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    string query = $@"
+                        SELECT TOP ({topN})
+                            s.SaleId,
+                            s.SaleDate,
+                            ISNULL(u.FullName, N'مدير النظام') AS Cashier,
+                            s.FinalAmount,
+                            s.PaymentMethod,
+                            ISNULL(itemSummary.ItemsCount, 0) AS ItemsCount
+                        FROM [dbo].[Sales] s
+                        LEFT JOIN [dbo].[Users] u ON s.UserId = u.UserId
+                        LEFT JOIN (
+                            SELECT SaleId, COUNT(1) AS ItemsCount
+                            FROM [dbo].[SaleDetails]
+                            GROUP BY SaleId
+                        ) itemSummary ON s.SaleId = itemSummary.SaleId
+                        ORDER BY s.SaleId DESC";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                    {
+                        dt.Load(reader);
                     }
                 }
             }
@@ -2069,12 +3087,52 @@ namespace POS
             return dt;
         }
 
+        public static async Task<DataTable> GetUrgentLowStockProductsAsync(int topN = 10)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    string query = $@"
+                        SELECT TOP ({topN})
+                            p.ProductId,
+                            p.Barcode,
+                            p.ProductName,
+                            ISNULL(c.CategoryName, N'عام') AS CategoryName,
+                            p.StockQuantity,
+                            p.MinStockAlert,
+                            p.BuyPrice,
+                            p.SellPrice
+                        FROM [dbo].[Products] p
+                        LEFT JOIN [dbo].[Categories] c ON p.CategoryId = c.CategoryId
+                        WHERE p.StockQuantity <= p.MinStockAlert
+                        ORDER BY p.StockQuantity ASC, p.ProductName ASC";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                    {
+                        dt.Load(reader);
+                    }
+                }
+            }
+            catch { }
+            return dt;
+        }
+
         #endregion
 
-        #region System Settings & Database Management
+        #region System Settings & Database Management (Cached)
 
         public static SystemSettingsModel GetSystemSettings()
         {
+            lock (_settingsLock)
+            {
+                if (_cachedSettings != null)
+                    return _cachedSettings;
+            }
+
             var settings = new SystemSettingsModel();
             try
             {
@@ -2121,6 +3179,75 @@ namespace POS
                             settings.AllowNegativeStock = neg;
                     }
                 }
+
+                lock (_settingsLock)
+                {
+                    _cachedSettings = settings;
+                }
+            }
+            catch { }
+            return settings;
+        }
+
+        public static async Task<SystemSettingsModel> GetSystemSettingsAsync()
+        {
+            lock (_settingsLock)
+            {
+                if (_cachedSettings != null)
+                    return _cachedSettings;
+            }
+
+            var settings = new SystemSettingsModel();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    string query = "SELECT SettingKey, SettingValue FROM [dbo].[SystemSettings]";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                    {
+                        var dict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                        while (await reader.ReadAsync().ConfigureAwait(false))
+                        {
+                            string k = reader["SettingKey"].ToString();
+                            string v = reader["SettingValue"] != DBNull.Value ? reader["SettingValue"].ToString() : "";
+                            dict[k] = v;
+                        }
+
+                        if (dict.TryGetValue("StoreName", out var storeName) && !string.IsNullOrWhiteSpace(storeName))
+                            settings.StoreName = storeName;
+                        if (dict.TryGetValue("StoreSubtitle", out var storeSub) && !string.IsNullOrWhiteSpace(storeSub))
+                            settings.StoreSubtitle = storeSub;
+                        if (dict.TryGetValue("StorePhone", out var storePhone))
+                            settings.StorePhone = storePhone;
+                        if (dict.TryGetValue("StoreAddress", out var storeAddr))
+                            settings.StoreAddress = storeAddr;
+                        if (dict.TryGetValue("TaxNumber", out var taxNum))
+                            settings.TaxNumber = taxNum;
+                        if (dict.TryGetValue("ReceiptHeader", out var rHeader) && !string.IsNullOrWhiteSpace(rHeader))
+                            settings.ReceiptHeader = rHeader;
+                        if (dict.TryGetValue("ReceiptFooter", out var rFooter) && !string.IsNullOrWhiteSpace(rFooter))
+                            settings.ReceiptFooter = rFooter;
+                        if (dict.TryGetValue("CurrencySymbol", out var curr) && !string.IsNullOrWhiteSpace(curr))
+                            settings.CurrencySymbol = curr;
+                        if (dict.TryGetValue("VatRate", out var vatStr) && decimal.TryParse(vatStr, NumberStyles.Any, CultureInfo.InvariantCulture, out var vat))
+                            settings.VatRate = vat;
+                        if (dict.TryGetValue("DefaultMinStock", out var minStockStr) && int.TryParse(minStockStr, out var minStock))
+                            settings.DefaultMinStock = minStock;
+                        if (dict.TryGetValue("EnablePrintPreview", out var prevStr) && bool.TryParse(prevStr, out var prev))
+                            settings.EnablePrintPreview = prev;
+                        if (dict.TryGetValue("AutoPrintOnSale", out var autoStr) && bool.TryParse(autoStr, out var autoP))
+                            settings.AutoPrintOnSale = autoP;
+                        if (dict.TryGetValue("AllowNegativeStock", out var negStr) && bool.TryParse(negStr, out var neg))
+                            settings.AllowNegativeStock = neg;
+                    }
+                }
+
+                lock (_settingsLock)
+                {
+                    _cachedSettings = settings;
+                }
             }
             catch { }
             return settings;
@@ -2134,52 +3261,59 @@ namespace POS
                 using (SqlConnection conn = new SqlConnection(GetConnectionString()))
                 {
                     conn.Open();
-                    using (SqlTransaction transaction = conn.BeginTransaction())
+
+                    var pairs = new Dictionary<string, string>
                     {
-                        try
-                        {
-                            var pairs = new Dictionary<string, string>
-                            {
-                                { "StoreName", settings.StoreName ?? "" },
-                                { "StoreSubtitle", settings.StoreSubtitle ?? "" },
-                                { "StorePhone", settings.StorePhone ?? "" },
-                                { "StoreAddress", settings.StoreAddress ?? "" },
-                                { "TaxNumber", settings.TaxNumber ?? "" },
-                                { "ReceiptHeader", settings.ReceiptHeader ?? "" },
-                                { "ReceiptFooter", settings.ReceiptFooter ?? "" },
-                                { "CurrencySymbol", settings.CurrencySymbol ?? "ج.م" },
-                                { "VatRate", settings.VatRate.ToString(CultureInfo.InvariantCulture) },
-                                { "DefaultMinStock", settings.DefaultMinStock.ToString() },
-                                { "EnablePrintPreview", settings.EnablePrintPreview.ToString() },
-                                { "AutoPrintOnSale", settings.AutoPrintOnSale.ToString() },
-                                { "AllowNegativeStock", settings.AllowNegativeStock.ToString() }
-                            };
+                        { "StoreName", settings.StoreName ?? "" },
+                        { "StoreSubtitle", settings.StoreSubtitle ?? "" },
+                        { "StorePhone", settings.StorePhone ?? "" },
+                        { "StoreAddress", settings.StoreAddress ?? "" },
+                        { "TaxNumber", settings.TaxNumber ?? "" },
+                        { "ReceiptHeader", settings.ReceiptHeader ?? "" },
+                        { "ReceiptFooter", settings.ReceiptFooter ?? "" },
+                        { "CurrencySymbol", settings.CurrencySymbol ?? "ج.م" },
+                        { "VatRate", settings.VatRate.ToString(CultureInfo.InvariantCulture) },
+                        { "DefaultMinStock", settings.DefaultMinStock.ToString() },
+                        { "EnablePrintPreview", settings.EnablePrintPreview.ToString() },
+                        { "AutoPrintOnSale", settings.AutoPrintOnSale.ToString() },
+                        { "AllowNegativeStock", settings.AllowNegativeStock.ToString() }
+                    };
 
-                            foreach (var kvp in pairs)
-                            {
-                                string upsertQuery = @"
-                                    IF EXISTS (SELECT 1 FROM [dbo].[SystemSettings] WHERE SettingKey = @Key)
-                                        UPDATE [dbo].[SystemSettings] SET SettingValue = @Val WHERE SettingKey = @Key
-                                    ELSE
-                                        INSERT INTO [dbo].[SystemSettings] (SettingKey, SettingValue) VALUES (@Key, @Val)";
+                    StringBuilder batchSql = new StringBuilder();
+                    batchSql.AppendLine("BEGIN TRANSACTION;");
 
-                                using (SqlCommand cmd = new SqlCommand(upsertQuery, conn, transaction))
-                                {
-                                    cmd.Parameters.Add("@Key", SqlDbType.NVarChar, 50).Value = kvp.Key;
-                                    cmd.Parameters.Add("@Val", SqlDbType.NVarChar, -1).Value = kvp.Value;
-                                    cmd.ExecuteNonQuery();
-                                }
-                            }
-
-                            transaction.Commit();
-                            return (true, "تم حفظ وتحديث إعدادات النظام بنجاح.");
-                        }
-                        catch (Exception ex)
-                        {
-                            try { transaction.Rollback(); } catch { }
-                            return (false, "فشل حفظ الإعدادات: " + ex.Message);
-                        }
+                    int idx = 0;
+                    foreach (var kvp in pairs)
+                    {
+                        batchSql.AppendLine($@"
+                            IF EXISTS (SELECT 1 FROM [dbo].[SystemSettings] WHERE SettingKey = @Key_{idx})
+                                UPDATE [dbo].[SystemSettings] SET SettingValue = @Val_{idx} WHERE SettingKey = @Key_{idx}
+                            ELSE
+                                INSERT INTO [dbo].[SystemSettings] (SettingKey, SettingValue) VALUES (@Key_{idx}, @Val_{idx});");
+                        idx++;
                     }
+
+                    batchSql.AppendLine("COMMIT TRANSACTION;");
+
+                    using (SqlCommand cmd = new SqlCommand(batchSql.ToString(), conn))
+                    {
+                        idx = 0;
+                        foreach (var kvp in pairs)
+                        {
+                            cmd.Parameters.Add($"@Key_{idx}", SqlDbType.NVarChar, 50).Value = kvp.Key;
+                            cmd.Parameters.Add($"@Val_{idx}", SqlDbType.NVarChar, -1).Value = kvp.Value;
+                            idx++;
+                        }
+
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    lock (_settingsLock)
+                    {
+                        _cachedSettings = settings;
+                    }
+
+                    return (true, "تم حفظ وتحديث إعدادات النظام بنجاح.");
                 }
             }
             catch (Exception ex)
@@ -2244,6 +3378,11 @@ namespace POS
                         cmd.ExecuteNonQuery();
                     }
                 }
+
+                InvalidateSettingsCache();
+                InvalidateCategoriesCache();
+                InvalidateProductsCache();
+
                 return (true, "تمت استعادة قاعدة البيانات بنجاح من النسخة الاحتياطية!");
             }
             catch (Exception ex)
@@ -2265,38 +3404,29 @@ namespace POS
                 using (SqlConnection conn = new SqlConnection(GetConnectionString()))
                 {
                     conn.Open();
-                    using (SqlTransaction tx = conn.BeginTransaction())
+                    string sql = @"
+                        BEGIN TRANSACTION;
+                        DELETE FROM [dbo].[SalesReturnDetails];
+                        DELETE FROM [dbo].[SalesReturns];
+                        DELETE FROM [dbo].[SaleDetails];
+                        DELETE FROM [dbo].[Sales];
+                        DELETE FROM [dbo].[PurchaseDetails];
+                        DELETE FROM [dbo].[Purchases];
+                        DBCC CHECKIDENT ('[dbo].[Sales]', RESEED, 0);
+                        DBCC CHECKIDENT ('[dbo].[SaleDetails]', RESEED, 0);
+                        DBCC CHECKIDENT ('[dbo].[Purchases]', RESEED, 0);
+                        DBCC CHECKIDENT ('[dbo].[PurchaseDetails]', RESEED, 0);
+                        DBCC CHECKIDENT ('[dbo].[SalesReturns]', RESEED, 0);
+                        DBCC CHECKIDENT ('[dbo].[SalesReturnDetails]', RESEED, 0);
+                        COMMIT TRANSACTION;";
+
+                    using (SqlCommand cmd = new SqlCommand(sql, conn))
                     {
-                        try
-                        {
-                            string sql = @"
-                                DELETE FROM [dbo].[SalesReturnDetails];
-                                DELETE FROM [dbo].[SalesReturns];
-                                DELETE FROM [dbo].[SaleDetails];
-                                DELETE FROM [dbo].[Sales];
-                                DELETE FROM [dbo].[PurchaseDetails];
-                                DELETE FROM [dbo].[Purchases];
-                                DBCC CHECKIDENT ('[dbo].[Sales]', RESEED, 0);
-                                DBCC CHECKIDENT ('[dbo].[SaleDetails]', RESEED, 0);
-                                DBCC CHECKIDENT ('[dbo].[Purchases]', RESEED, 0);
-                                DBCC CHECKIDENT ('[dbo].[PurchaseDetails]', RESEED, 0);
-                                DBCC CHECKIDENT ('[dbo].[SalesReturns]', RESEED, 0);
-                                DBCC CHECKIDENT ('[dbo].[SalesReturnDetails]', RESEED, 0);";
-
-                            using (SqlCommand cmd = new SqlCommand(sql, conn, tx))
-                            {
-                                cmd.ExecuteNonQuery();
-                            }
-
-                            tx.Commit();
-                            return (true, "تم تصفير سجلات المبيعات والمشتريات والمرتجعات بالكامل وبدء الترقيم من 1.");
-                        }
-                        catch (Exception ex)
-                        {
-                            try { tx.Rollback(); } catch { }
-                            return (false, "فشلت عملية التصفير: " + ex.Message);
-                        }
+                        cmd.ExecuteNonQuery();
                     }
+
+                    InvalidateProductsCache();
+                    return (true, "تم تصفير سجلات المبيعات والمشتريات والمرتجعات بالكامل وبدء الترقيم من 1.");
                 }
             }
             catch (Exception ex)

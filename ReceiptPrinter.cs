@@ -45,25 +45,39 @@ namespace POS
             }
         }
 
+        private static readonly Dictionary<(float, bool), Font> _receiptFontCache = new Dictionary<(float, bool), Font>();
+        private static readonly object _fontLock = new object();
+
         // بيرجع الخط الصح حسب الوزن المطلوب فعلياً — من غير ما يطلب Bold صناعي من GDI+
         private static Font CreateFont(float size, bool bold)
         {
-            FontFamily family = bold ? _cairoBoldFamily : _cairoRegularFamily;
-
-            if (family != null)
+            lock (_fontLock)
             {
-                // نطلب دايماً Regular من العائلة نفسها، لأن الوزن (Bold/Regular)
-                // ده جاي من اختيار ملف الخط مش من الـ FontStyle
-                if (family.IsStyleAvailable(FontStyle.Regular))
-                    return new Font(family, size, FontStyle.Regular);
+                if (_receiptFontCache.TryGetValue((size, bold), out Font cachedFont))
+                {
+                    return cachedFont;
+                }
 
-                // لو العائلة مش بتدعم Regular لأي سبب، اطلب أي style متاح فعلياً
-                if (family.IsStyleAvailable(FontStyle.Bold))
-                    return new Font(family, size, FontStyle.Bold);
+                FontFamily family = bold ? _cairoBoldFamily : _cairoRegularFamily;
+                Font font;
+
+                if (family != null)
+                {
+                    if (family.IsStyleAvailable(FontStyle.Regular))
+                        font = new Font(family, size, FontStyle.Regular);
+                    else if (family.IsStyleAvailable(FontStyle.Bold))
+                        font = new Font(family, size, FontStyle.Bold);
+                    else
+                        font = new Font("Tahoma", size, bold ? FontStyle.Bold : FontStyle.Regular);
+                }
+                else
+                {
+                    font = new Font("Tahoma", size, bold ? FontStyle.Bold : FontStyle.Regular);
+                }
+
+                _receiptFontCache[(size, bold)] = font;
+                return font;
             }
-
-            // فallback نهائي: Tahoma بتدعم الوزنين بشكل طبيعي وسليم
-            return new Font("Tahoma", size, bold ? FontStyle.Bold : FontStyle.Regular);
         }
 
         // عرض قابل للطباعة آمن لورق 80مم (بالمئة من البوصة)

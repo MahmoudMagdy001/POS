@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace POS
@@ -11,13 +12,15 @@ namespace POS
         private List<PurchaseDetailModel> _purchaseItems = new List<PurchaseDetailModel>();
         private DataTable _purchaseItemsTable;
         private List<ProductModel> _allProducts = new List<ProductModel>();
+        private int _currentHistorySequence = 0;
+        private bool _isLoadingHistory = false;
 
         public PurchasesForm()
         {
             InitializeComponent();
         }
 
-        private void PurchasesForm_Load(object sender, EventArgs e)
+        private async void PurchasesForm_Load(object sender, EventArgs e)
         {
             UIStyler.ApplyTheme(this);
             UIStyler.StylePrimaryButton(btnSavePurchase, "💾 حفظ فاتورة المشتريات");
@@ -28,16 +31,17 @@ namespace POS
             UIStyler.StyleDataGrid(dgvPurchasesHistory);
             UIStyler.StyleDataGrid(dgvPurchaseHistoryDetails);
             InitPurchaseItemsTable();
-            LoadSuppliers();
-            LoadProductDropdown();
-            LoadPurchasesHistory();
+
+            await LoadSuppliersAsync();
+            await LoadProductDropdownAsync();
+            await LoadPurchasesHistoryAsync();
         }
 
-        public void RefreshData()
+        public async void RefreshData()
         {
-            LoadSuppliers();
-            LoadProductDropdown();
-            LoadPurchasesHistory();
+            await LoadSuppliersAsync();
+            await LoadProductDropdownAsync();
+            await LoadPurchasesHistoryAsync();
         }
 
         private void InitPurchaseItemsTable()
@@ -111,11 +115,11 @@ namespace POS
             }
         }
 
-        private void LoadSuppliers()
+        private async Task LoadSuppliersAsync()
         {
             try
             {
-                var suppliers = DbHelper.GetAllSuppliersList();
+                var suppliers = await Task.Run(() => DbHelper.GetAllSuppliersList());
                 suppliers.Insert(0, new SupplierModel { SupplierId = 0, SupplierName = "مورد عام / نقدي (بدون تسجيل مورد)" });
 
                 cmbSupplier.DataSource = null;
@@ -126,11 +130,11 @@ namespace POS
             catch { }
         }
 
-        private void LoadProductDropdown()
+        private async Task LoadProductDropdownAsync()
         {
             try
             {
-                DataTable dt = DbHelper.GetAllProductsDataTable();
+                DataTable dt = await DbHelper.GetAllProductsDataTableAsync();
                 _allProducts.Clear();
                 foreach (DataRow r in dt.Rows)
                 {
@@ -201,6 +205,7 @@ namespace POS
 
         private void SyncPurchaseItems()
         {
+            _purchaseItemsTable.BeginLoadData();
             _purchaseItemsTable.Rows.Clear();
             decimal total = 0;
 
@@ -216,6 +221,7 @@ namespace POS
                 );
                 total += item.LineTotal;
             }
+            _purchaseItemsTable.EndLoadData();
 
             lblTotalPurchaseVal.Text = $"{total:N2} ج.م";
         }
@@ -229,7 +235,7 @@ namespace POS
             }
         }
 
-        private void btnSavePurchase_Click(object sender, EventArgs e)
+        private async void btnSavePurchase_Click(object sender, EventArgs e)
         {
             if (_purchaseItems.Count == 0)
             {
@@ -255,13 +261,13 @@ namespace POS
             };
 
             bool updateBuyPrice = chkUpdateBuyPrice.Checked;
-            var result = DbHelper.ProcessPurchaseTransaction(purchase, _purchaseItems, updateBuyPrice);
+            var result = await Task.Run(() => DbHelper.ProcessPurchaseTransaction(purchase, _purchaseItems, updateBuyPrice));
 
             if (result.Success)
             {
                 MessageBox.Show($"تم حفظ فاتورة المشتريات #{result.PurchaseId:D5} وتحديث أرصدة المخزون بنجاح!", "تم الحفظ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ResetNewPurchaseForm();
-                LoadPurchasesHistory();
+                await LoadPurchasesHistoryAsync();
             }
             else
             {
@@ -281,17 +287,17 @@ namespace POS
             }
         }
 
-        private void ResetNewPurchaseForm()
+        private async void ResetNewPurchaseForm()
         {
             _purchaseItems.Clear();
             SyncPurchaseItems();
             txtPurchaseNotes.Clear();
             dtpPurchaseDate.Value = DateTime.Now;
             if (cmbSupplier.Items.Count > 0) cmbSupplier.SelectedIndex = 0;
-            LoadProductDropdown();
+            await LoadProductDropdownAsync();
         }
 
-        private void btnQuickAddSupplier_Click(object sender, EventArgs e)
+        private async void btnQuickAddSupplier_Click(object sender, EventArgs e)
         {
             using (Form modal = new Form())
             {
@@ -359,30 +365,37 @@ namespace POS
                 FontManager.ApplyCairoFont(modal);
                 if (modal.ShowDialog(this) == DialogResult.OK)
                 {
-                    LoadSuppliers();
+                    await LoadSuppliersAsync();
                 }
             }
         }
 
         #region History Tab
 
-        private void tabPurchases_SelectedIndexChanged(object sender, EventArgs e)
+        private async void tabPurchases_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (tabPurchases.SelectedTab == tabHistory)
             {
-                LoadPurchasesHistory();
+                await LoadPurchasesHistoryAsync();
             }
         }
 
-        private void LoadPurchasesHistory()
+        private async Task LoadPurchasesHistoryAsync()
         {
+            if (_isLoadingHistory) return;
+
             try
             {
-                DataTable dt = DbHelper.GetAllPurchasesDataTable();
+                _isLoadingHistory = true;
+                DataTable dt = await DbHelper.GetAllPurchasesDataTableAsync();
                 dgvPurchasesHistory.DataSource = dt;
                 FormatHistoryGrid();
             }
             catch { }
+            finally
+            {
+                _isLoadingHistory = false;
+            }
         }
 
         private void FormatHistoryGrid()
@@ -430,20 +443,26 @@ namespace POS
             }
         }
 
-        private void dgvPurchasesHistory_SelectionChanged(object sender, EventArgs e)
+        private async void dgvPurchasesHistory_SelectionChanged(object sender, EventArgs e)
         {
             if (dgvPurchasesHistory.SelectedRows.Count > 0)
             {
-                int purchaseId = Convert.ToInt32(dgvPurchasesHistory.SelectedRows[0].Cells["PurchaseId"].Value);
-                LoadPurchaseHistoryDetails(purchaseId);
+                int seq = ++_currentHistorySequence;
+                var val = dgvPurchasesHistory.SelectedRows[0].Cells["PurchaseId"].Value;
+                if (val != null && int.TryParse(val.ToString(), out int purchaseId))
+                {
+                    await LoadPurchaseHistoryDetailsAsync(purchaseId, seq);
+                }
             }
         }
 
-        private void LoadPurchaseHistoryDetails(int purchaseId)
+        private async Task LoadPurchaseHistoryDetailsAsync(int purchaseId, int sequence)
         {
             try
             {
-                DataTable dt = DbHelper.GetPurchaseDetailsDataTable(purchaseId);
+                DataTable dt = await DbHelper.GetPurchaseDetailsDataTableAsync(purchaseId);
+                if (sequence != _currentHistorySequence) return;
+
                 dgvPurchaseHistoryDetails.DataSource = dt;
                 FormatHistoryDetailsGrid();
                 lblHistoryDetailsTitle.Text = $"📦 تفاصيل وأصناف الفاتورة #{purchaseId:D5}";

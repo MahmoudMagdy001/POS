@@ -128,24 +128,32 @@ namespace POS
             }
         }
 
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<(float, FontStyle), Font> _fontCache =
+            new System.Collections.Concurrent.ConcurrentDictionary<(float, FontStyle), Font>();
+
+        public static Font GetFont(float size, FontStyle style = FontStyle.Regular)
+        {
+            return _fontCache.GetOrAdd((size, style), key => new Font(CairoFamily, key.Item1, key.Item2, GraphicsUnit.Point));
+        }
+
         public static Font GetRegular(float size, FontStyle style = FontStyle.Regular)
         {
-            return new Font(CairoFamily, size, style, GraphicsUnit.Point);
+            return GetFont(size, style);
         }
 
         public static Font GetBold(float size)
         {
-            return new Font(CairoFamily, size, FontStyle.Bold, GraphicsUnit.Point);
+            return GetFont(size, FontStyle.Bold);
         }
 
         public static Font GetSemiBold(float size)
         {
-            return new Font(CairoFamily, size, FontStyle.Bold, GraphicsUnit.Point);
+            return GetFont(size, FontStyle.Bold);
         }
 
         public static Font GetMedium(float size)
         {
-            return new Font(CairoFamily, size, FontStyle.Regular, GraphicsUnit.Point);
+            return GetFont(size, FontStyle.Regular);
         }
 
         /// <summary>
@@ -171,7 +179,7 @@ namespace POS
                 // Preserve current style and size, switch font family to Cairo
                 FontStyle style = ctrl.Font != null ? ctrl.Font.Style : FontStyle.Regular;
                 float size = ctrl.Font != null ? ctrl.Font.Size : 9.5f;
-                ctrl.Font = new Font(CairoFamily, size, style, GraphicsUnit.Point);
+                ctrl.Font = GetFont(size, style);
 
                 // For Label, Button, CheckBox, RadioButton: ensure UseCompatibleTextRendering is false for GDI shaping
                 if (ctrl is Button btn)

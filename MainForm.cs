@@ -7,6 +7,8 @@ namespace POS
 {
     public partial class MainForm : Form
     {
+        private static readonly CultureInfo _arCulture = new CultureInfo("ar-EG");
+
         private readonly UserModel _currentUser;
         private Form _activeChildForm = null;
 
@@ -28,6 +30,7 @@ namespace POS
         {
             UIStyler.ApplyTheme(this);
             UIStyler.StyleDangerButton(btnLogout, "🚪 خروج");
+            lblCurrentTime.AutoSize = true;
             SetupUserInfo();
             InitializeChildForms();
             ShowView("Dashboard");
@@ -195,8 +198,7 @@ namespace POS
         {
             try
             {
-                var arCulture = new CultureInfo("ar-EG");
-                lblCurrentTime.Text = DateTime.Now.ToString("dddd، dd MMMM yyyy  -  hh:mm:ss tt", arCulture);
+                lblCurrentTime.Text = DateTime.Now.ToString("dddd، dd MMMM yyyy  -  hh:mm:ss tt", _arCulture);
             }
             catch
             {

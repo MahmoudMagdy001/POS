@@ -371,4 +371,72 @@ BEGIN
 END
 GO
 
+-- ============================================================================
+-- 13. الفهارس المتقدمة لتحسين سرعة الاستعلامات والعمليات (High-Performance Indexes)
+-- ============================================================================
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Products_CategoryId' AND object_id = OBJECT_ID(N'[dbo].[Products]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_Products_CategoryId] ON [dbo].[Products] ([CategoryId]) 
+    INCLUDE ([ProductName], [SellPrice], [StockQuantity], [Barcode]);
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Products_StockAlert' AND object_id = OBJECT_ID(N'[dbo].[Products]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_Products_StockAlert] ON [dbo].[Products] ([StockQuantity], [MinStockAlert]) 
+    INCLUDE ([ProductName], [Barcode], [BuyPrice], [SellPrice], [CategoryId]);
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Purchases_SupplierId' AND object_id = OBJECT_ID(N'[dbo].[Purchases]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_Purchases_SupplierId] ON [dbo].[Purchases] ([SupplierId]);
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Purchases_PurchaseDate' AND object_id = OBJECT_ID(N'[dbo].[Purchases]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_Purchases_PurchaseDate] ON [dbo].[Purchases] ([PurchaseDate]) 
+    INCLUDE ([TotalAmount], [SupplierId]);
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Sales_UserId' AND object_id = OBJECT_ID(N'[dbo].[Sales]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_Sales_UserId] ON [dbo].[Sales] ([UserId]);
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Sales_SaleDate_Covering' AND object_id = OBJECT_ID(N'[dbo].[Sales]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_Sales_SaleDate_Covering] ON [dbo].[Sales] ([SaleDate]) 
+    INCLUDE ([SaleId], [UserId], [FinalAmount], [TotalRefunded], [ReturnStatus], [PaymentMethod]);
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_SalesReturns_SaleId' AND object_id = OBJECT_ID(N'[dbo].[SalesReturns]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_SalesReturns_SaleId] ON [dbo].[SalesReturns] ([SaleId]);
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_SalesReturnDetails_ReturnId' AND object_id = OBJECT_ID(N'[dbo].[SalesReturnDetails]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_SalesReturnDetails_ReturnId] ON [dbo].[SalesReturnDetails] ([ReturnId]);
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_SalesReturnDetails_ProductId' AND object_id = OBJECT_ID(N'[dbo].[SalesReturnDetails]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_SalesReturnDetails_ProductId] ON [dbo].[SalesReturnDetails] ([ProductId]);
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_SaleDetails_ProductId' AND object_id = OBJECT_ID(N'[dbo].[SaleDetails]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_SaleDetails_ProductId] ON [dbo].[SaleDetails] ([ProductId]);
+END
+GO
+
+
 

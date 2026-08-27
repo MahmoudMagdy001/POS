@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace POS
@@ -8,13 +9,14 @@ namespace POS
     public partial class DashboardForm : Form
     {
         private string _activeFilter = "اليوم";
+        private bool _isLoading = false;
 
         public DashboardForm()
         {
             InitializeComponent();
         }
 
-        private void DashboardForm_Load(object sender, EventArgs e)
+        private async void DashboardForm_Load(object sender, EventArgs e)
         {
             UIStyler.ApplyTheme(this);
             UIStyler.SetFilterButtonActive(btnFilterToday, true);
@@ -25,16 +27,37 @@ namespace POS
             UIStyler.StyleDataGrid(dgvTopProducts);
             UIStyler.StyleDataGrid(dgvRecentSales);
             UIStyler.StyleDataGrid(dgvLowStock);
-            RefreshData();
+            await RefreshDataAsync();
         }
 
-        public void RefreshData()
+        public async void RefreshData()
         {
+            await RefreshDataAsync();
+        }
+
+        public async Task RefreshDataAsync()
+        {
+            if (_isLoading) return;
+
             try
             {
-                // 1. KPIs
-                var kpis = DbHelper.GetDashboardKPIs(_activeFilter);
+                _isLoading = true;
+                btnRefresh.Enabled = false;
 
+                // Execute all 4 analytical queries concurrently in parallel
+                var kpisTask = DbHelper.GetDashboardKPIsAsync(_activeFilter);
+                var topTask = DbHelper.GetTopSellingProductsAsync(5, _activeFilter);
+                var recentTask = DbHelper.GetRecentTransactionsAsync(10);
+                var lowStockTask = DbHelper.GetUrgentLowStockProductsAsync(10);
+
+                await Task.WhenAll(kpisTask, topTask, recentTask, lowStockTask);
+
+                var kpis = await kpisTask;
+                DataTable dtTop = await topTask;
+                DataTable dtRecent = await recentTask;
+                DataTable dtLowStock = await lowStockTask;
+
+                // 1. KPIs
                 // 1.1 إجمالي المبيعات (البيع)
                 lblKpiSalesVal.Text = $"{kpis.TotalSalesRevenue:N2} ج.م";
                 lblKpiSalesSub.Text = $"عدد الفواتير: {kpis.TotalTransactionsCount} فاتورة";
@@ -70,23 +93,25 @@ namespace POS
                 lblKpiProductsSub.Font = FontManager.GetRegular(8.5f);
 
                 // 2. Top Selling Products
-                DataTable dtTop = DbHelper.GetTopSellingProducts(5, _activeFilter);
                 dgvTopProducts.DataSource = dtTop;
                 FormatTopProductsGrid();
 
                 // 3. Recent Sales Transactions
-                DataTable dtRecent = DbHelper.GetRecentTransactions(10);
                 dgvRecentSales.DataSource = dtRecent;
                 FormatRecentSalesGrid();
 
                 // 4. Low Stock Critical Alerts
-                DataTable dtLowStock = DbHelper.GetUrgentLowStockProducts(10);
                 dgvLowStock.DataSource = dtLowStock;
                 FormatLowStockGrid();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("Dashboard refresh error: " + ex.Message);
+            }
+            finally
+            {
+                _isLoading = false;
+                btnRefresh.Enabled = true;
             }
         }
 
@@ -229,7 +254,7 @@ namespace POS
             }
         }
 
-        private void btnFilter_Click(object sender, EventArgs e)
+        private async void btnFilter_Click(object sender, EventArgs e)
         {
             Button btn = sender as Button;
             if (btn == null) return;
@@ -244,22 +269,20 @@ namespace POS
             else if (btn == btnFilterMonth) _activeFilter = "الشهر";
             else if (btn == btnFilterAll) _activeFilter = "الكل";
 
-            RefreshData();
+            await RefreshDataAsync();
         }
 
-        private void btnRefresh_Click(object sender, EventArgs e)
+        private async void btnRefresh_Click(object sender, EventArgs e)
         {
-            RefreshData();
+            await RefreshDataAsync();
         }
 
         private void lblKpiSalesVal_Click(object sender, EventArgs e)
         {
-
         }
 
         private void flpFilters_Paint(object sender, PaintEventArgs e)
         {
-
         }
     }
 }

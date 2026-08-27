@@ -311,14 +311,15 @@ namespace POS
             // 
             // lblCurrentTime
             // 
+            this.lblCurrentTime.AutoSize = true;
             this.lblCurrentTime.Font = new System.Drawing.Font("Tahoma", 9.5F, System.Drawing.FontStyle.Bold);
             this.lblCurrentTime.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblCurrentTime.Location = new System.Drawing.Point(217, 16);
+            this.lblCurrentTime.Location = new System.Drawing.Point(150, 18);
             this.lblCurrentTime.Name = "lblCurrentTime";
-            this.lblCurrentTime.Size = new System.Drawing.Size(280, 28);
+            this.lblCurrentTime.Size = new System.Drawing.Size(420, 24);
             this.lblCurrentTime.TabIndex = 2;
             this.lblCurrentTime.Text = "2026-08-25 16:00:00";
-            this.lblCurrentTime.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblCurrentTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // btnLogout
             // 
