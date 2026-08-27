@@ -120,6 +120,37 @@
     <Compile Include="FontManager.cs" />
     <Compile Include="UITheme.cs" />
     <Compile Include="UIStyler.cs" />
+    <Compile Include="DesignSystem\Tokens\UIColors.cs" />
+    <Compile Include="DesignSystem\Tokens\UITypography.cs" />
+    <Compile Include="DesignSystem\Tokens\UISpacing.cs" />
+    <Compile Include="DesignSystem\Helpers\GraphicsHelper.cs" />
+    <Compile Include="DesignSystem\Components\AppButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DesignSystem\Components\AppCard.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DesignSystem\Components\AppKpiCard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DesignSystem\Components\AppBadge.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DesignSystem\Components\AppTextBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DesignSystem\Components\AppSearchBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DesignSystem\Components\AppGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DesignSystem\Components\AppHeader.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DesignSystem\Components\AppModal.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="DashboardForm.resx">
