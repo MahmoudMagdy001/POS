@@ -315,8 +315,8 @@ namespace POS
                 Label lblAddress = new Label { Text = "العنوان:", Location = new Point(20, 140), AutoSize = true, Font = FontManager.GetBold(9f) };
                 TextBox txtAddress = new TextBox { Location = new Point(20, 165), Size = new Size(360, 25), Font = FontManager.GetRegular(10f) };
 
-                Button btnSave = new Button { Text = "💾 حفظ المورد", Location = new Point(20, 215), Size = new Size(360, 42), BackColor = Color.FromArgb(37, 99, 235), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Font = FontManager.GetBold(10f), Cursor = Cursors.Hand };
-                btnSave.FlatAppearance.BorderSize = 0;
+                Button btnSave = new Button { Text = "💾 حفظ المورد", Location = new Point(20, 215), Size = new Size(360, 42) };
+                UIStyler.StylePrimaryButton(btnSave, "💾 حفظ المورد", false);
 
                 btnSave.Click += (s, ev) =>
                 {

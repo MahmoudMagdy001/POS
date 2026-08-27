@@ -1,12 +1,16 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Reflection;
 using System.Windows.Forms;
+using POS.DesignSystem.Components;
+using POS.DesignSystem.Helpers;
+using POS.DesignSystem.Tokens;
 
 namespace POS
 {
     /// <summary>
-    /// Centralized UI Styler utility that provides standard styling functions,
+    /// Centralized UI Styler utility that provides standard design system styling,
     /// button variations, card borders, and DataGridView setup across all forms.
     /// </summary>
     public static class UIStyler
@@ -20,7 +24,7 @@ namespace POS
         {
             if (form == null) return;
 
-            form.BackColor = UITheme.AppBackground;
+            form.BackColor = UIColors.AppBackground;
             form.RightToLeft = RightToLeft.Yes;
             form.RightToLeftLayout = true;
             FontManager.ApplyCairoFont(form);
@@ -33,7 +37,7 @@ namespace POS
         /// <summary>
         /// Adjusts button width and height automatically based on its text and font metrics.
         /// </summary>
-        public static void AutoFitButton(Button btn, int minWidth = 90, int minHeight = 36, int horizontalPadding = 24)
+        public static void AutoFitButton(Button btn, int minWidth = 90, int minHeight = UISpacing.ButtonHeightDefault, int horizontalPadding = 24)
         {
             if (btn == null) return;
 
@@ -41,7 +45,7 @@ namespace POS
             {
                 if (btn.Dock == DockStyle.None && !string.IsNullOrEmpty(btn.Text))
                 {
-                    Font f = btn.Font ?? UITheme.ButtonFont;
+                    Font f = btn.Font ?? UITypography.Button;
                     Size measured = TextRenderer.MeasureText(btn.Text, f);
                     int desiredWidth = Math.Max(minWidth, measured.Width + horizontalPadding);
                     int desiredHeight = Math.Max(minHeight, measured.Height + 12);
@@ -76,9 +80,9 @@ namespace POS
 
             btn.FlatStyle = FlatStyle.Flat;
             btn.FlatAppearance.BorderSize = 0;
-            btn.BackColor = UITheme.Primary;
-            btn.ForeColor = UITheme.TextLight;
-            btn.Font = UITheme.ButtonFont;
+            btn.BackColor = UIColors.Primary;
+            btn.ForeColor = UIColors.TextLight;
+            btn.Font = UITypography.Button;
             btn.Cursor = Cursors.Hand;
             btn.UseCompatibleTextRendering = false;
             btn.RightToLeft = RightToLeft.No;
@@ -100,10 +104,10 @@ namespace POS
 
             btn.FlatStyle = FlatStyle.Flat;
             btn.FlatAppearance.BorderSize = 1;
-            btn.FlatAppearance.BorderColor = UITheme.BorderDark;
-            btn.BackColor = UITheme.SurfaceAlt;
-            btn.ForeColor = UITheme.TextSecondary;
-            btn.Font = UITheme.ButtonFont;
+            btn.FlatAppearance.BorderColor = UIColors.BorderDark;
+            btn.BackColor = UIColors.SurfaceAlt;
+            btn.ForeColor = UIColors.TextSecondary;
+            btn.Font = UITypography.Button;
             btn.Cursor = Cursors.Hand;
             btn.UseCompatibleTextRendering = false;
             btn.RightToLeft = RightToLeft.No;
@@ -125,9 +129,9 @@ namespace POS
 
             btn.FlatStyle = FlatStyle.Flat;
             btn.FlatAppearance.BorderSize = 0;
-            btn.BackColor = UITheme.Success;
-            btn.ForeColor = UITheme.TextLight;
-            btn.Font = UITheme.ButtonFont;
+            btn.BackColor = UIColors.Success;
+            btn.ForeColor = UIColors.TextLight;
+            btn.Font = UITypography.Button;
             btn.Cursor = Cursors.Hand;
             btn.UseCompatibleTextRendering = false;
             btn.RightToLeft = RightToLeft.No;
@@ -149,9 +153,9 @@ namespace POS
 
             btn.FlatStyle = FlatStyle.Flat;
             btn.FlatAppearance.BorderSize = 0;
-            btn.BackColor = UITheme.Danger;
-            btn.ForeColor = UITheme.TextLight;
-            btn.Font = UITheme.ButtonFont;
+            btn.BackColor = UIColors.Danger;
+            btn.ForeColor = UIColors.TextLight;
+            btn.Font = UITypography.Button;
             btn.Cursor = Cursors.Hand;
             btn.UseCompatibleTextRendering = false;
             btn.RightToLeft = RightToLeft.No;
@@ -181,18 +185,18 @@ namespace POS
 
             if (isActive)
             {
-                btn.BackColor = UITheme.Primary;
-                btn.ForeColor = UITheme.TextLight;
+                btn.BackColor = UIColors.Primary;
+                btn.ForeColor = UIColors.TextLight;
                 btn.FlatAppearance.BorderSize = 0;
-                btn.Font = UITheme.ButtonFont;
+                btn.Font = UITypography.Button;
             }
             else
             {
-                btn.BackColor = UITheme.SurfaceAlt;
-                btn.ForeColor = UITheme.TextSecondary;
+                btn.BackColor = UIColors.SurfaceAlt;
+                btn.ForeColor = UIColors.TextSecondary;
                 btn.FlatAppearance.BorderSize = 1;
-                btn.FlatAppearance.BorderColor = UITheme.BorderDark;
-                btn.Font = UITheme.SubtitleFont;
+                btn.FlatAppearance.BorderColor = UIColors.BorderDark;
+                btn.Font = UITypography.Subtitle;
             }
 
             AutoFitButton(btn);
@@ -203,16 +207,28 @@ namespace POS
         #region DataGridView Modern Styling
 
         /// <summary>
-        /// Applies standard modern DataGridView styling (Cairo font, row heights, alternating colors, selection styles).
+        /// Applies standard modern DataGridView styling (Cairo font, row heights, alternating colors, selection styles, double buffering).
         /// </summary>
         public static void StyleDataGrid(DataGridView dgv)
         {
             if (dgv == null) return;
 
-            dgv.BackgroundColor = UITheme.Surface;
+            // Enable double buffering via reflection to eliminate flickering
+            try
+            {
+                typeof(DataGridView).InvokeMember(
+                    "DoubleBuffered",
+                    BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty,
+                    null,
+                    dgv,
+                    new object[] { true });
+            }
+            catch { }
+
+            dgv.BackgroundColor = UIColors.Surface;
             dgv.BorderStyle = BorderStyle.None;
             dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            dgv.GridColor = UITheme.SurfaceAlt;
+            dgv.GridColor = UIColors.SurfaceAlt;
             dgv.EnableHeadersVisualStyles = false;
             dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgv.MultiSelect = false;
@@ -221,32 +237,37 @@ namespace POS
             dgv.AllowUserToDeleteRows = false;
             dgv.AllowUserToResizeRows = false;
             dgv.RowHeadersVisible = false;
+            dgv.RightToLeft = RightToLeft.Yes;
 
             // Column Header Style
             dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dgv.ColumnHeadersHeight = UITheme.GridHeaderHeight;
-            dgv.ColumnHeadersDefaultCellStyle.BackColor = UITheme.AppBackground;
-            dgv.ColumnHeadersDefaultCellStyle.ForeColor = UITheme.TextSecondary;
-            dgv.ColumnHeadersDefaultCellStyle.Font = UITheme.GridHeaderFont;
-            dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(8, 6, 8, 6);
-            dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = UITheme.AppBackground;
-            dgv.ColumnHeadersDefaultCellStyle.SelectionForeColor = UITheme.TextSecondary;
+            dgv.ColumnHeadersHeight = UISpacing.GridHeaderHeight;
+            dgv.ColumnHeadersDefaultCellStyle.BackColor = UIColors.SurfaceAlt;
+            dgv.ColumnHeadersDefaultCellStyle.ForeColor = UIColors.TextPrimary;
+            dgv.ColumnHeadersDefaultCellStyle.Font = UITypography.GridHeader;
+            dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(8, 4, 8, 4);
+            dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = UIColors.SurfaceAlt;
+            dgv.ColumnHeadersDefaultCellStyle.SelectionForeColor = UIColors.TextPrimary;
 
             // Row Template & Cell Styles
-            dgv.RowTemplate.Height = UITheme.GridRowHeight;
-            dgv.DefaultCellStyle.BackColor = UITheme.Surface;
-            dgv.DefaultCellStyle.ForeColor = UITheme.TextPrimary;
-            dgv.DefaultCellStyle.Font = UITheme.GridCellFont;
-            dgv.DefaultCellStyle.SelectionBackColor = UITheme.SurfaceAlt;
-            dgv.DefaultCellStyle.SelectionForeColor = UITheme.TextPrimary;
-            dgv.DefaultCellStyle.Padding = new Padding(8, 4, 8, 4);
+            dgv.RowTemplate.Height = UISpacing.GridRowHeight;
+            dgv.DefaultCellStyle.BackColor = UIColors.Surface;
+            dgv.DefaultCellStyle.ForeColor = UIColors.TextPrimary;
+            dgv.DefaultCellStyle.Font = UITypography.GridCell;
+            dgv.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dgv.DefaultCellStyle.SelectionBackColor = UIColors.PrimaryLight;
+            dgv.DefaultCellStyle.SelectionForeColor = UIColors.PrimaryDark;
+            dgv.DefaultCellStyle.Padding = new Padding(6, 2, 6, 2);
 
             // Alternating Row Styling
-            dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(250, 252, 255);
-            dgv.AlternatingRowsDefaultCellStyle.ForeColor = UITheme.TextPrimary;
-            dgv.AlternatingRowsDefaultCellStyle.SelectionBackColor = UITheme.SurfaceAlt;
-            dgv.AlternatingRowsDefaultCellStyle.SelectionForeColor = UITheme.TextPrimary;
+            dgv.AlternatingRowsDefaultCellStyle.BackColor = UIColors.AppBackground;
+            dgv.AlternatingRowsDefaultCellStyle.ForeColor = UIColors.TextPrimary;
+            dgv.AlternatingRowsDefaultCellStyle.Font = UITypography.GridCell;
+            dgv.AlternatingRowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dgv.AlternatingRowsDefaultCellStyle.SelectionBackColor = UIColors.PrimaryLight;
+            dgv.AlternatingRowsDefaultCellStyle.SelectionForeColor = UIColors.PrimaryDark;
+            dgv.AlternatingRowsDefaultCellStyle.Padding = new Padding(6, 2, 6, 2);
         }
 
         #endregion
@@ -254,13 +275,13 @@ namespace POS
         #region Card & Panel Styling
 
         /// <summary>
-        /// Styles a panel as a modern card container with a clean white background and subtle border.
+        /// Styles a panel as a modern card container with a clean white background and subtle anti-aliased border.
         /// </summary>
         public static void StyleCardPanel(Panel panel)
         {
             if (panel == null) return;
 
-            panel.BackColor = UITheme.Surface;
+            panel.BackColor = UIColors.Surface;
             panel.Paint -= OnCardPanelPaint;
             panel.Paint += OnCardPanelPaint;
         }
@@ -269,11 +290,11 @@ namespace POS
         {
             if (sender is Panel p)
             {
-                using (var pen = new Pen(UITheme.Border, 1f))
+                GraphicsHelper.ConfigureHighQuality(e.Graphics);
+                using (var pen = new Pen(UIColors.Border, 1f))
                 {
-                    e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                     var rect = new Rectangle(0, 0, p.Width - 1, p.Height - 1);
-                    e.Graphics.DrawRectangle(pen, rect);
+                    GraphicsHelper.DrawRoundedRectangle(e.Graphics, pen, rect, UISpacing.RadiusMedium);
                 }
             }
         }
@@ -285,29 +306,29 @@ namespace POS
         {
             if (card != null)
             {
-                card.BackColor = UITheme.Surface;
+                card.BackColor = UIColors.Surface;
                 card.Paint -= OnCardPanelPaint;
                 card.Paint += OnCardPanelPaint;
             }
 
             if (lblTitle != null)
             {
-                lblTitle.ForeColor = UITheme.TextMuted;
-                lblTitle.Font = UITheme.SubtitleFont;
+                lblTitle.ForeColor = UIColors.TextMuted;
+                lblTitle.Font = UITypography.CardTitle;
                 lblTitle.UseCompatibleTextRendering = false;
             }
 
             if (lblVal != null)
             {
                 lblVal.ForeColor = accentColor;
-                lblVal.Font = UITheme.KpiNumberFont;
+                lblVal.Font = UITypography.KpiNumberMedium;
                 lblVal.UseCompatibleTextRendering = false;
             }
 
             if (lblSub != null)
             {
-                lblSub.ForeColor = UITheme.TextMuted;
-                lblSub.Font = UITheme.CaptionFont;
+                lblSub.ForeColor = UIColors.TextSecondary;
+                lblSub.Font = UITypography.Caption;
                 lblSub.UseCompatibleTextRendering = false;
             }
         }
@@ -323,10 +344,24 @@ namespace POS
         {
             if (txt == null) return;
 
-            txt.Font = UITheme.BodyFont;
-            txt.BackColor = UITheme.Surface;
-            txt.ForeColor = UITheme.TextPrimary;
+            txt.Font = UITypography.Input;
+            txt.BackColor = UIColors.Surface;
+            txt.ForeColor = UIColors.TextPrimary;
             txt.BorderStyle = BorderStyle.FixedSingle;
+        }
+
+        /// <summary>
+        /// Styles a ComboBox with design system typography and colors.
+        /// </summary>
+        public static void StyleComboBox(ComboBox cmb)
+        {
+            if (cmb == null) return;
+
+            cmb.Font = UITypography.Input;
+            cmb.BackColor = UIColors.Surface;
+            cmb.ForeColor = UIColors.TextPrimary;
+            cmb.FlatStyle = FlatStyle.Flat;
+            cmb.RightToLeft = RightToLeft.Yes;
         }
 
         #endregion

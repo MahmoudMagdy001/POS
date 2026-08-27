@@ -43,7 +43,7 @@ namespace POS
             {
                 pnlMain.Enabled = false;
                 flpActions.Enabled = false;
-                lblStatus.ForeColor = Color.FromArgb(220, 38, 38);
+                lblStatus.ForeColor = POS.DesignSystem.Tokens.UIColors.Danger;
                 lblStatus.Text = "⛔ وصول مقيد: هذه الشاشة مخصصة فقط لمدير النظام.";
                 MessageBox.Show(
                     "عذراً، هذه الشاشة مخصصة لمدير النظام فقط. لا تملك الصلاحية الكافية لتعديل إعدادات النظام.",
@@ -87,7 +87,7 @@ namespace POS
             }
             catch (Exception ex)
             {
-                lblStatus.ForeColor = Color.FromArgb(220, 38, 38);
+                lblStatus.ForeColor = POS.DesignSystem.Tokens.UIColors.Danger;
                 lblStatus.Text = "فشل تحميل الإعدادات: " + ex.Message;
             }
         }
@@ -117,14 +117,12 @@ namespace POS
                     StorePhone = txtStorePhone.Text.Trim(),
                     StoreAddress = txtStoreAddress.Text.Trim(),
                     TaxNumber = txtTaxNumber.Text.Trim(),
-
                     ReceiptHeader = txtReceiptHeader.Text.Trim(),
                     ReceiptFooter = txtReceiptFooter.Text.Trim(),
                     CurrencySymbol = string.IsNullOrWhiteSpace(txtCurrencySymbol.Text) ? "ج.م" : txtCurrencySymbol.Text.Trim(),
                     VatRate = nudVatRate.Value,
                     EnablePrintPreview = chkEnablePrintPreview.Checked,
                     AutoPrintOnSale = chkAutoPrintOnSale.Checked,
-
                     DefaultMinStock = (int)nudDefaultMinStock.Value,
                     AllowNegativeStock = chkAllowNegativeStock.Checked
                 };
@@ -133,13 +131,13 @@ namespace POS
                 if (result.Success)
                 {
                     _currentSettings = newSettings;
-                    lblStatus.ForeColor = Color.FromArgb(22, 163, 74);
+                    lblStatus.ForeColor = POS.DesignSystem.Tokens.UIColors.Success;
                     lblStatus.Text = "✔ تم حفظ كافة الإعدادات بنجاح!";
                     MessageBox.Show("تم حفظ وتطبيق كافة إعدادات النظام بنجاح.", "تم الحفظ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    lblStatus.ForeColor = Color.FromArgb(220, 38, 38);
+                    lblStatus.ForeColor = POS.DesignSystem.Tokens.UIColors.Danger;
                     lblStatus.Text = "❌ " + result.Message;
                     MessageBox.Show(result.Message, "خطأ في الحفظ", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }

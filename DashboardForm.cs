@@ -46,7 +46,7 @@ namespace POS
                 // 1.3 صافي الأرباح والمكسب
                 string sign = kpis.NetProfit >= 0 ? "+" : "";
                 lblKpiProfitVal.Text = $"{sign}{kpis.NetProfit:N2} ج.م";
-                lblKpiProfitVal.ForeColor = kpis.NetProfit >= 0 ? Color.FromArgb(16, 185, 129) : Color.FromArgb(220, 38, 38);
+                lblKpiProfitVal.ForeColor = kpis.NetProfit >= 0 ? POS.DesignSystem.Tokens.UIColors.Success : POS.DesignSystem.Tokens.UIColors.Danger;
                 lblKpiProfitSub.Text = $"هامش الربح: {kpis.ProfitMarginPct:N1}% من إجمالي المبيعات";
 
                 // 1.4 بضاعة وقيمة المخزون
@@ -203,7 +203,7 @@ namespace POS
             {
                 dgvLowStock.Columns["StockQuantity"].HeaderText = "الكمية الحالية";
                 dgvLowStock.Columns["StockQuantity"].FillWeight = 60;
-                dgvLowStock.Columns["StockQuantity"].DefaultCellStyle.ForeColor = Color.FromArgb(220, 38, 38);
+                dgvLowStock.Columns["StockQuantity"].DefaultCellStyle.ForeColor = POS.DesignSystem.Tokens.UIColors.Danger;
                 dgvLowStock.Columns["StockQuantity"].DefaultCellStyle.Font = FontManager.GetBold(9.5f);
                 dgvLowStock.Columns["StockQuantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }

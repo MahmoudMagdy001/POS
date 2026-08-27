@@ -95,7 +95,7 @@ namespace POS
                 HeaderText = "مرتجع سابقاً",
                 ReadOnly = true,
                 FillWeight = 65,
-                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter, ForeColor = Color.FromArgb(100, 116, 139) }
+                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter, ForeColor = POS.DesignSystem.Tokens.UIColors.TextMuted }
             });
 
             dgvReturnItems.Columns.Add(new DataGridViewTextBoxColumn
@@ -104,7 +104,7 @@ namespace POS
                 HeaderText = "المتاح للإرجاع",
                 ReadOnly = true,
                 FillWeight = 70,
-                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter, Font = FontManager.GetBold(9.5f), ForeColor = Color.FromArgb(22, 163, 74) }
+                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter, Font = FontManager.GetBold(9.5f), ForeColor = POS.DesignSystem.Tokens.UIColors.Success }
             });
 
             // Editable Return Qty
@@ -118,10 +118,10 @@ namespace POS
                 {
                     Alignment = DataGridViewContentAlignment.MiddleCenter,
                     Font = FontManager.GetBold(10f),
-                    BackColor = Color.FromArgb(254, 249, 195), // Light Yellow Highlight
-                    ForeColor = Color.FromArgb(161, 98, 7),
-                    SelectionBackColor = Color.FromArgb(253, 230, 138),
-                    SelectionForeColor = Color.FromArgb(113, 63, 18)
+                    BackColor = POS.DesignSystem.Tokens.UIColors.WarningLight,
+                    ForeColor = POS.DesignSystem.Tokens.UIColors.WarningDark,
+                    SelectionBackColor = POS.DesignSystem.Tokens.UIColors.WarningLight,
+                    SelectionForeColor = POS.DesignSystem.Tokens.UIColors.WarningDark
                 }
             };
             dgvReturnItems.Columns.Add(colReturnQty);
@@ -136,7 +136,7 @@ namespace POS
                 {
                     Alignment = DataGridViewContentAlignment.MiddleRight,
                     Font = FontManager.GetBold(9.5f),
-                    ForeColor = Color.FromArgb(220, 38, 38),
+                    ForeColor = POS.DesignSystem.Tokens.UIColors.Danger,
                     Format = "N2"
                 }
             });

@@ -180,17 +180,17 @@ namespace POS
                 string status = e.Value.ToString();
                 if (status == "مرتجع بالكامل")
                 {
-                    e.CellStyle.ForeColor = Color.FromArgb(220, 38, 38);
-                    e.CellStyle.BackColor = Color.FromArgb(254, 242, 242);
+                    e.CellStyle.ForeColor = POS.DesignSystem.Tokens.UIColors.Danger;
+                    e.CellStyle.BackColor = POS.DesignSystem.Tokens.UIColors.DangerLight;
                 }
                 else if (status == "مرتجع جزئي")
                 {
-                    e.CellStyle.ForeColor = Color.FromArgb(217, 119, 6);
-                    e.CellStyle.BackColor = Color.FromArgb(254, 243, 199);
+                    e.CellStyle.ForeColor = POS.DesignSystem.Tokens.UIColors.Warning;
+                    e.CellStyle.BackColor = POS.DesignSystem.Tokens.UIColors.WarningLight;
                 }
                 else
                 {
-                    e.CellStyle.ForeColor = Color.FromArgb(22, 163, 74);
+                    e.CellStyle.ForeColor = POS.DesignSystem.Tokens.UIColors.Success;
                 }
             }
         }

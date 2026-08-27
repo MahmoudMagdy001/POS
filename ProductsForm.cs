@@ -151,10 +151,10 @@ namespace POS
                     int isLow = Convert.ToInt32(row.Cells["IsLowStock"].Value);
                     if (isLow == 1)
                     {
-                        row.DefaultCellStyle.BackColor = Color.FromArgb(254, 242, 242);
-                        row.DefaultCellStyle.ForeColor = Color.FromArgb(185, 28, 28);
-                        row.DefaultCellStyle.SelectionBackColor = Color.FromArgb(254, 202, 202);
-                        row.DefaultCellStyle.SelectionForeColor = Color.FromArgb(153, 27, 27);
+                        row.DefaultCellStyle.BackColor = POS.DesignSystem.Tokens.UIColors.DangerLight;
+                        row.DefaultCellStyle.ForeColor = POS.DesignSystem.Tokens.UIColors.DangerHover;
+                        row.DefaultCellStyle.SelectionBackColor = POS.DesignSystem.Tokens.UIColors.DangerLight;
+                        row.DefaultCellStyle.SelectionForeColor = POS.DesignSystem.Tokens.UIColors.DangerDark;
                     }
                 }
             }

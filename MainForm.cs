@@ -145,8 +145,8 @@ namespace POS
             ResetNavButtons();
             if (activeButton != null)
             {
-                activeButton.BackColor = Color.FromArgb(30, 41, 59);
-                activeButton.ForeColor = Color.White;
+                activeButton.BackColor = POS.DesignSystem.Tokens.UIColors.SidebarActiveItem;
+                activeButton.ForeColor = POS.DesignSystem.Tokens.UIColors.SidebarActiveText;
             }
 
             lblCurrentSectionTitle.Text = sectionTitle;
@@ -168,7 +168,7 @@ namespace POS
             foreach (var b in buttons)
             {
                 b.BackColor = Color.Transparent;
-                b.ForeColor = Color.FromArgb(148, 163, 184);
+                b.ForeColor = POS.DesignSystem.Tokens.UIColors.SidebarText;
             }
         }
 

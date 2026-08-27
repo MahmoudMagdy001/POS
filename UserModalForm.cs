@@ -177,7 +177,7 @@ namespace POS
         private void SetStatus(string message, bool isError)
         {
             lblStatus.Text = message;
-            lblStatus.ForeColor = isError ? Color.FromArgb(220, 38, 38) : Color.FromArgb(22, 163, 74);
+            lblStatus.ForeColor = isError ? POS.DesignSystem.Tokens.UIColors.Danger : POS.DesignSystem.Tokens.UIColors.Success;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
