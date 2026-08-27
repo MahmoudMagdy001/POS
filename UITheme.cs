@@ -89,11 +89,11 @@ namespace POS
 
         #region Metrics & Dimensions
 
-        public const int GridHeaderHeight = 48;
-        public const int GridRowHeight = 40;
-        public const int DefaultButtonHeight = 38;
-        public const int SearchBoxHeight = 36;
-        public const int CardPadding = 12;
+        public const int GridHeaderHeight = 38;
+        public const int GridRowHeight = 36;
+        public const int DefaultButtonHeight = 36;
+        public const int SearchBoxHeight = 32;
+        public const int CardPadding = 10;
         public const int CornerRadius = 8;
 
         #endregion

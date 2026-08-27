@@ -17,8 +17,8 @@ namespace POS
 
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tlpMain = new System.Windows.Forms.TableLayoutPanel();
             this.pnlEditor = new System.Windows.Forms.Panel();
             this.tlpEditor = new System.Windows.Forms.TableLayoutPanel();
@@ -123,25 +123,25 @@ namespace POS
             this.tlpEditor.Location = new System.Drawing.Point(14, 14);
             this.tlpEditor.Name = "tlpEditor";
             this.tlpEditor.RowCount = 18;
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 46F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 48F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 46F));
-            this.tlpEditor.Size = new System.Drawing.Size(389, 580);
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 18F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 18F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 18F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 18F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 18F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 18F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 18F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 42F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
+            this.tlpEditor.Size = new System.Drawing.Size(389, 500);
             this.tlpEditor.TabIndex = 0;
             // 
             // lblEditorTitle
@@ -151,7 +151,7 @@ namespace POS
             this.lblEditorTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this.lblEditorTitle.Location = new System.Drawing.Point(3, 0);
             this.lblEditorTitle.Name = "lblEditorTitle";
-            this.lblEditorTitle.Size = new System.Drawing.Size(383, 34);
+            this.lblEditorTitle.Size = new System.Drawing.Size(383, 32);
             this.lblEditorTitle.TabIndex = 0;
             this.lblEditorTitle.Text = "📝 بيانات الصنف / المنتج";
             this.lblEditorTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -161,9 +161,9 @@ namespace POS
             this.lblBarcode.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblBarcode.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblBarcode.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblBarcode.Location = new System.Drawing.Point(3, 34);
+            this.lblBarcode.Location = new System.Drawing.Point(3, 32);
             this.lblBarcode.Name = "lblBarcode";
-            this.lblBarcode.Size = new System.Drawing.Size(383, 20);
+            this.lblBarcode.Size = new System.Drawing.Size(383, 18);
             this.lblBarcode.TabIndex = 1;
             this.lblBarcode.Text = "الباركود:";
             this.lblBarcode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -173,10 +173,10 @@ namespace POS
             this.pnlBarcodeRow.Controls.Add(this.txtBarcode);
             this.pnlBarcodeRow.Controls.Add(this.btnGenBarcode);
             this.pnlBarcodeRow.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlBarcodeRow.Location = new System.Drawing.Point(0, 54);
+            this.pnlBarcodeRow.Location = new System.Drawing.Point(0, 50);
             this.pnlBarcodeRow.Margin = new System.Windows.Forms.Padding(0, 0, 0, 6);
             this.pnlBarcodeRow.Name = "pnlBarcodeRow";
-            this.pnlBarcodeRow.Size = new System.Drawing.Size(389, 28);
+            this.pnlBarcodeRow.Size = new System.Drawing.Size(389, 26);
             this.pnlBarcodeRow.TabIndex = 2;
             // 
             // txtBarcode
@@ -185,10 +185,11 @@ namespace POS
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtBarcode.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtBarcode.Font = new System.Drawing.Font("Tahoma", 10F);
-            this.txtBarcode.Location = new System.Drawing.Point(86, 2);
+            this.txtBarcode.Location = new System.Drawing.Point(120, 2);
             this.txtBarcode.Name = "txtBarcode";
-            this.txtBarcode.Size = new System.Drawing.Size(300, 28);
+            this.txtBarcode.Size = new System.Drawing.Size(266, 28);
             this.txtBarcode.TabIndex = 0;
+            this.txtBarcode.Text = "d";
             // 
             // btnGenBarcode
             // 
@@ -199,12 +200,10 @@ namespace POS
             this.btnGenBarcode.Font = new System.Drawing.Font("Tahoma", 8.5F);
             this.btnGenBarcode.Location = new System.Drawing.Point(3, 1);
             this.btnGenBarcode.Name = "btnGenBarcode";
-            this.btnGenBarcode.Padding = new System.Windows.Forms.Padding(0);
             this.btnGenBarcode.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnGenBarcode.Size = new System.Drawing.Size(77, 26);
             this.btnGenBarcode.TabIndex = 1;
-            this.btnGenBarcode.Text = "⚡ باركود";
-            this.btnGenBarcode.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnGenBarcode.Text = "باركود";
             this.btnGenBarcode.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnGenBarcode.UseVisualStyleBackColor = false;
             this.btnGenBarcode.Click += new System.EventHandler(this.btnGenBarcode_Click);
@@ -214,9 +213,9 @@ namespace POS
             this.lblProductName.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblProductName.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblProductName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblProductName.Location = new System.Drawing.Point(3, 88);
+            this.lblProductName.Location = new System.Drawing.Point(3, 82);
             this.lblProductName.Name = "lblProductName";
-            this.lblProductName.Size = new System.Drawing.Size(383, 20);
+            this.lblProductName.Size = new System.Drawing.Size(383, 18);
             this.lblProductName.TabIndex = 3;
             this.lblProductName.Text = "اسم المنتج:";
             this.lblProductName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -226,7 +225,7 @@ namespace POS
             this.txtProductName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtProductName.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtProductName.Font = new System.Drawing.Font("Tahoma", 10F);
-            this.txtProductName.Location = new System.Drawing.Point(3, 111);
+            this.txtProductName.Location = new System.Drawing.Point(3, 103);
             this.txtProductName.Margin = new System.Windows.Forms.Padding(3, 3, 3, 6);
             this.txtProductName.Name = "txtProductName";
             this.txtProductName.Size = new System.Drawing.Size(383, 28);
@@ -237,9 +236,9 @@ namespace POS
             this.lblCategory.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblCategory.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblCategory.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblCategory.Location = new System.Drawing.Point(3, 142);
+            this.lblCategory.Location = new System.Drawing.Point(3, 132);
             this.lblCategory.Name = "lblCategory";
-            this.lblCategory.Size = new System.Drawing.Size(383, 20);
+            this.lblCategory.Size = new System.Drawing.Size(383, 18);
             this.lblCategory.TabIndex = 5;
             this.lblCategory.Text = "القسم:";
             this.lblCategory.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -249,10 +248,10 @@ namespace POS
             this.pnlCategoryRow.Controls.Add(this.cmbCategory);
             this.pnlCategoryRow.Controls.Add(this.btnManageCategories);
             this.pnlCategoryRow.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlCategoryRow.Location = new System.Drawing.Point(0, 162);
+            this.pnlCategoryRow.Location = new System.Drawing.Point(0, 150);
             this.pnlCategoryRow.Margin = new System.Windows.Forms.Padding(0, 0, 0, 6);
             this.pnlCategoryRow.Name = "pnlCategoryRow";
-            this.pnlCategoryRow.Size = new System.Drawing.Size(389, 28);
+            this.pnlCategoryRow.Size = new System.Drawing.Size(389, 26);
             this.pnlCategoryRow.TabIndex = 6;
             // 
             // cmbCategory
@@ -262,9 +261,9 @@ namespace POS
             this.cmbCategory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbCategory.Font = new System.Drawing.Font("Tahoma", 10F);
             this.cmbCategory.FormattingEnabled = true;
-            this.cmbCategory.Location = new System.Drawing.Point(86, 2);
+            this.cmbCategory.Location = new System.Drawing.Point(120, 2);
             this.cmbCategory.Name = "cmbCategory";
-            this.cmbCategory.Size = new System.Drawing.Size(300, 29);
+            this.cmbCategory.Size = new System.Drawing.Size(266, 29);
             this.cmbCategory.TabIndex = 0;
             // 
             // btnManageCategories
@@ -276,12 +275,10 @@ namespace POS
             this.btnManageCategories.Font = new System.Drawing.Font("Tahoma", 8.5F);
             this.btnManageCategories.Location = new System.Drawing.Point(3, 1);
             this.btnManageCategories.Name = "btnManageCategories";
-            this.btnManageCategories.Padding = new System.Windows.Forms.Padding(0);
             this.btnManageCategories.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnManageCategories.Size = new System.Drawing.Size(77, 26);
             this.btnManageCategories.TabIndex = 1;
-            this.btnManageCategories.Text = "⚙️ الأقسام";
-            this.btnManageCategories.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnManageCategories.Text = "الأقسام";
             this.btnManageCategories.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnManageCategories.UseVisualStyleBackColor = false;
             this.btnManageCategories.Click += new System.EventHandler(this.btnManageCategories_Click);
@@ -291,9 +288,9 @@ namespace POS
             this.lblBuyPrice.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblBuyPrice.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblBuyPrice.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblBuyPrice.Location = new System.Drawing.Point(3, 196);
+            this.lblBuyPrice.Location = new System.Drawing.Point(3, 182);
             this.lblBuyPrice.Name = "lblBuyPrice";
-            this.lblBuyPrice.Size = new System.Drawing.Size(383, 20);
+            this.lblBuyPrice.Size = new System.Drawing.Size(383, 18);
             this.lblBuyPrice.TabIndex = 7;
             this.lblBuyPrice.Text = "سعر الشراء (التكلفة):";
             this.lblBuyPrice.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -303,7 +300,7 @@ namespace POS
             this.numBuyPrice.DecimalPlaces = 2;
             this.numBuyPrice.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numBuyPrice.Font = new System.Drawing.Font("Tahoma", 10F);
-            this.numBuyPrice.Location = new System.Drawing.Point(3, 219);
+            this.numBuyPrice.Location = new System.Drawing.Point(3, 203);
             this.numBuyPrice.Margin = new System.Windows.Forms.Padding(3, 3, 3, 6);
             this.numBuyPrice.Maximum = new decimal(new int[] {
             1000000,
@@ -319,9 +316,9 @@ namespace POS
             this.lblSellPrice.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblSellPrice.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblSellPrice.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblSellPrice.Location = new System.Drawing.Point(3, 250);
+            this.lblSellPrice.Location = new System.Drawing.Point(3, 232);
             this.lblSellPrice.Name = "lblSellPrice";
-            this.lblSellPrice.Size = new System.Drawing.Size(383, 20);
+            this.lblSellPrice.Size = new System.Drawing.Size(383, 18);
             this.lblSellPrice.TabIndex = 9;
             this.lblSellPrice.Text = "سعر البيع للجمهور:";
             this.lblSellPrice.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -331,7 +328,7 @@ namespace POS
             this.numSellPrice.DecimalPlaces = 2;
             this.numSellPrice.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numSellPrice.Font = new System.Drawing.Font("Tahoma", 10F);
-            this.numSellPrice.Location = new System.Drawing.Point(3, 273);
+            this.numSellPrice.Location = new System.Drawing.Point(3, 253);
             this.numSellPrice.Margin = new System.Windows.Forms.Padding(3, 3, 3, 6);
             this.numSellPrice.Maximum = new decimal(new int[] {
             1000000,
@@ -347,9 +344,9 @@ namespace POS
             this.lblStockQuantity.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblStockQuantity.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblStockQuantity.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblStockQuantity.Location = new System.Drawing.Point(3, 304);
+            this.lblStockQuantity.Location = new System.Drawing.Point(3, 282);
             this.lblStockQuantity.Name = "lblStockQuantity";
-            this.lblStockQuantity.Size = new System.Drawing.Size(383, 20);
+            this.lblStockQuantity.Size = new System.Drawing.Size(383, 18);
             this.lblStockQuantity.TabIndex = 11;
             this.lblStockQuantity.Text = "الكمية المتاحة بالمخزن:";
             this.lblStockQuantity.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -358,7 +355,7 @@ namespace POS
             // 
             this.numStockQuantity.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numStockQuantity.Font = new System.Drawing.Font("Tahoma", 10F);
-            this.numStockQuantity.Location = new System.Drawing.Point(3, 327);
+            this.numStockQuantity.Location = new System.Drawing.Point(3, 303);
             this.numStockQuantity.Margin = new System.Windows.Forms.Padding(3, 3, 3, 6);
             this.numStockQuantity.Maximum = new decimal(new int[] {
             1000000,
@@ -374,9 +371,9 @@ namespace POS
             this.lblMinStockAlert.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblMinStockAlert.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblMinStockAlert.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblMinStockAlert.Location = new System.Drawing.Point(3, 358);
+            this.lblMinStockAlert.Location = new System.Drawing.Point(3, 332);
             this.lblMinStockAlert.Name = "lblMinStockAlert";
-            this.lblMinStockAlert.Size = new System.Drawing.Size(383, 20);
+            this.lblMinStockAlert.Size = new System.Drawing.Size(383, 18);
             this.lblMinStockAlert.TabIndex = 13;
             this.lblMinStockAlert.Text = "حد التنبيه (أدنى مخزون):";
             this.lblMinStockAlert.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -385,7 +382,7 @@ namespace POS
             // 
             this.numMinStockAlert.Dock = System.Windows.Forms.DockStyle.Fill;
             this.numMinStockAlert.Font = new System.Drawing.Font("Tahoma", 10F);
-            this.numMinStockAlert.Location = new System.Drawing.Point(3, 381);
+            this.numMinStockAlert.Location = new System.Drawing.Point(3, 353);
             this.numMinStockAlert.Margin = new System.Windows.Forms.Padding(3, 3, 3, 8);
             this.numMinStockAlert.Maximum = new decimal(new int[] {
             10000,
@@ -410,15 +407,13 @@ namespace POS
             this.btnNewProduct.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnNewProduct.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.btnNewProduct.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
-            this.btnNewProduct.Location = new System.Drawing.Point(3, 415);
+            this.btnNewProduct.Location = new System.Drawing.Point(3, 385);
             this.btnNewProduct.Margin = new System.Windows.Forms.Padding(3, 3, 3, 5);
             this.btnNewProduct.Name = "btnNewProduct";
-            this.btnNewProduct.Padding = new System.Windows.Forms.Padding(0);
             this.btnNewProduct.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnNewProduct.Size = new System.Drawing.Size(383, 38);
+            this.btnNewProduct.Size = new System.Drawing.Size(383, 32);
             this.btnNewProduct.TabIndex = 15;
             this.btnNewProduct.Text = "➕ صنف جديد (تفريغ الحقول)";
-            this.btnNewProduct.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnNewProduct.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNewProduct.UseVisualStyleBackColor = false;
             this.btnNewProduct.Click += new System.EventHandler(this.btnNewProduct_Click);
@@ -432,15 +427,13 @@ namespace POS
             this.btnSaveProduct.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSaveProduct.Font = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
             this.btnSaveProduct.ForeColor = System.Drawing.Color.White;
-            this.btnSaveProduct.Location = new System.Drawing.Point(3, 461);
+            this.btnSaveProduct.Location = new System.Drawing.Point(3, 425);
             this.btnSaveProduct.Margin = new System.Windows.Forms.Padding(3, 3, 3, 5);
             this.btnSaveProduct.Name = "btnSaveProduct";
-            this.btnSaveProduct.Padding = new System.Windows.Forms.Padding(0);
             this.btnSaveProduct.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnSaveProduct.Size = new System.Drawing.Size(383, 40);
+            this.btnSaveProduct.Size = new System.Drawing.Size(383, 34);
             this.btnSaveProduct.TabIndex = 16;
             this.btnSaveProduct.Text = "💾 حفظ بيانات المنتج";
-            this.btnSaveProduct.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnSaveProduct.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnSaveProduct.UseVisualStyleBackColor = false;
             this.btnSaveProduct.Click += new System.EventHandler(this.btnSaveProduct_Click);
@@ -455,15 +448,13 @@ namespace POS
             this.btnDeleteProduct.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDeleteProduct.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.btnDeleteProduct.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this.btnDeleteProduct.Location = new System.Drawing.Point(3, 509);
+            this.btnDeleteProduct.Location = new System.Drawing.Point(3, 467);
             this.btnDeleteProduct.Margin = new System.Windows.Forms.Padding(3, 3, 3, 5);
             this.btnDeleteProduct.Name = "btnDeleteProduct";
-            this.btnDeleteProduct.Padding = new System.Windows.Forms.Padding(0);
             this.btnDeleteProduct.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnDeleteProduct.Size = new System.Drawing.Size(383, 66);
+            this.btnDeleteProduct.Size = new System.Drawing.Size(383, 30);
             this.btnDeleteProduct.TabIndex = 17;
             this.btnDeleteProduct.Text = "🗑️ حذف الصنف المحدد";
-            this.btnDeleteProduct.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnDeleteProduct.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnDeleteProduct.UseVisualStyleBackColor = false;
             this.btnDeleteProduct.Click += new System.EventHandler(this.btnDeleteProduct_Click);
@@ -490,26 +481,26 @@ namespace POS
             this.dgvProducts.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgvProducts.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.dgvProducts.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Tahoma", 9.5F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            dataGridViewCellStyle1.Padding = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvProducts.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Tahoma", 9.5F);
+            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            dataGridViewCellStyle5.Padding = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvProducts.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
             this.dgvProducts.ColumnHeadersHeight = 48;
             this.dgvProducts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Tahoma", 9.5F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvProducts.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Tahoma", 9.5F);
+            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle6.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvProducts.DefaultCellStyle = dataGridViewCellStyle6;
             this.dgvProducts.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvProducts.EnableHeadersVisualStyles = false;
             this.dgvProducts.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
@@ -629,12 +620,10 @@ namespace POS
             this.btnRefresh.Font = new System.Drawing.Font("Tahoma", 9F);
             this.btnRefresh.Location = new System.Drawing.Point(3, 27);
             this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Padding = new System.Windows.Forms.Padding(0);
             this.btnRefresh.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnRefresh.Size = new System.Drawing.Size(68, 30);
             this.btnRefresh.TabIndex = 5;
             this.btnRefresh.Text = "🔄 تحديث";
-            this.btnRefresh.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnRefresh.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnRefresh.UseVisualStyleBackColor = false;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);

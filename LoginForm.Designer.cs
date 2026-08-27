@@ -52,7 +52,7 @@ namespace POS
             this.pnlRight.Location = new System.Drawing.Point(540, 0);
             this.pnlRight.Name = "pnlRight";
             this.pnlRight.Padding = new System.Windows.Forms.Padding(25, 40, 25, 20);
-            this.pnlRight.Size = new System.Drawing.Size(310, 520);
+            this.pnlRight.Size = new System.Drawing.Size(310, 485);
             this.pnlRight.TabIndex = 0;
             // 
             // lblLeftVersion
@@ -60,7 +60,7 @@ namespace POS
             this.lblLeftVersion.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.lblLeftVersion.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.lblLeftVersion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
-            this.lblLeftVersion.Location = new System.Drawing.Point(25, 475);
+            this.lblLeftVersion.Location = new System.Drawing.Point(25, 440);
             this.lblLeftVersion.Name = "lblLeftVersion";
             this.lblLeftVersion.Size = new System.Drawing.Size(260, 25);
             this.lblLeftVersion.TabIndex = 5;
@@ -139,7 +139,7 @@ namespace POS
             this.pnlLeft.Location = new System.Drawing.Point(0, 0);
             this.pnlLeft.Name = "pnlLeft";
             this.pnlLeft.Padding = new System.Windows.Forms.Padding(40, 40, 40, 20);
-            this.pnlLeft.Size = new System.Drawing.Size(540, 520);
+            this.pnlLeft.Size = new System.Drawing.Size(540, 485);
             this.pnlLeft.TabIndex = 1;
             // 
             // btnExit
@@ -152,12 +152,10 @@ namespace POS
             this.btnExit.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
             this.btnExit.Location = new System.Drawing.Point(40, 436);
             this.btnExit.Name = "btnExit";
-            this.btnExit.Padding = new System.Windows.Forms.Padding(0);
             this.btnExit.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnExit.Size = new System.Drawing.Size(460, 38);
             this.btnExit.TabIndex = 9;
             this.btnExit.Text = "🚪 إغلاق التطبيق";
-            this.btnExit.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnExit.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnExit.UseVisualStyleBackColor = true;
             this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
@@ -196,12 +194,10 @@ namespace POS
             this.btnLogin.ForeColor = System.Drawing.Color.White;
             this.btnLogin.Location = new System.Drawing.Point(40, 376);
             this.btnLogin.Name = "btnLogin";
-            this.btnLogin.Padding = new System.Windows.Forms.Padding(0);
             this.btnLogin.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnLogin.Size = new System.Drawing.Size(460, 48);
             this.btnLogin.TabIndex = 6;
             this.btnLogin.Text = "🔓 تسجيل الدخول";
-            this.btnLogin.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnLogin.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnLogin.UseVisualStyleBackColor = false;
             this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
@@ -212,7 +208,7 @@ namespace POS
             this.txtPassword.Font = new System.Drawing.Font("Tahoma", 11F);
             this.txtPassword.Location = new System.Drawing.Point(40, 256);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(460, 34);
+            this.txtPassword.Size = new System.Drawing.Size(460, 30);
             this.txtPassword.TabIndex = 5;
             this.txtPassword.UseSystemPasswordChar = true;
             // 
@@ -233,7 +229,7 @@ namespace POS
             this.txtUsername.Font = new System.Drawing.Font("Tahoma", 11F);
             this.txtUsername.Location = new System.Drawing.Point(40, 180);
             this.txtUsername.Name = "txtUsername";
-            this.txtUsername.Size = new System.Drawing.Size(460, 34);
+            this.txtUsername.Size = new System.Drawing.Size(460, 30);
             this.txtUsername.TabIndex = 3;
             // 
             // lblUsername
@@ -275,7 +271,7 @@ namespace POS
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnExit;
-            this.ClientSize = new System.Drawing.Size(850, 520);
+            this.ClientSize = new System.Drawing.Size(850, 485);
             this.Controls.Add(this.pnlLeft);
             this.Controls.Add(this.pnlRight);
             this.Font = new System.Drawing.Font("Tahoma", 9F);
@@ -283,8 +279,6 @@ namespace POS
             this.MaximizeBox = false;
             this.Name = "LoginForm";
             this.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.RightToLeftLayout = true;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "نظام نقاط البيع - تسجيل الدخول";
             this.Load += new System.EventHandler(this.LoginForm_Load);
             this.pnlRight.ResumeLayout(false);

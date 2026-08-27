@@ -583,5 +583,10 @@ namespace POS
         }
 
         #endregion
+
+        private void lblBarcodeTitle_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

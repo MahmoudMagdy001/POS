@@ -21,8 +21,8 @@ namespace POS
             lblEditorTitle.Font = FontManager.GetBold(11.5f);
             UIStyler.StylePrimaryButton(btnSaveProduct, "💾 حفظ بيانات المنتج");
             UIStyler.StyleSecondaryButton(btnNewProduct, "➕ صنف جديد (تفريغ الحقول)");
-            UIStyler.StyleSecondaryButton(btnGenBarcode, "⚡ باركود");
-            UIStyler.StyleSecondaryButton(btnManageCategories, "⚙️ الأقسام");
+            UIStyler.StyleSecondaryButton(btnGenBarcode, "باركود");
+            UIStyler.StyleSecondaryButton(btnManageCategories, "الأقسام");
             UIStyler.StyleDangerButton(btnDeleteProduct, "🗑️ حذف الصنف المحدد");
             UIStyler.StyleSecondaryButton(btnRefresh, "🔄 تحديث");
             UIStyler.StyleDataGrid(dgvProducts);

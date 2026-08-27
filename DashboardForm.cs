@@ -94,8 +94,8 @@ namespace POS
         {
             if (dgvTopProducts.Columns.Count == 0) return;
 
-            dgvTopProducts.ColumnHeadersHeight = 48;
-            dgvTopProducts.RowTemplate.Height = 40;
+            dgvTopProducts.ColumnHeadersHeight = UITheme.GridHeaderHeight;
+            dgvTopProducts.RowTemplate.Height = UITheme.GridRowHeight;
             dgvTopProducts.EnableHeadersVisualStyles = false;
 
             if (dgvTopProducts.Columns["ProductName"] != null)
@@ -132,8 +132,8 @@ namespace POS
         {
             if (dgvRecentSales.Columns.Count == 0) return;
 
-            dgvRecentSales.ColumnHeadersHeight = 48;
-            dgvRecentSales.RowTemplate.Height = 40;
+            dgvRecentSales.ColumnHeadersHeight = UITheme.GridHeaderHeight;
+            dgvRecentSales.RowTemplate.Height = UITheme.GridRowHeight;
             dgvRecentSales.EnableHeadersVisualStyles = false;
 
             if (dgvRecentSales.Columns["SaleId"] != null)
@@ -177,8 +177,8 @@ namespace POS
         {
             if (dgvLowStock.Columns.Count == 0) return;
 
-            dgvLowStock.ColumnHeadersHeight = 48;
-            dgvLowStock.RowTemplate.Height = 40;
+            dgvLowStock.ColumnHeadersHeight = UITheme.GridHeaderHeight;
+            dgvLowStock.RowTemplate.Height = UITheme.GridRowHeight;
             dgvLowStock.EnableHeadersVisualStyles = false;
 
             if (dgvLowStock.Columns["ProductId"] != null)
@@ -253,6 +253,11 @@ namespace POS
         }
 
         private void lblKpiSalesVal_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void flpFilters_Paint(object sender, PaintEventArgs e)
         {
 
         }

@@ -114,8 +114,8 @@ namespace POS
             this.lblSubtitle.Name = "lblSubtitle";
             this.lblSubtitle.Size = new System.Drawing.Size(1056, 22);
             this.lblSubtitle.TabIndex = 1;
-            this.lblSubtitle.Text = "تخصيص بيانات المنشأة، سياسات الفواتير والطباعة، التنبيهات، وإدارة النسخ الاحتياط" +
-    "ي (متاح لمدير النظام فقط)";
+            this.lblSubtitle.Text = "تخصيص بيانات المنشأة، سياسات الفواتير والطباعة، التنبيهات، وإدارة النسخ الاحتياطي" +
+    " (متاح لمدير النظام فقط)";
             this.lblSubtitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblTitle
@@ -164,12 +164,10 @@ namespace POS
             this.btnSave.Location = new System.Drawing.Point(390, 0);
             this.btnSave.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Padding = new System.Windows.Forms.Padding(0);
             this.btnSave.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnSave.Size = new System.Drawing.Size(160, 36);
             this.btnSave.TabIndex = 0;
             this.btnSave.Text = "💾 حفظ التغييرات";
-            this.btnSave.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnSave.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnSave.UseVisualStyleBackColor = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
@@ -185,12 +183,10 @@ namespace POS
             this.btnResetDefaults.Location = new System.Drawing.Point(210, 0);
             this.btnResetDefaults.Margin = new System.Windows.Forms.Padding(0, 0, 10, 0);
             this.btnResetDefaults.Name = "btnResetDefaults";
-            this.btnResetDefaults.Padding = new System.Windows.Forms.Padding(0);
             this.btnResetDefaults.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnResetDefaults.Size = new System.Drawing.Size(170, 36);
             this.btnResetDefaults.TabIndex = 1;
             this.btnResetDefaults.Text = "🔄 استعادة الافتراضي";
-            this.btnResetDefaults.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnResetDefaults.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnResetDefaults.UseVisualStyleBackColor = false;
             this.btnResetDefaults.Click += new System.EventHandler(this.btnResetDefaults_Click);
@@ -206,12 +202,10 @@ namespace POS
             this.btnTestReceipt.Location = new System.Drawing.Point(40, 0);
             this.btnTestReceipt.Margin = new System.Windows.Forms.Padding(0);
             this.btnTestReceipt.Name = "btnTestReceipt";
-            this.btnTestReceipt.Padding = new System.Windows.Forms.Padding(0);
             this.btnTestReceipt.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnTestReceipt.Size = new System.Drawing.Size(160, 36);
             this.btnTestReceipt.TabIndex = 2;
             this.btnTestReceipt.Text = "معاينة إيصال";
-            this.btnTestReceipt.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnTestReceipt.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnTestReceipt.UseVisualStyleBackColor = false;
             this.btnTestReceipt.Click += new System.EventHandler(this.btnTestReceipt_Click);
@@ -275,7 +269,7 @@ namespace POS
             this.pnlStoreInfo.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlStoreInfo.Location = new System.Drawing.Point(20, 20);
             this.pnlStoreInfo.Name = "pnlStoreInfo";
-            this.pnlStoreInfo.Size = new System.Drawing.Size(1044, 456);
+            this.pnlStoreInfo.Size = new System.Drawing.Size(1044, 460);
             this.pnlStoreInfo.TabIndex = 0;
             // 
             // tlpStoreInfo
@@ -444,7 +438,7 @@ namespace POS
             this.pnlPrinting.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlPrinting.Location = new System.Drawing.Point(20, 20);
             this.pnlPrinting.Name = "pnlPrinting";
-            this.pnlPrinting.Size = new System.Drawing.Size(1044, 456);
+            this.pnlPrinting.Size = new System.Drawing.Size(1044, 460);
             this.pnlPrinting.TabIndex = 0;
             // 
             // tlpPrinting
@@ -565,11 +559,6 @@ namespace POS
             this.nudVatRate.Font = new System.Drawing.Font("Tahoma", 10F);
             this.nudVatRate.Location = new System.Drawing.Point(611, 192);
             this.nudVatRate.Margin = new System.Windows.Forms.Padding(3, 12, 3, 3);
-            this.nudVatRate.Maximum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
             this.nudVatRate.Name = "nudVatRate";
             this.nudVatRate.Size = new System.Drawing.Size(200, 28);
             this.nudVatRate.TabIndex = 7;
@@ -581,10 +570,10 @@ namespace POS
             this.chkEnablePrintPreview.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkEnablePrintPreview.Font = new System.Drawing.Font("Tahoma", 9.5F);
             this.chkEnablePrintPreview.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            this.chkEnablePrintPreview.Location = new System.Drawing.Point(544, 245);
+            this.chkEnablePrintPreview.Location = new System.Drawing.Point(518, 245);
             this.chkEnablePrintPreview.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
             this.chkEnablePrintPreview.Name = "chkEnablePrintPreview";
-            this.chkEnablePrintPreview.Size = new System.Drawing.Size(267, 25);
+            this.chkEnablePrintPreview.Size = new System.Drawing.Size(293, 23);
             this.chkEnablePrintPreview.TabIndex = 8;
             this.chkEnablePrintPreview.Text = "عرض معاينة الإيصال قبل إرساله للطابعة";
             this.chkEnablePrintPreview.UseVisualStyleBackColor = true;
@@ -594,10 +583,10 @@ namespace POS
             this.chkAutoPrintOnSale.AutoSize = true;
             this.chkAutoPrintOnSale.Font = new System.Drawing.Font("Tahoma", 9.5F);
             this.chkAutoPrintOnSale.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            this.chkAutoPrintOnSale.Location = new System.Drawing.Point(524, 290);
+            this.chkAutoPrintOnSale.Location = new System.Drawing.Point(474, 290);
             this.chkAutoPrintOnSale.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
             this.chkAutoPrintOnSale.Name = "chkAutoPrintOnSale";
-            this.chkAutoPrintOnSale.Size = new System.Drawing.Size(287, 25);
+            this.chkAutoPrintOnSale.Size = new System.Drawing.Size(337, 23);
             this.chkAutoPrintOnSale.TabIndex = 9;
             this.chkAutoPrintOnSale.Text = "طباعة الفاتورة آلياً فور إتمام عملية البيع (POS)";
             this.chkAutoPrintOnSale.UseVisualStyleBackColor = true;
@@ -683,10 +672,10 @@ namespace POS
             this.chkAllowNegativeStock.AutoSize = true;
             this.chkAllowNegativeStock.Font = new System.Drawing.Font("Tahoma", 9.5F);
             this.chkAllowNegativeStock.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            this.chkAllowNegativeStock.Location = new System.Drawing.Point(472, 75);
+            this.chkAllowNegativeStock.Location = new System.Drawing.Point(377, 75);
             this.chkAllowNegativeStock.Margin = new System.Windows.Forms.Padding(3, 15, 3, 3);
             this.chkAllowNegativeStock.Name = "chkAllowNegativeStock";
-            this.chkAllowNegativeStock.Size = new System.Drawing.Size(309, 25);
+            this.chkAllowNegativeStock.Size = new System.Drawing.Size(404, 23);
             this.chkAllowNegativeStock.TabIndex = 2;
             this.chkAllowNegativeStock.Text = "السماح بإتمام عمليات البيع عند نفاد المخزون (بالسالب)";
             this.chkAllowNegativeStock.UseVisualStyleBackColor = true;
@@ -710,7 +699,7 @@ namespace POS
             this.pnlDatabase.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlDatabase.Location = new System.Drawing.Point(20, 20);
             this.pnlDatabase.Name = "pnlDatabase";
-            this.pnlDatabase.Size = new System.Drawing.Size(1044, 456);
+            this.pnlDatabase.Size = new System.Drawing.Size(1044, 460);
             this.pnlDatabase.TabIndex = 0;
             // 
             // tlpDatabase
@@ -770,15 +759,13 @@ namespace POS
             this.btnBackupDb.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnBackupDb.Font = new System.Drawing.Font("Tahoma", 9.5F, System.Drawing.FontStyle.Bold);
             this.btnBackupDb.ForeColor = System.Drawing.Color.White;
-            this.btnBackupDb.Location = new System.Drawing.Point(525, 83);
+            this.btnBackupDb.Location = new System.Drawing.Point(532, 83);
             this.btnBackupDb.Margin = new System.Windows.Forms.Padding(3, 3, 10, 10);
             this.btnBackupDb.Name = "btnBackupDb";
-            this.btnBackupDb.Padding = new System.Windows.Forms.Padding(0);
             this.btnBackupDb.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnBackupDb.Size = new System.Drawing.Size(509, 47);
             this.btnBackupDb.TabIndex = 2;
             this.btnBackupDb.Text = "💾 أخذ نسخة احتياطية من قاعدة البيانات (.bak)";
-            this.btnBackupDb.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnBackupDb.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnBackupDb.UseVisualStyleBackColor = false;
             this.btnBackupDb.Click += new System.EventHandler(this.btnBackupDb_Click);
@@ -792,15 +779,13 @@ namespace POS
             this.btnRestoreDb.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRestoreDb.Font = new System.Drawing.Font("Tahoma", 9.5F, System.Drawing.FontStyle.Bold);
             this.btnRestoreDb.ForeColor = System.Drawing.Color.White;
-            this.btnRestoreDb.Location = new System.Drawing.Point(10, 83);
+            this.btnRestoreDb.Location = new System.Drawing.Point(3, 83);
             this.btnRestoreDb.Margin = new System.Windows.Forms.Padding(10, 3, 3, 10);
             this.btnRestoreDb.Name = "btnRestoreDb";
-            this.btnRestoreDb.Padding = new System.Windows.Forms.Padding(0);
             this.btnRestoreDb.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnRestoreDb.Size = new System.Drawing.Size(509, 47);
             this.btnRestoreDb.TabIndex = 3;
             this.btnRestoreDb.Text = "🔄 استعادة قاعدة بيانات من نسخة احتياطية (.bak)";
-            this.btnRestoreDb.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnRestoreDb.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnRestoreDb.UseVisualStyleBackColor = false;
             this.btnRestoreDb.Click += new System.EventHandler(this.btnRestoreDb_Click);
@@ -831,12 +816,10 @@ namespace POS
             this.btnClearHistory.ForeColor = System.Drawing.Color.White;
             this.btnClearHistory.Location = new System.Drawing.Point(15, 75);
             this.btnClearHistory.Name = "btnClearHistory";
-            this.btnClearHistory.Padding = new System.Windows.Forms.Padding(0);
             this.btnClearHistory.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnClearHistory.Size = new System.Drawing.Size(260, 37);
+            this.btnClearHistory.Size = new System.Drawing.Size(423, 37);
             this.btnClearHistory.TabIndex = 2;
             this.btnClearHistory.Text = "🗑️ تصفير المعاملات وبدء تشغيل جديد";
-            this.btnClearHistory.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnClearHistory.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnClearHistory.UseVisualStyleBackColor = false;
             this.btnClearHistory.Click += new System.EventHandler(this.btnClearHistory_Click);
@@ -850,8 +833,8 @@ namespace POS
             this.lblDangerDesc.Name = "lblDangerDesc";
             this.lblDangerDesc.Size = new System.Drawing.Size(1008, 35);
             this.lblDangerDesc.TabIndex = 1;
-            this.lblDangerDesc.Text = "يقوم هذا الإجراء بحذف كافة سجلات المبيعات والمشتريات والمرتجعات التجريبية مع الإ" +
-    "بقاء على المنتجات والأقسام والمستخدمين.";
+            this.lblDangerDesc.Text = "يقوم هذا الإجراء بحذف كافة سجلات المبيعات والمشتريات والمرتجعات التجريبية مع الإب" +
+    "قاء على المنتجات والأقسام والمستخدمين.";
             this.lblDangerDesc.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblDangerTitle

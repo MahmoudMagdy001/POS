@@ -22,9 +22,9 @@ namespace POS
             this.pnlNavContainer = new System.Windows.Forms.Panel();
             this.btnNavSettings = new System.Windows.Forms.Button();
             this.btnNavUsers = new System.Windows.Forms.Button();
+            this.btnNavSales = new System.Windows.Forms.Button();
             this.btnNavPurchases = new System.Windows.Forms.Button();
             this.btnNavProducts = new System.Windows.Forms.Button();
-            this.btnNavSales = new System.Windows.Forms.Button();
             this.btnNavPOS = new System.Windows.Forms.Button();
             this.btnNavDashboard = new System.Windows.Forms.Button();
             this.pnlUserBadge = new System.Windows.Forms.Panel();
@@ -88,12 +88,10 @@ namespace POS
             this.btnNavSettings.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
             this.btnNavSettings.Location = new System.Drawing.Point(12, 303);
             this.btnNavSettings.Name = "btnNavSettings";
-            this.btnNavSettings.Padding = new System.Windows.Forms.Padding(0);
             this.btnNavSettings.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnNavSettings.Size = new System.Drawing.Size(226, 48);
+            this.btnNavSettings.Size = new System.Drawing.Size(256, 48);
             this.btnNavSettings.TabIndex = 6;
             this.btnNavSettings.Text = "⚙️  إعدادات النظام";
-            this.btnNavSettings.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnNavSettings.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavSettings.UseVisualStyleBackColor = false;
             this.btnNavSettings.Click += new System.EventHandler(this.btnNav_Click);
@@ -109,12 +107,10 @@ namespace POS
             this.btnNavUsers.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
             this.btnNavUsers.Location = new System.Drawing.Point(12, 255);
             this.btnNavUsers.Name = "btnNavUsers";
-            this.btnNavUsers.Padding = new System.Windows.Forms.Padding(0);
             this.btnNavUsers.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnNavUsers.Size = new System.Drawing.Size(226, 48);
+            this.btnNavUsers.Size = new System.Drawing.Size(256, 48);
             this.btnNavUsers.TabIndex = 5;
             this.btnNavUsers.Text = "👥  المستخدمين والموظفين";
-            this.btnNavUsers.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnNavUsers.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavUsers.UseVisualStyleBackColor = false;
             this.btnNavUsers.Click += new System.EventHandler(this.btnNav_Click);
@@ -130,12 +126,10 @@ namespace POS
             this.btnNavSales.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
             this.btnNavSales.Location = new System.Drawing.Point(12, 207);
             this.btnNavSales.Name = "btnNavSales";
-            this.btnNavSales.Padding = new System.Windows.Forms.Padding(0);
             this.btnNavSales.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnNavSales.Size = new System.Drawing.Size(226, 48);
+            this.btnNavSales.Size = new System.Drawing.Size(256, 48);
             this.btnNavSales.TabIndex = 4;
             this.btnNavSales.Text = "🧾  فواتير وسجل المبيعات";
-            this.btnNavSales.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnNavSales.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavSales.UseVisualStyleBackColor = false;
             this.btnNavSales.Click += new System.EventHandler(this.btnNav_Click);
@@ -151,12 +145,10 @@ namespace POS
             this.btnNavPurchases.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
             this.btnNavPurchases.Location = new System.Drawing.Point(12, 159);
             this.btnNavPurchases.Name = "btnNavPurchases";
-            this.btnNavPurchases.Padding = new System.Windows.Forms.Padding(0);
             this.btnNavPurchases.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnNavPurchases.Size = new System.Drawing.Size(226, 48);
+            this.btnNavPurchases.Size = new System.Drawing.Size(256, 48);
             this.btnNavPurchases.TabIndex = 3;
             this.btnNavPurchases.Text = "📥  فواتير المشتريات";
-            this.btnNavPurchases.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnNavPurchases.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavPurchases.UseVisualStyleBackColor = false;
             this.btnNavPurchases.Click += new System.EventHandler(this.btnNav_Click);
@@ -172,12 +164,10 @@ namespace POS
             this.btnNavProducts.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
             this.btnNavProducts.Location = new System.Drawing.Point(12, 111);
             this.btnNavProducts.Name = "btnNavProducts";
-            this.btnNavProducts.Padding = new System.Windows.Forms.Padding(0);
             this.btnNavProducts.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnNavProducts.Size = new System.Drawing.Size(226, 48);
+            this.btnNavProducts.Size = new System.Drawing.Size(256, 48);
             this.btnNavProducts.TabIndex = 2;
             this.btnNavProducts.Text = "📦  المنتجات والمخزون";
-            this.btnNavProducts.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnNavProducts.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavProducts.UseVisualStyleBackColor = false;
             this.btnNavProducts.Click += new System.EventHandler(this.btnNav_Click);
@@ -193,12 +183,10 @@ namespace POS
             this.btnNavPOS.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
             this.btnNavPOS.Location = new System.Drawing.Point(12, 63);
             this.btnNavPOS.Name = "btnNavPOS";
-            this.btnNavPOS.Padding = new System.Windows.Forms.Padding(0);
             this.btnNavPOS.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnNavPOS.Size = new System.Drawing.Size(226, 48);
+            this.btnNavPOS.Size = new System.Drawing.Size(256, 48);
             this.btnNavPOS.TabIndex = 1;
             this.btnNavPOS.Text = "🛒  شاشة الكاشير (POS)";
-            this.btnNavPOS.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnNavPOS.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavPOS.UseVisualStyleBackColor = false;
             this.btnNavPOS.Click += new System.EventHandler(this.btnNav_Click);
@@ -214,12 +202,10 @@ namespace POS
             this.btnNavDashboard.ForeColor = System.Drawing.Color.White;
             this.btnNavDashboard.Location = new System.Drawing.Point(12, 15);
             this.btnNavDashboard.Name = "btnNavDashboard";
-            this.btnNavDashboard.Padding = new System.Windows.Forms.Padding(0);
             this.btnNavDashboard.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnNavDashboard.Size = new System.Drawing.Size(226, 48);
+            this.btnNavDashboard.Size = new System.Drawing.Size(256, 48);
             this.btnNavDashboard.TabIndex = 0;
             this.btnNavDashboard.Text = "📊  لوحة التحكم العامة";
-            this.btnNavDashboard.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnNavDashboard.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavDashboard.UseVisualStyleBackColor = false;
             this.btnNavDashboard.Click += new System.EventHandler(this.btnNav_Click);
@@ -327,12 +313,12 @@ namespace POS
             // 
             this.lblCurrentTime.Font = new System.Drawing.Font("Tahoma", 9.5F, System.Drawing.FontStyle.Bold);
             this.lblCurrentTime.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblCurrentTime.Location = new System.Drawing.Point(145, 16);
+            this.lblCurrentTime.Location = new System.Drawing.Point(217, 16);
             this.lblCurrentTime.Name = "lblCurrentTime";
             this.lblCurrentTime.Size = new System.Drawing.Size(280, 28);
             this.lblCurrentTime.TabIndex = 2;
             this.lblCurrentTime.Text = "2026-08-25 16:00:00";
-            this.lblCurrentTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblCurrentTime.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnLogout
             // 
@@ -344,11 +330,9 @@ namespace POS
             this.btnLogout.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
             this.btnLogout.Location = new System.Drawing.Point(20, 14);
             this.btnLogout.Name = "btnLogout";
-            this.btnLogout.Padding = new System.Windows.Forms.Padding(0);
             this.btnLogout.Size = new System.Drawing.Size(115, 32);
             this.btnLogout.TabIndex = 1;
             this.btnLogout.Text = "🚪 خروج";
-            this.btnLogout.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnLogout.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnLogout.UseVisualStyleBackColor = false;
             this.btnLogout.Click += new System.EventHandler(this.btnLogout_Click);
