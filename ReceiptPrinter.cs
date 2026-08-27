@@ -293,6 +293,14 @@ namespace POS
                     y += 18;
                 }
 
+                if (sale.TaxAmount > 0)
+                {
+                    string vatLabel = sysSettings.VatRate > 0 ? $"الضريبة ({sysSettings.VatRate:0.##}%):" : "ضريبة القيمة المضافة:";
+                    TextRenderer.DrawText(g, $"{vatLabel} +{sale.TaxAmount:N2} {currency}", headerFont,
+                        new Rectangle(startX, y, pageWidth, 18), textColor, flagsRight);
+                    y += 18;
+                }
+
                 g.DrawLine(Pens.Black, startX, y, startX + pageWidth, y);
                 y += 6;
 
@@ -359,6 +367,7 @@ namespace POS
             height += 6 + 8;
             height += 18;
             if (sale.Discount > 0) height += 18;
+            if (sale.TaxAmount > 0) height += 18;
             height += 6;
             height += 24 + 18 + 24;
             height += 12;

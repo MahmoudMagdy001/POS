@@ -247,6 +247,7 @@ namespace POS
                                 [SaleDate]      DATETIME          NOT NULL DEFAULT GETDATE(),
                                 [TotalAmount]   DECIMAL(18,2)     NOT NULL DEFAULT 0.00,
                                 [Discount]      DECIMAL(18,2)     NOT NULL DEFAULT 0.00,
+                                [TaxAmount]     DECIMAL(18,2)     NOT NULL DEFAULT 0.00,
                                 [FinalAmount]   DECIMAL(18,2)     NOT NULL DEFAULT 0.00,
                                 [PaidAmount]    DECIMAL(18,2)     NOT NULL DEFAULT 0.00,
                                 [ChangeAmount]  DECIMAL(18,2)     NOT NULL DEFAULT 0.00,
@@ -274,7 +275,12 @@ namespace POS
                             );
                         END;
 
-                        -- Migrations for Returns
+                        -- Migrations for Tax and Returns
+                        IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[Sales]') AND name = 'TaxAmount')
+                        BEGIN
+                            ALTER TABLE [dbo].[Sales] ADD [TaxAmount] DECIMAL(18,2) NOT NULL DEFAULT 0.00;
+                        END;
+
                         IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[Sales]') AND name = 'ReturnStatus')
                         BEGIN
                             ALTER TABLE [dbo].[Sales] ADD [ReturnStatus] NVARCHAR(50) NOT NULL DEFAULT N'مكتملة';
@@ -1273,9 +1279,9 @@ namespace POS
                         // 2. إدراج رأس الفاتورة
                         string insertSaleSql = @"
                             INSERT INTO [dbo].[Sales] 
-                                (UserId, SaleDate, TotalAmount, Discount, FinalAmount, PaidAmount, ChangeAmount, PaymentMethod)
+                                (UserId, SaleDate, TotalAmount, Discount, TaxAmount, FinalAmount, PaidAmount, ChangeAmount, PaymentMethod)
                             VALUES 
-                                (@UserId, @SaleDate, @TotalAmount, @Discount, @FinalAmount, @PaidAmount, @ChangeAmount, @PaymentMethod);
+                                (@UserId, @SaleDate, @TotalAmount, @Discount, @TaxAmount, @FinalAmount, @PaidAmount, @ChangeAmount, @PaymentMethod);
                             SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
                         int saleId;
@@ -1285,6 +1291,7 @@ namespace POS
                             cmd.Parameters.Add("@SaleDate", SqlDbType.DateTime).Value = sale.SaleDate == default ? DateTime.Now : sale.SaleDate;
                             cmd.Parameters.Add("@TotalAmount", SqlDbType.Decimal).Value = sale.TotalAmount;
                             cmd.Parameters.Add("@Discount", SqlDbType.Decimal).Value = sale.Discount;
+                            cmd.Parameters.Add("@TaxAmount", SqlDbType.Decimal).Value = sale.TaxAmount;
                             cmd.Parameters.Add("@FinalAmount", SqlDbType.Decimal).Value = sale.FinalAmount;
                             cmd.Parameters.Add("@PaidAmount", SqlDbType.Decimal).Value = sale.PaidAmount;
                             cmd.Parameters.Add("@ChangeAmount", SqlDbType.Decimal).Value = sale.ChangeAmount;
@@ -1351,6 +1358,7 @@ namespace POS
                             ISNULL(u.FullName, N'مدير النظام') AS CashierName, 
                             s.TotalAmount, 
                             s.Discount, 
+                            ISNULL(s.TaxAmount, 0) AS TaxAmount,
                             s.FinalAmount, 
                             ISNULL(s.TotalRefunded, 0) AS TotalRefunded,
                             (s.FinalAmount - ISNULL(s.TotalRefunded, 0)) AS NetFinalAmount,
@@ -1627,7 +1635,7 @@ namespace POS
                     conn.Open();
                     string query = @"
                         SELECT s.SaleId, s.UserId, ISNULL(u.FullName, N'مدير النظام') AS CashierName, 
-                               s.SaleDate, s.TotalAmount, s.Discount, s.FinalAmount, 
+                               s.SaleDate, s.TotalAmount, s.Discount, ISNULL(s.TaxAmount, 0) AS TaxAmount, s.FinalAmount, 
                                ISNULL(s.TotalRefunded, 0) AS TotalRefunded,
                                ISNULL(s.ReturnStatus, N'مكتملة') AS ReturnStatus,
                                s.PaidAmount, s.ChangeAmount, s.PaymentMethod
@@ -1650,6 +1658,7 @@ namespace POS
                                     SaleDate = Convert.ToDateTime(reader["SaleDate"]),
                                     TotalAmount = Convert.ToDecimal(reader["TotalAmount"]),
                                     Discount = Convert.ToDecimal(reader["Discount"]),
+                                    TaxAmount = reader["TaxAmount"] != DBNull.Value ? Convert.ToDecimal(reader["TaxAmount"]) : 0.00m,
                                     FinalAmount = Convert.ToDecimal(reader["FinalAmount"]),
                                     TotalRefunded = Convert.ToDecimal(reader["TotalRefunded"]),
                                     ReturnStatus = reader["ReturnStatus"].ToString(),

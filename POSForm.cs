@@ -11,6 +11,7 @@ namespace POS
         private readonly UserModel _currentUser;
         private List<CartItemModel> _cartItems = new List<CartItemModel>();
         private DataTable _cartTable;
+        private SystemSettingsModel _sysSettings;
 
         public POSForm(UserModel currentUser)
         {
@@ -27,6 +28,7 @@ namespace POS
             UIStyler.StyleDangerButton(btnClearCart, "🗑️ تفريغ السلة");
             UIStyler.StyleDataGrid(dgvProductsCatalog);
             UIStyler.StyleDataGrid(dgvCart);
+            LoadSettings();
             InitCartTable();
             LoadCategories();
             LoadProducts();
@@ -36,9 +38,24 @@ namespace POS
 
         public void RefreshData()
         {
+            LoadSettings();
             LoadCategories();
             LoadProducts();
+            CalculateTotals();
             txtBarcodeScan.Focus();
+        }
+
+        private void LoadSettings()
+        {
+            try
+            {
+                _sysSettings = DbHelper.GetSystemSettings();
+                if (_sysSettings != null && lblVat != null)
+                {
+                    lblVat.Text = $"الضريبة ({_sysSettings.VatRate:0.##}%):";
+                }
+            }
+            catch { }
         }
 
         #region Cashier & POS Sales Functions
@@ -310,6 +327,14 @@ namespace POS
 
         private void CalculateTotals()
         {
+            if (_sysSettings == null)
+            {
+                _sysSettings = DbHelper.GetSystemSettings();
+            }
+
+            string curr = !string.IsNullOrWhiteSpace(_sysSettings?.CurrencySymbol) ? _sysSettings.CurrencySymbol : "ج.م";
+            decimal vatRate = _sysSettings?.VatRate ?? 0.00m;
+
             decimal subtotal = 0;
             foreach (var item in _cartItems)
             {
@@ -317,10 +342,16 @@ namespace POS
             }
 
             decimal discount = numDiscount.Value;
-            decimal finalAmount = Math.Max(0, subtotal - discount);
+            decimal taxableBase = Math.Max(0, subtotal - discount);
+            decimal vatAmount = (vatRate > 0) ? Math.Round(taxableBase * (vatRate / 100m), 2) : 0.00m;
+            decimal finalAmount = taxableBase + vatAmount;
 
-            lblSubtotalVal.Text = $"{subtotal:N2} ج.م";
-            lblFinalTotalVal.Text = $"{finalAmount:N2} ج.م";
+            lblSubtotalVal.Text = $"{subtotal:N2} {curr}";
+            if (lblVat != null)
+                lblVat.Text = $"الضريبة ({vatRate:0.##}%):";
+            if (lblVatVal != null)
+                lblVatVal.Text = $"{vatAmount:N2} {curr}";
+            lblFinalTotalVal.Text = $"{finalAmount:N2} {curr}";
 
             if (numCashPaid.Value == 0 || numCashPaid.Value < finalAmount)
             {
@@ -328,7 +359,7 @@ namespace POS
             }
 
             decimal change = Math.Max(0, numCashPaid.Value - finalAmount);
-            lblChangeDueVal.Text = $"{change:N2} ج.م";
+            lblChangeDueVal.Text = $"{change:N2} {curr}";
         }
 
         private void txtBarcodeScan_KeyDown(object sender, KeyEventArgs e)
@@ -499,16 +530,26 @@ namespace POS
                 return;
             }
 
+            if (_sysSettings == null)
+            {
+                _sysSettings = DbHelper.GetSystemSettings();
+            }
+
+            string curr = !string.IsNullOrWhiteSpace(_sysSettings?.CurrencySymbol) ? _sysSettings.CurrencySymbol : "ج.م";
+            decimal vatRate = _sysSettings?.VatRate ?? 0.00m;
+
             decimal subtotal = 0;
             foreach (var item in _cartItems) subtotal += item.LineTotal;
 
             decimal discount = numDiscount.Value;
-            decimal finalAmount = Math.Max(0, subtotal - discount);
+            decimal taxableBase = Math.Max(0, subtotal - discount);
+            decimal vatAmount = (vatRate > 0) ? Math.Round(taxableBase * (vatRate / 100m), 2) : 0.00m;
+            decimal finalAmount = taxableBase + vatAmount;
             decimal paidAmount = numCashPaid.Value;
 
             if (paidAmount < finalAmount)
             {
-                MessageBox.Show($"المبلغ المدفوع ({paidAmount:N2} ج.م) أقل من إجمالي الفاتورة المطلوب ({finalAmount:N2} ج.م).", "المبلغ المدفوع غير كافٍ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"المبلغ المدفوع ({paidAmount:N2} {curr}) أقل من إجمالي الفاتورة المطلوب ({finalAmount:N2} {curr}).", "المبلغ المدفوع غير كافٍ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 numCashPaid.Focus();
                 return;
             }
@@ -523,6 +564,7 @@ namespace POS
                 SaleDate = DateTime.Now,
                 TotalAmount = subtotal,
                 Discount = discount,
+                TaxAmount = vatAmount,
                 FinalAmount = finalAmount,
                 PaidAmount = paidAmount,
                 ChangeAmount = change,
@@ -534,10 +576,14 @@ namespace POS
             if (result.Success)
             {
                 sale.SaleId = result.SaleId;
-                var sysSettings = DbHelper.GetSystemSettings();
-                string curr = !string.IsNullOrWhiteSpace(sysSettings.CurrencySymbol) ? sysSettings.CurrencySymbol : "ج.م";
+                var sysSettings = _sysSettings ?? DbHelper.GetSystemSettings();
 
-                MessageBox.Show($"تم إتمام الفاتورة بنجاح!\n\nرقم الفاتورة: #{result.SaleId:D5}\nالإجمالي: {finalAmount:N2} {curr}\nالمدفوع: {paidAmount:N2} {curr}\nالمتبقي للعميل: {change:N2} {curr}", "عملية بيع ناجحة", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                string msg = $"تم إتمام الفاتورة بنجاح!\n\nرقم الفاتورة: #{result.SaleId:D5}\nالمجموع: {subtotal:N2} {curr}";
+                if (discount > 0) msg += $"\nالخصم: {discount:N2} {curr}";
+                if (vatAmount > 0) msg += $"\nالضريبة ({vatRate:0.##}%): {vatAmount:N2} {curr}";
+                msg += $"\nالإجمالي النهائي: {finalAmount:N2} {curr}\nالمدفوع: {paidAmount:N2} {curr}\nالمتبقي للعميل: {change:N2} {curr}";
+
+                MessageBox.Show(msg, "عملية بيع ناجحة", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 // معاينة وطباعة الفاتورة الحرارية 80 مم
                 if (sysSettings.AutoPrintOnSale)

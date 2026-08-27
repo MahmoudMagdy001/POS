@@ -23,9 +23,16 @@ namespace POS
         {
             UIStyler.ApplyTheme(this);
             UIStyler.StyleDangerButton(btnConfirmReturn, "↩️ تأكيد عملية الإرجاع");
-            UIStyler.StyleSecondaryButton(btnReturnAll, "إرجاع الكل");
+            UIStyler.StyleSecondaryButton(btnReturnAll, "⚡ إرجاع الكل");
+            UIStyler.StyleSecondaryButton(btnResetAll, "🔄 تصفير الكل");
             UIStyler.StyleSecondaryButton(btnCancel, "إلغاء");
             UIStyler.StyleDataGrid(dgvReturnItems);
+
+            // Enable grid cell editing
+            dgvReturnItems.ReadOnly = false;
+            dgvReturnItems.SelectionMode = DataGridViewSelectionMode.CellSelect;
+            dgvReturnItems.EditMode = DataGridViewEditMode.EditOnEnter;
+
             LoadSaleData();
         }
 
@@ -60,7 +67,9 @@ namespace POS
                 Name = "colBarcode",
                 HeaderText = "الباركود",
                 ReadOnly = true,
-                FillWeight = 85
+                FillWeight = 85,
+                MinimumWidth = 95,
+                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
 
             dgvReturnItems.Columns.Add(new DataGridViewTextBoxColumn
@@ -68,7 +77,9 @@ namespace POS
                 Name = "colProductName",
                 HeaderText = "اسم الصنف",
                 ReadOnly = true,
-                FillWeight = 160
+                FillWeight = 160,
+                MinimumWidth = 140,
+                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleRight }
             });
 
             dgvReturnItems.Columns.Add(new DataGridViewTextBoxColumn
@@ -77,15 +88,17 @@ namespace POS
                 HeaderText = "سعر الوحدة",
                 ReadOnly = true,
                 FillWeight = 70,
-                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleRight, Format = "N2" }
+                MinimumWidth = 80,
+                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter, Format = "N2" }
             });
 
             dgvReturnItems.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "colSoldQty",
-                HeaderText = "الكمية المباعة",
+                HeaderText = "المباع",
                 ReadOnly = true,
-                FillWeight = 65,
+                FillWeight = 55,
+                MinimumWidth = 60,
                 DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
 
@@ -95,51 +108,123 @@ namespace POS
                 HeaderText = "مرتجع سابقاً",
                 ReadOnly = true,
                 FillWeight = 65,
+                MinimumWidth = 70,
                 DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter, ForeColor = POS.DesignSystem.Tokens.UIColors.TextMuted }
             });
 
             dgvReturnItems.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "colAvailableToReturn",
-                HeaderText = "المتاح للإرجاع",
+                HeaderText = "المتاح",
                 ReadOnly = true,
-                FillWeight = 70,
+                FillWeight = 60,
+                MinimumWidth = 65,
                 DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter, Font = FontManager.GetBold(9.5f), ForeColor = POS.DesignSystem.Tokens.UIColors.Success }
             });
+
+            // Button - (Minus)
+            var colBtnDec = new DataGridViewButtonColumn
+            {
+                Name = "colBtnDec",
+                HeaderText = "-",
+                Text = "➖",
+                UseColumnTextForButtonValue = true,
+                ReadOnly = true,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
+                Width = 42,
+                Resizable = DataGridViewTriState.False,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    Alignment = DataGridViewContentAlignment.MiddleCenter,
+                    Font = FontManager.GetBold(9.5f),
+                    ForeColor = Color.FromArgb(185, 28, 28)
+                }
+            };
+            dgvReturnItems.Columns.Add(colBtnDec);
 
             // Editable Return Qty
             var colReturnQty = new DataGridViewTextBoxColumn
             {
                 Name = "colReturnQty",
-                HeaderText = "كمية الإرجاع",
+                HeaderText = "كمية الإرجاع ✍️",
                 ReadOnly = false,
-                FillWeight = 75,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
+                Width = 85,
+                Resizable = DataGridViewTriState.False,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
                     Alignment = DataGridViewContentAlignment.MiddleCenter,
-                    Font = FontManager.GetBold(10f),
-                    BackColor = POS.DesignSystem.Tokens.UIColors.WarningLight,
-                    ForeColor = POS.DesignSystem.Tokens.UIColors.WarningDark,
-                    SelectionBackColor = POS.DesignSystem.Tokens.UIColors.WarningLight,
-                    SelectionForeColor = POS.DesignSystem.Tokens.UIColors.WarningDark
+                    Font = FontManager.GetBold(11f),
+                    BackColor = Color.FromArgb(254, 243, 199),
+                    ForeColor = Color.FromArgb(146, 64, 14),
+                    SelectionBackColor = Color.FromArgb(253, 230, 138),
+                    SelectionForeColor = Color.FromArgb(146, 64, 14)
                 }
             };
             dgvReturnItems.Columns.Add(colReturnQty);
 
+            // Button + (Plus)
+            var colBtnInc = new DataGridViewButtonColumn
+            {
+                Name = "colBtnInc",
+                HeaderText = "+",
+                Text = "➕",
+                UseColumnTextForButtonValue = true,
+                ReadOnly = true,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
+                Width = 42,
+                Resizable = DataGridViewTriState.False,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    Alignment = DataGridViewContentAlignment.MiddleCenter,
+                    Font = FontManager.GetBold(9.5f),
+                    ForeColor = Color.FromArgb(22, 163, 74)
+                }
+            };
+            dgvReturnItems.Columns.Add(colBtnInc);
+
+            // Button All for this row
+            var colBtnAll = new DataGridViewButtonColumn
+            {
+                Name = "colBtnAll",
+                HeaderText = "إرجاع",
+                Text = "الكل",
+                UseColumnTextForButtonValue = true,
+                ReadOnly = true,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
+                Width = 55,
+                Resizable = DataGridViewTriState.False,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    Alignment = DataGridViewContentAlignment.MiddleCenter,
+                    Font = FontManager.GetBold(8.5f),
+                    ForeColor = Color.FromArgb(30, 64, 175)
+                }
+            };
+            dgvReturnItems.Columns.Add(colBtnAll);
+
+            // Refund Amount
             dgvReturnItems.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "colRefundAmount",
                 HeaderText = "المسترد (ج.م)",
                 ReadOnly = true,
-                FillWeight = 80,
+                FillWeight = 85,
+                MinimumWidth = 95,
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
-                    Alignment = DataGridViewContentAlignment.MiddleRight,
+                    Alignment = DataGridViewContentAlignment.MiddleCenter,
                     Font = FontManager.GetBold(9.5f),
                     ForeColor = POS.DesignSystem.Tokens.UIColors.Danger,
                     Format = "N2"
                 }
             });
+
+            // Wire event handlers
+            dgvReturnItems.CellContentClick -= DgvReturnItems_CellContentClick;
+            dgvReturnItems.CellContentClick += DgvReturnItems_CellContentClick;
+            dgvReturnItems.EditingControlShowing -= DgvReturnItems_EditingControlShowing;
+            dgvReturnItems.EditingControlShowing += DgvReturnItems_EditingControlShowing;
         }
 
         private void PopulateGrid()
@@ -154,7 +239,10 @@ namespace POS
                     item.OriginalQuantity,
                     item.AlreadyReturnedQuantity,
                     item.AvailableToReturn,
+                    "➖",
                     item.ReturnQuantity,
+                    "➕",
+                    "الكل",
                     item.RefundAmount
                 );
 
@@ -167,6 +255,87 @@ namespace POS
                     dgvReturnItems.Rows[rowIndex].DefaultCellStyle.BackColor = Color.FromArgb(248, 250, 252);
                     dgvReturnItems.Rows[rowIndex].DefaultCellStyle.ForeColor = Color.FromArgb(148, 163, 184);
                 }
+            }
+        }
+
+        private void DgvReturnItems_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            if (dgvReturnItems.CurrentCell != null && dgvReturnItems.Columns[dgvReturnItems.CurrentCell.ColumnIndex].Name == "colReturnQty")
+            {
+                if (e.Control is TextBox tb)
+                {
+                    tb.KeyPress -= ReturnQtyTextBox_KeyPress;
+                    tb.KeyPress += ReturnQtyTextBox_KeyPress;
+                    tb.SelectAll();
+                }
+            }
+        }
+
+        private void ReturnQtyTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Allow only digits and control characters (like Backspace)
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void DgvReturnItems_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= dgvReturnItems.Rows.Count) return;
+
+            var row = dgvReturnItems.Rows[e.RowIndex];
+            var item = row.Tag as ReturnItemModel;
+            if (item == null || item.AvailableToReturn <= 0) return;
+
+            string colName = dgvReturnItems.Columns[e.ColumnIndex].Name;
+
+            if (colName == "colBtnInc")
+            {
+                if (item.ReturnQuantity < item.AvailableToReturn)
+                {
+                    SetItemReturnQuantity(row, item, item.ReturnQuantity + 1);
+                }
+            }
+            else if (colName == "colBtnDec")
+            {
+                if (item.ReturnQuantity > 0)
+                {
+                    SetItemReturnQuantity(row, item, item.ReturnQuantity - 1);
+                }
+            }
+            else if (colName == "colBtnAll")
+            {
+                SetItemReturnQuantity(row, item, item.AvailableToReturn);
+            }
+        }
+
+        private void SetItemReturnQuantity(DataGridViewRow row, ReturnItemModel item, int newQty)
+        {
+            if (newQty < 0) newQty = 0;
+            if (newQty > item.AvailableToReturn) newQty = item.AvailableToReturn;
+
+            item.ReturnQuantity = newQty;
+            row.Cells["colReturnQty"].Value = item.ReturnQuantity;
+            row.Cells["colRefundAmount"].Value = item.RefundAmount;
+
+            UpdateRowHighlight(row, item);
+            CalculateTotalRefund();
+        }
+
+        private void UpdateRowHighlight(DataGridViewRow row, ReturnItemModel item)
+        {
+            if (item.ReturnQuantity > 0)
+            {
+                row.DefaultCellStyle.BackColor = Color.FromArgb(254, 242, 242);
+            }
+            else if (item.AvailableToReturn <= 0)
+            {
+                row.DefaultCellStyle.BackColor = Color.FromArgb(248, 250, 252);
+            }
+            else
+            {
+                row.DefaultCellStyle.BackColor = Color.White;
             }
         }
 
@@ -192,11 +361,7 @@ namespace POS
                 inputQty = item.AvailableToReturn;
             }
 
-            item.ReturnQuantity = inputQty;
-            row.Cells["colReturnQty"].Value = inputQty;
-            row.Cells["colRefundAmount"].Value = item.RefundAmount;
-
-            CalculateTotalRefund();
+            SetItemReturnQuantity(row, item, inputQty);
         }
 
         private void btnReturnAll_Click(object sender, EventArgs e)
@@ -206,12 +371,21 @@ namespace POS
                 var item = row.Tag as ReturnItemModel;
                 if (item != null && item.AvailableToReturn > 0)
                 {
-                    item.ReturnQuantity = item.AvailableToReturn;
-                    row.Cells["colReturnQty"].Value = item.ReturnQuantity;
-                    row.Cells["colRefundAmount"].Value = item.RefundAmount;
+                    SetItemReturnQuantity(row, item, item.AvailableToReturn);
                 }
             }
-            CalculateTotalRefund();
+        }
+
+        private void btnResetAll_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow row in dgvReturnItems.Rows)
+            {
+                var item = row.Tag as ReturnItemModel;
+                if (item != null)
+                {
+                    SetItemReturnQuantity(row, item, 0);
+                }
+            }
         }
 
         private void CalculateTotalRefund()
@@ -233,6 +407,9 @@ namespace POS
 
         private void btnConfirmReturn_Click(object sender, EventArgs e)
         {
+            // Commit any current cell edit in progress
+            dgvReturnItems.EndEdit();
+
             var returnItems = _items.FindAll(x => x.ReturnQuantity > 0);
             if (returnItems.Count == 0)
             {
@@ -277,3 +454,4 @@ namespace POS
         }
     }
 }
+

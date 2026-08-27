@@ -114,6 +114,10 @@ namespace POS
             {
                 dgvSalesList.Columns["Discount"].Visible = false;
             }
+            if (dgvSalesList.Columns["TaxAmount"] != null)
+            {
+                dgvSalesList.Columns["TaxAmount"].Visible = false;
+            }
             if (dgvSalesList.Columns["FinalAmount"] != null)
             {
                 dgvSalesList.Columns["FinalAmount"].HeaderText = "المبلغ الأصلي";

@@ -53,6 +53,8 @@ namespace POS
             this.numCashPaid = new System.Windows.Forms.NumericUpDown();
             this.lblChangeDue = new System.Windows.Forms.Label();
             this.lblChangeDueVal = new System.Windows.Forms.Label();
+            this.lblVat = new System.Windows.Forms.Label();
+            this.lblVatVal = new System.Windows.Forms.Label();
             this.pnlFinalTotal = new System.Windows.Forms.Panel();
             this.lblFinalTotalVal = new System.Windows.Forms.Label();
             this.lblFinalTotalTitle = new System.Windows.Forms.Label();
@@ -442,6 +444,8 @@ namespace POS
             this.tlpPaymentGrid.Controls.Add(this.numCashPaid, 1, 1);
             this.tlpPaymentGrid.Controls.Add(this.lblChangeDue, 2, 1);
             this.tlpPaymentGrid.Controls.Add(this.lblChangeDueVal, 3, 1);
+            this.tlpPaymentGrid.Controls.Add(this.lblVat, 4, 1);
+            this.tlpPaymentGrid.Controls.Add(this.lblVatVal, 5, 1);
             this.tlpPaymentGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpPaymentGrid.Location = new System.Drawing.Point(0, 6);
             this.tlpPaymentGrid.Name = "tlpPaymentGrid";
@@ -582,6 +586,30 @@ namespace POS
             this.lblChangeDueVal.Text = "0.00 ج.م";
             this.lblChangeDueVal.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // lblVat
+            // 
+            this.lblVat.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblVat.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.lblVat.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            this.lblVat.Location = new System.Drawing.Point(101, 47);
+            this.lblVat.Name = "lblVat";
+            this.lblVat.Size = new System.Drawing.Size(83, 47);
+            this.lblVat.TabIndex = 10;
+            this.lblVat.Text = "الضريبة (0%):";
+            this.lblVat.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // lblVatVal
+            // 
+            this.lblVatVal.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblVatVal.Font = new System.Drawing.Font("Tahoma", 10.5F, System.Drawing.FontStyle.Bold);
+            this.lblVatVal.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            this.lblVatVal.Location = new System.Drawing.Point(3, 47);
+            this.lblVatVal.Name = "lblVatVal";
+            this.lblVatVal.Size = new System.Drawing.Size(92, 47);
+            this.lblVatVal.TabIndex = 11;
+            this.lblVatVal.Text = "0.00 ج.م";
+            this.lblVatVal.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // pnlFinalTotal
             // 
             this.pnlFinalTotal.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
@@ -705,6 +733,8 @@ namespace POS
         private System.Windows.Forms.NumericUpDown numCashPaid;
         private System.Windows.Forms.Label lblChangeDue;
         private System.Windows.Forms.Label lblChangeDueVal;
+        private System.Windows.Forms.Label lblVat;
+        private System.Windows.Forms.Label lblVatVal;
         private System.Windows.Forms.TableLayoutPanel tlpCartActions;
         private System.Windows.Forms.Button btnCheckout;
         private System.Windows.Forms.Button btnClearCart;

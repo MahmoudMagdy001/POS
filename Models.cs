@@ -74,6 +74,7 @@ namespace POS
         public DateTime SaleDate { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal Discount { get; set; }
+        public decimal TaxAmount { get; set; } = 0.00m;
         public decimal FinalAmount { get; set; }
         public decimal PaidAmount { get; set; }
         public decimal ChangeAmount { get; set; }
