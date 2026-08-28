@@ -438,5 +438,33 @@ BEGIN
 END
 GO
 
+-- ============================================================================
+-- 14. جدول الورديات وحضور وانصراف الموظفين (Shifts)
+-- ============================================================================
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Shifts]') AND type in (N'U'))
+BEGIN
+    CREATE TABLE [dbo].[Shifts] (
+        [ShiftId]      INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        [UserId]       INT               NOT NULL,
+        [ClockInTime]  DATETIME          NOT NULL DEFAULT GETDATE(),
+        [ClockOutTime] DATETIME          NULL,
+        [Notes]        NVARCHAR(500)     NULL,
+        CONSTRAINT [FK_Shifts_Users] FOREIGN KEY ([UserId]) 
+            REFERENCES [dbo].[Users] ([UserId]) ON DELETE CASCADE
+    );
+END
+GO
 
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Shifts_UserId' AND object_id = OBJECT_ID(N'[dbo].[Shifts]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_Shifts_UserId] ON [dbo].[Shifts] ([UserId])
+    INCLUDE ([ClockInTime], [ClockOutTime]);
+END
+GO
 
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Shifts_ClockInTime' AND object_id = OBJECT_ID(N'[dbo].[Shifts]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_Shifts_ClockInTime] ON [dbo].[Shifts] ([ClockInTime])
+    INCLUDE ([UserId], [ClockOutTime]);
+END
+GO

@@ -103,7 +103,7 @@ namespace POS
 
         #region Database Initialization
 
-        private const int CurrentSchemaVersion = 2;
+        private const int CurrentSchemaVersion = 3;
 
         public static void InitializeDatabase()
         {
@@ -422,6 +422,32 @@ namespace POS
                             );
                         END;
 
+                        -- Shifts (Attendance / الوردية والحضور والانصراف)
+                        IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Shifts]') AND type in (N'U'))
+                        BEGIN
+                            CREATE TABLE [dbo].[Shifts] (
+                                [ShiftId]      INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                                [UserId]       INT               NOT NULL,
+                                [ClockInTime]  DATETIME          NOT NULL DEFAULT GETDATE(),
+                                [ClockOutTime] DATETIME          NULL,
+                                [Notes]        NVARCHAR(500)     NULL,
+                                CONSTRAINT [FK_Shifts_Users] FOREIGN KEY ([UserId]) 
+                                    REFERENCES [dbo].[Users] ([UserId]) ON DELETE CASCADE
+                            );
+                        END;
+
+                        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Shifts_UserId' AND object_id = OBJECT_ID(N'[dbo].[Shifts]'))
+                        BEGIN
+                            CREATE NONCLUSTERED INDEX [IX_Shifts_UserId] ON [dbo].[Shifts] ([UserId])
+                            INCLUDE ([ClockInTime], [ClockOutTime]);
+                        END;
+
+                        IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Shifts_ClockInTime' AND object_id = OBJECT_ID(N'[dbo].[Shifts]'))
+                        BEGIN
+                            CREATE NONCLUSTERED INDEX [IX_Shifts_ClockInTime] ON [dbo].[Shifts] ([ClockInTime])
+                            INCLUDE ([UserId], [ClockOutTime]);
+                        END;
+
                         -- Schema Version Tracker
                         IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[__SchemaVersion]') AND type in (N'U'))
                         BEGIN
@@ -431,9 +457,9 @@ namespace POS
                             );
                         END;
 
-                        IF NOT EXISTS (SELECT 1 FROM [dbo].[__SchemaVersion] WHERE VersionNumber = 2)
+                        IF NOT EXISTS (SELECT 1 FROM [dbo].[__SchemaVersion] WHERE VersionNumber = 3)
                         BEGIN
-                            INSERT INTO [dbo].[__SchemaVersion] (VersionNumber, AppliedAt) VALUES (2, GETDATE());
+                            INSERT INTO [dbo].[__SchemaVersion] (VersionNumber, AppliedAt) VALUES (3, GETDATE());
                         END;
                     ";
 
@@ -3433,6 +3459,321 @@ namespace POS
             {
                 return (false, "خطأ أثناء التنفيذ: " + ex.Message);
             }
+        }
+
+        #endregion
+
+        #region Shift / Attendance Management (الورديات والحضور والانصراف)
+
+        /// <summary>
+        /// تسجيل حضور موظف (بداية وردية جديدة)
+        /// </summary>
+        public static (bool Success, string Message, int ShiftId) ClockIn(int userId, string notes = null)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+
+                    string checkQuery = @"SELECT COUNT(1) FROM [dbo].[Shifts] WHERE UserId = @UserId AND ClockOutTime IS NULL";
+                    using (SqlCommand checkCmd = new SqlCommand(checkQuery, conn))
+                    {
+                        checkCmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+                        int openShifts = Convert.ToInt32(checkCmd.ExecuteScalar());
+                        if (openShifts > 0)
+                            return (false, "هذا الموظف لديه وردية مفتوحة بالفعل. يرجى تسجيل الانصراف أولاً.", 0);
+                    }
+
+                    string insertQuery = @"INSERT INTO [dbo].[Shifts] (UserId, ClockInTime, Notes) 
+                                           VALUES (@UserId, GETDATE(), @Notes);
+                                           SELECT SCOPE_IDENTITY();";
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, conn))
+                    {
+                        cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+                        cmd.Parameters.Add("@Notes", SqlDbType.NVarChar, 500).Value = (object)notes ?? DBNull.Value;
+                        int shiftId = Convert.ToInt32(cmd.ExecuteScalar());
+                        return (true, "تم تسجيل الحضور بنجاح.", shiftId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, "خطأ في تسجيل الحضور: " + ex.Message, 0);
+            }
+        }
+
+        /// <summary>
+        /// تسجيل انصراف موظف (إغلاق الوردية المفتوحة)
+        /// </summary>
+        public static (bool Success, string Message) ClockOut(int userId, string notes = null)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    string query = @"UPDATE [dbo].[Shifts] SET ClockOutTime = GETDATE(), 
+                                     Notes = CASE WHEN @Notes IS NOT NULL THEN ISNULL(Notes + N' | ', N'') + @Notes ELSE Notes END
+                                     WHERE UserId = @UserId AND ClockOutTime IS NULL";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+                        cmd.Parameters.Add("@Notes", SqlDbType.NVarChar, 500).Value = (object)notes ?? DBNull.Value;
+                        int rows = cmd.ExecuteNonQuery();
+                        if (rows == 0)
+                            return (false, "لا توجد وردية مفتوحة لهذا الموظف.");
+                        return (true, "تم تسجيل الانصراف بنجاح.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, "خطأ في تسجيل الانصراف: " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// التحقق مما إذا كان الموظف لديه وردية مفتوحة حالياً
+        /// </summary>
+        public static ShiftModel GetActiveShift(int userId)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    string query = @"SELECT s.ShiftId, s.UserId, u.FullName, u.Username, s.ClockInTime, s.ClockOutTime, s.Notes
+                                     FROM [dbo].[Shifts] s
+                                     INNER JOIN [dbo].[Users] u ON s.UserId = u.UserId
+                                     WHERE s.UserId = @UserId AND s.ClockOutTime IS NULL";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userId;
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                return new ShiftModel
+                                {
+                                    ShiftId = Convert.ToInt32(reader["ShiftId"]),
+                                    UserId = Convert.ToInt32(reader["UserId"]),
+                                    FullName = reader["FullName"].ToString(),
+                                    Username = reader["Username"].ToString(),
+                                    ClockInTime = Convert.ToDateTime(reader["ClockInTime"]),
+                                    ClockOutTime = null,
+                                    Notes = reader["Notes"] != DBNull.Value ? reader["Notes"].ToString() : null
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        /// <summary>
+        /// جلب سجل الورديات مع فلتر حسب الموظف والتاريخ
+        /// </summary>
+        public static async Task<DataTable> GetShiftsAsync(int? userIdFilter = null, DateTime? dateFrom = null, DateTime? dateTo = null, string searchTerm = "")
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    string query = @"
+                        SELECT 
+                            s.ShiftId,
+                            s.UserId,
+                            u.FullName,
+                            u.Username,
+                            s.ClockInTime,
+                            s.ClockOutTime,
+                            CASE 
+                                WHEN s.ClockOutTime IS NOT NULL THEN 
+                                    RIGHT('0' + CAST(DATEDIFF(HOUR, s.ClockInTime, s.ClockOutTime) AS NVARCHAR), 2) + N':' + 
+                                    RIGHT('0' + CAST(DATEDIFF(MINUTE, s.ClockInTime, s.ClockOutTime) % 60 AS NVARCHAR), 2)
+                                ELSE N'وردية مفتوحة'
+                            END AS Duration,
+                            CASE 
+                                WHEN s.ClockOutTime IS NOT NULL THEN 
+                                    CAST(DATEDIFF(MINUTE, s.ClockInTime, s.ClockOutTime) / 60.0 AS DECIMAL(10,2))
+                                ELSE 0
+                            END AS TotalHours,
+                            s.Notes
+                        FROM [dbo].[Shifts] s
+                        INNER JOIN [dbo].[Users] u ON s.UserId = u.UserId
+                        WHERE 1=1";
+
+                    if (userIdFilter.HasValue)
+                        query += " AND s.UserId = @UserId";
+                    if (dateFrom.HasValue)
+                        query += " AND s.ClockInTime >= @DateFrom";
+                    if (dateTo.HasValue)
+                        query += " AND s.ClockInTime < DATEADD(DAY, 1, @DateTo)";
+                    if (!string.IsNullOrWhiteSpace(searchTerm))
+                        query += " AND (u.FullName LIKE @Search OR u.Username LIKE @Search)";
+
+                    query += " ORDER BY s.ClockInTime DESC";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        if (userIdFilter.HasValue)
+                            cmd.Parameters.Add("@UserId", SqlDbType.Int).Value = userIdFilter.Value;
+                        if (dateFrom.HasValue)
+                            cmd.Parameters.Add("@DateFrom", SqlDbType.DateTime).Value = dateFrom.Value.Date;
+                        if (dateTo.HasValue)
+                            cmd.Parameters.Add("@DateTo", SqlDbType.DateTime).Value = dateTo.Value.Date;
+                        if (!string.IsNullOrWhiteSpace(searchTerm))
+                            cmd.Parameters.Add("@Search", SqlDbType.NVarChar, 200).Value = "%" + searchTerm + "%";
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            dt.Load(reader);
+                        }
+                    }
+                }
+            }
+            catch { }
+            return dt;
+        }
+
+        /// <summary>
+        /// جلب ملخص ساعات العمل لكل موظف خلال فترة محددة
+        /// </summary>
+        public static async Task<DataTable> GetShiftsSummaryAsync(DateTime? dateFrom = null, DateTime? dateTo = null)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    string query = @"
+                        SELECT 
+                            u.UserId,
+                            u.FullName,
+                            COUNT(s.ShiftId) AS TotalShifts,
+                            ISNULL(CAST(SUM(CASE WHEN s.ClockOutTime IS NOT NULL THEN DATEDIFF(MINUTE, s.ClockInTime, s.ClockOutTime) ELSE 0 END) / 60.0 AS DECIMAL(10,2)), 0) AS TotalHours,
+                            ISNULL(CAST(AVG(CASE WHEN s.ClockOutTime IS NOT NULL THEN CAST(DATEDIFF(MINUTE, s.ClockInTime, s.ClockOutTime) AS FLOAT) ELSE NULL END) / 60.0 AS DECIMAL(10,2)), 0) AS AvgHoursPerShift,
+                            MAX(s.ClockInTime) AS LastClockIn
+                        FROM [dbo].[Users] u
+                        LEFT JOIN [dbo].[Shifts] s ON u.UserId = s.UserId
+                        WHERE u.IsActive = 1";
+
+                    if (dateFrom.HasValue)
+                        query += " AND (s.ClockInTime IS NULL OR s.ClockInTime >= @DateFrom)";
+                    if (dateTo.HasValue)
+                        query += " AND (s.ClockInTime IS NULL OR s.ClockInTime < DATEADD(DAY, 1, @DateTo))";
+
+                    query += @"
+                        GROUP BY u.UserId, u.FullName
+                        ORDER BY TotalHours DESC";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        if (dateFrom.HasValue)
+                            cmd.Parameters.Add("@DateFrom", SqlDbType.DateTime).Value = dateFrom.Value.Date;
+                        if (dateTo.HasValue)
+                            cmd.Parameters.Add("@DateTo", SqlDbType.DateTime).Value = dateTo.Value.Date;
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            dt.Load(reader);
+                        }
+                    }
+                }
+            }
+            catch { }
+            return dt;
+        }
+
+        /// <summary>
+        /// حذف سجل وردية محدد (للمدير فقط)
+        /// </summary>
+        public static (bool Success, string Message) DeleteShift(int shiftId)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    string query = "DELETE FROM [dbo].[Shifts] WHERE ShiftId = @ShiftId";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@ShiftId", SqlDbType.Int).Value = shiftId;
+                        int rows = cmd.ExecuteNonQuery();
+                        if (rows == 0)
+                            return (false, "لم يتم العثور على سجل الوردية المحدد.");
+                        return (true, "تم حذف سجل الوردية بنجاح.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, "خطأ في حذف سجل الوردية: " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// تعديل سجل وردية محدد (تعديل أوقات الحضور والانصراف يدوياً)
+        /// </summary>
+        public static (bool Success, string Message) UpdateShift(int shiftId, DateTime clockInTime, DateTime? clockOutTime, string notes)
+        {
+            try
+            {
+                if (clockOutTime.HasValue && clockOutTime.Value <= clockInTime)
+                    return (false, "وقت الانصراف يجب أن يكون بعد وقت الحضور.");
+
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    conn.Open();
+                    string query = @"UPDATE [dbo].[Shifts] SET ClockInTime = @ClockIn, ClockOutTime = @ClockOut, Notes = @Notes WHERE ShiftId = @ShiftId";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.Add("@ShiftId", SqlDbType.Int).Value = shiftId;
+                        cmd.Parameters.Add("@ClockIn", SqlDbType.DateTime).Value = clockInTime;
+                        cmd.Parameters.Add("@ClockOut", SqlDbType.DateTime).Value = (object)clockOutTime ?? DBNull.Value;
+                        cmd.Parameters.Add("@Notes", SqlDbType.NVarChar, 500).Value = (object)notes ?? DBNull.Value;
+                        int rows = cmd.ExecuteNonQuery();
+                        if (rows == 0)
+                            return (false, "لم يتم العثور على سجل الوردية المحدد.");
+                        return (true, "تم تحديث سجل الوردية بنجاح.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, "خطأ في تحديث سجل الوردية: " + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// جلب قائمة المستخدمين النشطين للاختيار في الورديات
+        /// </summary>
+        public static async Task<DataTable> GetActiveUsersForShiftsAsync()
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(GetConnectionString()))
+                {
+                    await conn.OpenAsync().ConfigureAwait(false);
+                    string query = @"SELECT UserId, FullName, Username FROM [dbo].[Users] WHERE IsActive = 1 ORDER BY FullName";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        {
+                            dt.Load(reader);
+                        }
+                    }
+                }
+            }
+            catch { }
+            return dt;
         }
 
         #endregion

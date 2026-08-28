@@ -17,6 +17,7 @@ namespace POS
         private SalesForm _salesForm;
         private ProductsForm _productsForm;
         private PurchasesForm _purchasesForm;
+        private ShiftsForm _shiftsForm;
         private UsersForm _usersForm;
         private SettingsForm _settingsForm;
 
@@ -76,6 +77,7 @@ namespace POS
             _salesForm = new SalesForm(_currentUser) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
             _productsForm = new ProductsForm { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
             _purchasesForm = new PurchasesForm { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+            _shiftsForm = new ShiftsForm(_currentUser) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
             _usersForm = new UsersForm(_currentUser) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
             _settingsForm = new SettingsForm(_currentUser) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
         }
@@ -118,6 +120,12 @@ namespace POS
                     activeButton = btnNavPurchases;
                     sectionTitle = "إدارة فواتير المشتريات والموردين";
                     _purchasesForm?.RefreshData();
+                    break;
+                case "Shifts":
+                    targetForm = _shiftsForm;
+                    activeButton = btnNavShifts;
+                    sectionTitle = "نظام الورديات والحضور والانصراف وحساب ساعات العمل";
+                    _shiftsForm?.RefreshData();
                     break;
                 case "Users":
                     if (!isAdmin)
@@ -167,7 +175,7 @@ namespace POS
 
         private void ResetNavButtons()
         {
-            Button[] buttons = { btnNavDashboard, btnNavPOS, btnNavSales, btnNavProducts, btnNavPurchases, btnNavUsers, btnNavSettings };
+            Button[] buttons = { btnNavDashboard, btnNavPOS, btnNavSales, btnNavProducts, btnNavPurchases, btnNavShifts, btnNavUsers, btnNavSettings };
             foreach (var b in buttons)
             {
                 b.BackColor = Color.Transparent;
@@ -185,6 +193,7 @@ namespace POS
             else if (clicked == btnNavSales) ShowView("Sales");
             else if (clicked == btnNavProducts) ShowView("Products");
             else if (clicked == btnNavPurchases) ShowView("Purchases");
+            else if (clicked == btnNavShifts) ShowView("Shifts");
             else if (clicked == btnNavUsers) ShowView("Users");
             else if (clicked == btnNavSettings) ShowView("Settings");
         }

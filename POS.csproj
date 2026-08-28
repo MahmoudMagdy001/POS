@@ -117,6 +117,18 @@
     <Compile Include="SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ShiftsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ShiftsForm.Designer.cs">
+      <DependentUpon>ShiftsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShiftEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ShiftEditForm.Designer.cs">
+      <DependentUpon>ShiftEditForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FontManager.cs" />
     <Compile Include="UITheme.cs" />
     <Compile Include="UIStyler.cs" />
@@ -196,6 +208,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShiftsForm.resx">
+      <DependentUpon>ShiftsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShiftEditForm.resx">
+      <DependentUpon>ShiftEditForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserModalForm.resx">
       <DependentUpon>UserModalForm.cs</DependentUpon>

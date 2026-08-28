@@ -178,4 +178,28 @@ namespace POS
         public bool AutoPrintOnSale { get; set; } = false;
         public bool AllowNegativeStock { get; set; } = false;
     }
+
+    public class ShiftModel
+    {
+        public int ShiftId { get; set; }
+        public int UserId { get; set; }
+        public string FullName { get; set; }
+        public string Username { get; set; }
+        public DateTime ClockInTime { get; set; }
+        public DateTime? ClockOutTime { get; set; }
+        public string Duration { get; set; }
+        public double TotalHours { get; set; }
+        public string Notes { get; set; }
+        public bool IsActive => ClockOutTime == null;
+    }
+
+    public class ShiftSummaryModel
+    {
+        public int UserId { get; set; }
+        public string FullName { get; set; }
+        public int TotalShifts { get; set; }
+        public double TotalHours { get; set; }
+        public double AverageHoursPerShift { get; set; }
+        public DateTime? LastClockIn { get; set; }
+    }
 }

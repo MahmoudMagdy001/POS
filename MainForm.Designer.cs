@@ -22,6 +22,7 @@ namespace POS
             this.pnlNavContainer = new System.Windows.Forms.Panel();
             this.btnNavSettings = new System.Windows.Forms.Button();
             this.btnNavUsers = new System.Windows.Forms.Button();
+            this.btnNavShifts = new System.Windows.Forms.Button();
             this.btnNavSales = new System.Windows.Forms.Button();
             this.btnNavPurchases = new System.Windows.Forms.Button();
             this.btnNavProducts = new System.Windows.Forms.Button();
@@ -64,6 +65,7 @@ namespace POS
             // 
             this.pnlNavContainer.Controls.Add(this.btnNavSettings);
             this.pnlNavContainer.Controls.Add(this.btnNavUsers);
+            this.pnlNavContainer.Controls.Add(this.btnNavShifts);
             this.pnlNavContainer.Controls.Add(this.btnNavSales);
             this.pnlNavContainer.Controls.Add(this.btnNavPurchases);
             this.pnlNavContainer.Controls.Add(this.btnNavProducts);
@@ -86,11 +88,11 @@ namespace POS
             this.btnNavSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnNavSettings.Font = new System.Drawing.Font("Tahoma", 10.5F, System.Drawing.FontStyle.Bold);
             this.btnNavSettings.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
-            this.btnNavSettings.Location = new System.Drawing.Point(12, 303);
+            this.btnNavSettings.Location = new System.Drawing.Point(12, 351);
             this.btnNavSettings.Name = "btnNavSettings";
             this.btnNavSettings.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNavSettings.Size = new System.Drawing.Size(256, 48);
-            this.btnNavSettings.TabIndex = 6;
+            this.btnNavSettings.TabIndex = 7;
             this.btnNavSettings.Text = "⚙️  إعدادات النظام";
             this.btnNavSettings.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavSettings.UseVisualStyleBackColor = false;
@@ -105,15 +107,34 @@ namespace POS
             this.btnNavUsers.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnNavUsers.Font = new System.Drawing.Font("Tahoma", 10.5F, System.Drawing.FontStyle.Bold);
             this.btnNavUsers.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
-            this.btnNavUsers.Location = new System.Drawing.Point(12, 255);
+            this.btnNavUsers.Location = new System.Drawing.Point(12, 303);
             this.btnNavUsers.Name = "btnNavUsers";
             this.btnNavUsers.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNavUsers.Size = new System.Drawing.Size(256, 48);
-            this.btnNavUsers.TabIndex = 5;
+            this.btnNavUsers.TabIndex = 6;
             this.btnNavUsers.Text = "👥  المستخدمين والموظفين";
             this.btnNavUsers.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavUsers.UseVisualStyleBackColor = false;
             this.btnNavUsers.Click += new System.EventHandler(this.btnNav_Click);
+            // 
+            // btnNavShifts
+            // 
+            this.btnNavShifts.BackColor = System.Drawing.Color.Transparent;
+            this.btnNavShifts.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnNavShifts.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnNavShifts.FlatAppearance.BorderSize = 0;
+            this.btnNavShifts.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnNavShifts.Font = new System.Drawing.Font("Tahoma", 10.5F, System.Drawing.FontStyle.Bold);
+            this.btnNavShifts.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
+            this.btnNavShifts.Location = new System.Drawing.Point(12, 255);
+            this.btnNavShifts.Name = "btnNavShifts";
+            this.btnNavShifts.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btnNavShifts.Size = new System.Drawing.Size(256, 48);
+            this.btnNavShifts.TabIndex = 5;
+            this.btnNavShifts.Text = "⏰  الورديات والحضور";
+            this.btnNavShifts.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnNavShifts.UseVisualStyleBackColor = false;
+            this.btnNavShifts.Click += new System.EventHandler(this.btnNav_Click);
             // 
             // btnNavSales
             // 
@@ -410,6 +431,7 @@ namespace POS
         private System.Windows.Forms.Button btnNavSales;
         private System.Windows.Forms.Button btnNavProducts;
         private System.Windows.Forms.Button btnNavPurchases;
+        private System.Windows.Forms.Button btnNavShifts;
         private System.Windows.Forms.Button btnNavUsers;
         private System.Windows.Forms.Button btnNavSettings;
         private System.Windows.Forms.Panel pnlTopHeader;
