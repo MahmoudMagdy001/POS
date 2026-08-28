@@ -119,6 +119,7 @@ namespace POS
         {
             if (dgvTopProducts.Columns.Count == 0) return;
 
+            dgvTopProducts.ScrollBars = ScrollBars.Both;
             dgvTopProducts.ColumnHeadersHeight = UITheme.GridHeaderHeight;
             dgvTopProducts.RowTemplate.Height = UITheme.GridRowHeight;
             dgvTopProducts.EnableHeadersVisualStyles = false;
@@ -127,27 +128,32 @@ namespace POS
             {
                 dgvTopProducts.Columns["ProductName"].HeaderText = "اسم المنتج";
                 dgvTopProducts.Columns["ProductName"].FillWeight = 175;
+                dgvTopProducts.Columns["ProductName"].MinimumWidth = 140;
             }
             if (dgvTopProducts.Columns["Barcode"] != null)
             {
                 dgvTopProducts.Columns["Barcode"].HeaderText = "الباركود";
                 dgvTopProducts.Columns["Barcode"].FillWeight = 75;
+                dgvTopProducts.Columns["Barcode"].MinimumWidth = 90;
             }
             if (dgvTopProducts.Columns["CategoryName"] != null)
             {
                 dgvTopProducts.Columns["CategoryName"].HeaderText = "القسم";
                 dgvTopProducts.Columns["CategoryName"].FillWeight = 75;
+                dgvTopProducts.Columns["CategoryName"].MinimumWidth = 85;
             }
             if (dgvTopProducts.Columns["UnitsSold"] != null)
             {
                 dgvTopProducts.Columns["UnitsSold"].HeaderText = "الكمية المباعة";
                 dgvTopProducts.Columns["UnitsSold"].FillWeight = 75;
+                dgvTopProducts.Columns["UnitsSold"].MinimumWidth = 85;
                 dgvTopProducts.Columns["UnitsSold"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             if (dgvTopProducts.Columns["TotalRevenue"] != null)
             {
                 dgvTopProducts.Columns["TotalRevenue"].HeaderText = "إجمالي الإيراد";
                 dgvTopProducts.Columns["TotalRevenue"].FillWeight = 100;
+                dgvTopProducts.Columns["TotalRevenue"].MinimumWidth = 95;
                 dgvTopProducts.Columns["TotalRevenue"].DefaultCellStyle.Format = "N2";
                 dgvTopProducts.Columns["TotalRevenue"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }
@@ -157,6 +163,7 @@ namespace POS
         {
             if (dgvRecentSales.Columns.Count == 0) return;
 
+            dgvRecentSales.ScrollBars = ScrollBars.Both;
             dgvRecentSales.ColumnHeadersHeight = UITheme.GridHeaderHeight;
             dgvRecentSales.RowTemplate.Height = UITheme.GridRowHeight;
             dgvRecentSales.EnableHeadersVisualStyles = false;
@@ -165,23 +172,27 @@ namespace POS
             {
                 dgvRecentSales.Columns["SaleId"].HeaderText = "رقم الفاتورة";
                 dgvRecentSales.Columns["SaleId"].FillWeight = 60;
+                dgvRecentSales.Columns["SaleId"].MinimumWidth = 80;
                 dgvRecentSales.Columns["SaleId"].DefaultCellStyle.Format = "D5";
             }
             if (dgvRecentSales.Columns["SaleDate"] != null)
             {
                 dgvRecentSales.Columns["SaleDate"].HeaderText = "التاريخ والوقت";
                 dgvRecentSales.Columns["SaleDate"].FillWeight = 110;
+                dgvRecentSales.Columns["SaleDate"].MinimumWidth = 130;
                 dgvRecentSales.Columns["SaleDate"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm";
             }
             if (dgvRecentSales.Columns["Cashier"] != null)
             {
                 dgvRecentSales.Columns["Cashier"].HeaderText = "الكاشير";
                 dgvRecentSales.Columns["Cashier"].FillWeight = 90;
+                dgvRecentSales.Columns["Cashier"].MinimumWidth = 100;
             }
             if (dgvRecentSales.Columns["FinalAmount"] != null)
             {
                 dgvRecentSales.Columns["FinalAmount"].HeaderText = "الإجمالي (ج.م)";
                 dgvRecentSales.Columns["FinalAmount"].FillWeight = 90;
+                dgvRecentSales.Columns["FinalAmount"].MinimumWidth = 95;
                 dgvRecentSales.Columns["FinalAmount"].DefaultCellStyle.Format = "N2";
                 dgvRecentSales.Columns["FinalAmount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }
@@ -189,11 +200,13 @@ namespace POS
             {
                 dgvRecentSales.Columns["PaymentMethod"].HeaderText = "الدفع";
                 dgvRecentSales.Columns["PaymentMethod"].FillWeight = 70;
+                dgvRecentSales.Columns["PaymentMethod"].MinimumWidth = 75;
             }
             if (dgvRecentSales.Columns["ItemsCount"] != null)
             {
                 dgvRecentSales.Columns["ItemsCount"].HeaderText = "عدد الأصناف";
                 dgvRecentSales.Columns["ItemsCount"].FillWeight = 80;
+                dgvRecentSales.Columns["ItemsCount"].MinimumWidth = 80;
                 dgvRecentSales.Columns["ItemsCount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
         }
@@ -202,6 +215,7 @@ namespace POS
         {
             if (dgvLowStock.Columns.Count == 0) return;
 
+            dgvLowStock.ScrollBars = ScrollBars.Both;
             dgvLowStock.ColumnHeadersHeight = UITheme.GridHeaderHeight;
             dgvLowStock.RowTemplate.Height = UITheme.GridRowHeight;
             dgvLowStock.EnableHeadersVisualStyles = false;
@@ -213,21 +227,25 @@ namespace POS
             {
                 dgvLowStock.Columns["ProductName"].HeaderText = "اسم المنتج";
                 dgvLowStock.Columns["ProductName"].FillWeight = 175;
+                dgvLowStock.Columns["ProductName"].MinimumWidth = 140;
             }
             if (dgvLowStock.Columns["Barcode"] != null)
             {
                 dgvLowStock.Columns["Barcode"].HeaderText = "الباركود";
                 dgvLowStock.Columns["Barcode"].FillWeight = 75;
+                dgvLowStock.Columns["Barcode"].MinimumWidth = 90;
             }
             if (dgvLowStock.Columns["CategoryName"] != null)
             {
                 dgvLowStock.Columns["CategoryName"].HeaderText = "القسم";
                 dgvLowStock.Columns["CategoryName"].FillWeight = 70;
+                dgvLowStock.Columns["CategoryName"].MinimumWidth = 85;
             }
             if (dgvLowStock.Columns["StockQuantity"] != null)
             {
                 dgvLowStock.Columns["StockQuantity"].HeaderText = "الكمية الحالية";
                 dgvLowStock.Columns["StockQuantity"].FillWeight = 60;
+                dgvLowStock.Columns["StockQuantity"].MinimumWidth = 85;
                 dgvLowStock.Columns["StockQuantity"].DefaultCellStyle.ForeColor = POS.DesignSystem.Tokens.UIColors.Danger;
                 dgvLowStock.Columns["StockQuantity"].DefaultCellStyle.Font = FontManager.GetBold(9.5f);
                 dgvLowStock.Columns["StockQuantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -236,12 +254,14 @@ namespace POS
             {
                 dgvLowStock.Columns["MinStockAlert"].HeaderText = "حد الطلب (الأدنى)";
                 dgvLowStock.Columns["MinStockAlert"].FillWeight = 60;
+                dgvLowStock.Columns["MinStockAlert"].MinimumWidth = 95;
                 dgvLowStock.Columns["MinStockAlert"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             if (dgvLowStock.Columns["BuyPrice"] != null)
             {
                 dgvLowStock.Columns["BuyPrice"].HeaderText = "سعر الشراء";
                 dgvLowStock.Columns["BuyPrice"].FillWeight = 60;
+                dgvLowStock.Columns["BuyPrice"].MinimumWidth = 85;
                 dgvLowStock.Columns["BuyPrice"].DefaultCellStyle.Format = "N2";
                 dgvLowStock.Columns["BuyPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }
@@ -249,6 +269,7 @@ namespace POS
             {
                 dgvLowStock.Columns["SellPrice"].HeaderText = "سعر البيع";
                 dgvLowStock.Columns["SellPrice"].FillWeight = 60;
+                dgvLowStock.Columns["SellPrice"].MinimumWidth = 85;
                 dgvLowStock.Columns["SellPrice"].DefaultCellStyle.Format = "N2";
                 dgvLowStock.Columns["SellPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }

@@ -333,7 +333,7 @@ namespace POS
                 Height = 200,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 Text = "تأكيد كلمة المرور",
-                StartPosition = FormStartPosition.CenterParent,
+                StartPosition = FormStartPosition.CenterScreen,
                 MaximizeBox = false,
                 MinimizeBox = false,
                 RightToLeft = RightToLeft.Yes,
@@ -358,7 +358,7 @@ namespace POS
 
             FontManager.ApplyCairoFont(prompt);
 
-            return prompt.ShowDialog(this) == DialogResult.OK ? textBox.Text : "";
+            return prompt.ShowDialog(this.FindForm() ?? this) == DialogResult.OK ? textBox.Text : "";
         }
     }
 }

@@ -279,6 +279,8 @@ namespace POS
             this.MaximizeBox = false;
             this.Name = "LoginForm";
             this.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.RightToLeftLayout = true;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "نظام نقاط البيع - تسجيل الدخول";
             this.Load += new System.EventHandler(this.LoginForm_Load);
             this.pnlRight.ResumeLayout(false);

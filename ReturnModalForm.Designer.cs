@@ -415,7 +415,7 @@ namespace POS
             this.RightToLeftLayout = true;
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "عملية إرجاع مبيعات";
             this.Load += new System.EventHandler(this.ReturnModalForm_Load);
             this.pnlHeader.ResumeLayout(false);

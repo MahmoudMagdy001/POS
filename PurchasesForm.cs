@@ -62,6 +62,7 @@ namespace POS
         {
             if (dgvPurchaseItems.Columns.Count == 0) return;
 
+            dgvPurchaseItems.ScrollBars = ScrollBars.Both;
             dgvPurchaseItems.ColumnHeadersHeight = 48;
             dgvPurchaseItems.RowTemplate.Height = 40;
             dgvPurchaseItems.EnableHeadersVisualStyles = false;
@@ -73,16 +74,19 @@ namespace POS
             {
                 dgvPurchaseItems.Columns["Barcode"].HeaderText = "الباركود";
                 dgvPurchaseItems.Columns["Barcode"].FillWeight = 75; // 15%
+                dgvPurchaseItems.Columns["Barcode"].MinimumWidth = 95;
             }
             if (dgvPurchaseItems.Columns["ProductName"] != null)
             {
                 dgvPurchaseItems.Columns["ProductName"].HeaderText = "اسم الصنف";
                 dgvPurchaseItems.Columns["ProductName"].FillWeight = 175; // 35%
+                dgvPurchaseItems.Columns["ProductName"].MinimumWidth = 160;
             }
             if (dgvPurchaseItems.Columns["UnitPrice"] != null)
             {
                 dgvPurchaseItems.Columns["UnitPrice"].HeaderText = "سعر الشراء للوحدة";
                 dgvPurchaseItems.Columns["UnitPrice"].FillWeight = 75; // 15%
+                dgvPurchaseItems.Columns["UnitPrice"].MinimumWidth = 110;
                 dgvPurchaseItems.Columns["UnitPrice"].DefaultCellStyle.Format = "N2";
                 dgvPurchaseItems.Columns["UnitPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }
@@ -90,12 +94,14 @@ namespace POS
             {
                 dgvPurchaseItems.Columns["Quantity"].HeaderText = "الكمية المشتراة";
                 dgvPurchaseItems.Columns["Quantity"].FillWeight = 60; // 12%
+                dgvPurchaseItems.Columns["Quantity"].MinimumWidth = 95;
                 dgvPurchaseItems.Columns["Quantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             if (dgvPurchaseItems.Columns["LineTotal"] != null)
             {
                 dgvPurchaseItems.Columns["LineTotal"].HeaderText = "الإجمالي (ج.م)";
                 dgvPurchaseItems.Columns["LineTotal"].FillWeight = 75; // 15%
+                dgvPurchaseItems.Columns["LineTotal"].MinimumWidth = 100;
                 dgvPurchaseItems.Columns["LineTotal"].DefaultCellStyle.Format = "N2";
                 dgvPurchaseItems.Columns["LineTotal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }
@@ -108,10 +114,15 @@ namespace POS
                 btnDel.Text = "❌ حذف";
                 btnDel.UseColumnTextForButtonValue = true;
                 btnDel.FillWeight = 40; // 8%
+                btnDel.MinimumWidth = 75;
                 btnDel.FlatStyle = FlatStyle.Flat;
                 btnDel.DefaultCellStyle.ForeColor = Color.FromArgb(220, 38, 38);
                 btnDel.DefaultCellStyle.SelectionForeColor = Color.FromArgb(220, 38, 38);
                 dgvPurchaseItems.Columns.Add(btnDel);
+            }
+            else
+            {
+                dgvPurchaseItems.Columns["colDelete"].MinimumWidth = 75;
             }
         }
 
@@ -303,7 +314,7 @@ namespace POS
             {
                 modal.Text = "إضافة مورد جديد";
                 modal.Size = new Size(420, 320);
-                modal.StartPosition = FormStartPosition.CenterParent;
+                modal.StartPosition = FormStartPosition.CenterScreen;
                 modal.FormBorderStyle = FormBorderStyle.FixedDialog;
                 modal.MaximizeBox = false;
                 modal.MinimizeBox = false;
@@ -363,7 +374,7 @@ namespace POS
                 modal.Controls.Add(btnSave);
 
                 FontManager.ApplyCairoFont(modal);
-                if (modal.ShowDialog(this) == DialogResult.OK)
+                if (modal.ShowDialog(this.FindForm() ?? this) == DialogResult.OK)
                 {
                     await LoadSuppliersAsync();
                 }
@@ -402,6 +413,7 @@ namespace POS
         {
             if (dgvPurchasesHistory.Columns.Count == 0) return;
 
+            dgvPurchasesHistory.ScrollBars = ScrollBars.Both;
             dgvPurchasesHistory.ColumnHeadersHeight = 48;
             dgvPurchasesHistory.RowTemplate.Height = 40;
             dgvPurchasesHistory.EnableHeadersVisualStyles = false;
@@ -410,23 +422,27 @@ namespace POS
             {
                 dgvPurchasesHistory.Columns["PurchaseId"].HeaderText = "رقم الفاتورة";
                 dgvPurchasesHistory.Columns["PurchaseId"].FillWeight = 70; // 14%
+                dgvPurchasesHistory.Columns["PurchaseId"].MinimumWidth = 85;
                 dgvPurchasesHistory.Columns["PurchaseId"].DefaultCellStyle.Format = "D5";
             }
             if (dgvPurchasesHistory.Columns["PurchaseDate"] != null)
             {
                 dgvPurchasesHistory.Columns["PurchaseDate"].HeaderText = "تاريخ الشراء";
                 dgvPurchasesHistory.Columns["PurchaseDate"].FillWeight = 100; // 20%
+                dgvPurchasesHistory.Columns["PurchaseDate"].MinimumWidth = 110;
                 dgvPurchasesHistory.Columns["PurchaseDate"].DefaultCellStyle.Format = "yyyy-MM-dd";
             }
             if (dgvPurchasesHistory.Columns["SupplierName"] != null)
             {
                 dgvPurchasesHistory.Columns["SupplierName"].HeaderText = "المورد";
                 dgvPurchasesHistory.Columns["SupplierName"].FillWeight = 140; // 28%
+                dgvPurchasesHistory.Columns["SupplierName"].MinimumWidth = 130;
             }
             if (dgvPurchasesHistory.Columns["TotalAmount"] != null)
             {
                 dgvPurchasesHistory.Columns["TotalAmount"].HeaderText = "الإجمالي (ج.م)";
                 dgvPurchasesHistory.Columns["TotalAmount"].FillWeight = 100; // 20%
+                dgvPurchasesHistory.Columns["TotalAmount"].MinimumWidth = 100;
                 dgvPurchasesHistory.Columns["TotalAmount"].DefaultCellStyle.Format = "N2";
                 dgvPurchasesHistory.Columns["TotalAmount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }
@@ -434,12 +450,14 @@ namespace POS
             {
                 dgvPurchasesHistory.Columns["ItemsCount"].HeaderText = "عدد الأصناف";
                 dgvPurchasesHistory.Columns["ItemsCount"].FillWeight = 90; // 18%
+                dgvPurchasesHistory.Columns["ItemsCount"].MinimumWidth = 85;
                 dgvPurchasesHistory.Columns["ItemsCount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             if (dgvPurchasesHistory.Columns["Notes"] != null)
             {
                 dgvPurchasesHistory.Columns["Notes"].HeaderText = "ملاحظات";
                 dgvPurchasesHistory.Columns["Notes"].FillWeight = 90;
+                dgvPurchasesHistory.Columns["Notes"].MinimumWidth = 100;
             }
         }
 
@@ -474,6 +492,7 @@ namespace POS
         {
             if (dgvPurchaseHistoryDetails.Columns.Count == 0) return;
 
+            dgvPurchaseHistoryDetails.ScrollBars = ScrollBars.Both;
             dgvPurchaseHistoryDetails.ColumnHeadersHeight = 48;
             dgvPurchaseHistoryDetails.RowTemplate.Height = 40;
             dgvPurchaseHistoryDetails.EnableHeadersVisualStyles = false;
@@ -489,16 +508,19 @@ namespace POS
             {
                 dgvPurchaseHistoryDetails.Columns["Barcode"].HeaderText = "الباركود";
                 dgvPurchaseHistoryDetails.Columns["Barcode"].FillWeight = 80; // 16%
+                dgvPurchaseHistoryDetails.Columns["Barcode"].MinimumWidth = 95;
             }
             if (dgvPurchaseHistoryDetails.Columns["ProductName"] != null)
             {
                 dgvPurchaseHistoryDetails.Columns["ProductName"].HeaderText = "اسم الصنف";
                 dgvPurchaseHistoryDetails.Columns["ProductName"].FillWeight = 200; // 40%
+                dgvPurchaseHistoryDetails.Columns["ProductName"].MinimumWidth = 160;
             }
             if (dgvPurchaseHistoryDetails.Columns["UnitPrice"] != null)
             {
                 dgvPurchaseHistoryDetails.Columns["UnitPrice"].HeaderText = "سعر الوحدة";
                 dgvPurchaseHistoryDetails.Columns["UnitPrice"].FillWeight = 80; // 16%
+                dgvPurchaseHistoryDetails.Columns["UnitPrice"].MinimumWidth = 90;
                 dgvPurchaseHistoryDetails.Columns["UnitPrice"].DefaultCellStyle.Format = "N2";
                 dgvPurchaseHistoryDetails.Columns["UnitPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }
@@ -506,12 +528,14 @@ namespace POS
             {
                 dgvPurchaseHistoryDetails.Columns["Quantity"].HeaderText = "الكمية";
                 dgvPurchaseHistoryDetails.Columns["Quantity"].FillWeight = 60; // 12%
+                dgvPurchaseHistoryDetails.Columns["Quantity"].MinimumWidth = 70;
                 dgvPurchaseHistoryDetails.Columns["Quantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             if (dgvPurchaseHistoryDetails.Columns["LineTotal"] != null)
             {
                 dgvPurchaseHistoryDetails.Columns["LineTotal"].HeaderText = "الإجمالي (ج.م)";
                 dgvPurchaseHistoryDetails.Columns["LineTotal"].FillWeight = 80; // 16%
+                dgvPurchaseHistoryDetails.Columns["LineTotal"].MinimumWidth = 95;
                 dgvPurchaseHistoryDetails.Columns["LineTotal"].DefaultCellStyle.Format = "N2";
                 dgvPurchaseHistoryDetails.Columns["LineTotal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }

@@ -226,6 +226,7 @@ namespace POS
                 }
                 else if (ctrl is DataGridView dgv)
                 {
+                    dgv.ScrollBars = ScrollBars.Both;
                     dgv.EnableHeadersVisualStyles = false;
                     dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
                     if (dgv.ColumnHeadersHeight < 46)

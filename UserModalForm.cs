@@ -12,6 +12,7 @@ namespace POS
         public UserModalForm()
         {
             InitializeComponent();
+            this.StartPosition = FormStartPosition.CenterScreen;
             _isEditMode = false;
             SetupForm();
         }
@@ -19,14 +20,28 @@ namespace POS
         public UserModalForm(UserModel userToEdit)
         {
             InitializeComponent();
+            this.StartPosition = FormStartPosition.CenterScreen;
             _existingUser = userToEdit;
             _isEditMode = true;
             SetupForm();
         }
 
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            UIStyler.CenterFormOnScreen(this);
+        }
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            UIStyler.CenterFormOnScreen(this);
+        }
+
         private void SetupForm()
         {
             UIStyler.ApplyTheme(this);
+            UIStyler.CenterFormOnScreen(this);
             lblHeaderTitle.Font = FontManager.GetBold(14f);
             UIStyler.StylePrimaryButton(btnSave);
             UIStyler.StyleSecondaryButton(btnCancel, "إلغاء");

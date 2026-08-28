@@ -49,6 +49,7 @@ namespace POS.DesignSystem.Components
             RowHeadersVisible = false;
             AutoGenerateColumns = false;
             RightToLeft = RightToLeft.Yes;
+            ScrollBars = ScrollBars.Both;
 
             // Header Style
             ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
@@ -89,6 +90,15 @@ namespace POS.DesignSystem.Components
                 SelectionForeColor = UIColors.PrimaryDark,
                 Padding = new Padding(2, 0, 2, 0)
             };
+        }
+
+        protected override void OnColumnAdded(DataGridViewColumnEventArgs e)
+        {
+            base.OnColumnAdded(e);
+            if (e.Column != null && e.Column.MinimumWidth < 50)
+            {
+                e.Column.MinimumWidth = 50;
+            }
         }
     }
 }

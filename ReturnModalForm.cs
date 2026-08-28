@@ -17,11 +17,25 @@ namespace POS
             _saleId = saleId;
             _currentUser = currentUser;
             InitializeComponent();
+            this.StartPosition = FormStartPosition.CenterScreen;
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            UIStyler.CenterFormOnScreen(this);
+        }
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            UIStyler.CenterFormOnScreen(this);
         }
 
         private void ReturnModalForm_Load(object sender, EventArgs e)
         {
             UIStyler.ApplyTheme(this);
+            UIStyler.CenterFormOnScreen(this);
             UIStyler.StyleDangerButton(btnConfirmReturn, "↩️ تأكيد عملية الإرجاع");
             UIStyler.StyleSecondaryButton(btnReturnAll, "⚡ إرجاع الكل");
             UIStyler.StyleSecondaryButton(btnResetAll, "🔄 تصفير الكل");
@@ -59,6 +73,7 @@ namespace POS
 
         private void SetupGridColumns()
         {
+            dgvReturnItems.ScrollBars = ScrollBars.Both;
             dgvReturnItems.Columns.Clear();
             dgvReturnItems.AutoGenerateColumns = false;
 

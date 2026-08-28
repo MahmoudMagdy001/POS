@@ -197,6 +197,9 @@
     <EmbeddedResource Include="SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UserModalForm.resx">
+      <DependentUpon>UserModalForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UsersForm.resx">
       <DependentUpon>UsersForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -210,7 +213,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="Ultimate C# POS Performance Optimization Prompt.md" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

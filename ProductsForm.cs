@@ -100,6 +100,7 @@ namespace POS
         {
             if (dgvProducts.Columns.Count == 0) return;
 
+            dgvProducts.ScrollBars = ScrollBars.Both;
             dgvProducts.ColumnHeadersHeight = 48;
             dgvProducts.RowTemplate.Height = 40;
             dgvProducts.EnableHeadersVisualStyles = false;
@@ -117,21 +118,25 @@ namespace POS
             {
                 dgvProducts.Columns["ProductName"].HeaderText = "اسم المنتج";
                 dgvProducts.Columns["ProductName"].FillWeight = 175; // 35%
+                dgvProducts.Columns["ProductName"].MinimumWidth = 160;
             }
             if (dgvProducts.Columns["Barcode"] != null)
             {
                 dgvProducts.Columns["Barcode"].HeaderText = "الباركود";
                 dgvProducts.Columns["Barcode"].FillWeight = 75; // 15%
+                dgvProducts.Columns["Barcode"].MinimumWidth = 100;
             }
             if (dgvProducts.Columns["CategoryName"] != null)
             {
                 dgvProducts.Columns["CategoryName"].HeaderText = "القسم";
                 dgvProducts.Columns["CategoryName"].FillWeight = 70; // 14%
+                dgvProducts.Columns["CategoryName"].MinimumWidth = 90;
             }
             if (dgvProducts.Columns["BuyPrice"] != null)
             {
                 dgvProducts.Columns["BuyPrice"].HeaderText = "سعر الشراء";
                 dgvProducts.Columns["BuyPrice"].FillWeight = 60; // 12%
+                dgvProducts.Columns["BuyPrice"].MinimumWidth = 85;
                 dgvProducts.Columns["BuyPrice"].DefaultCellStyle.Format = "N2";
                 dgvProducts.Columns["BuyPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }
@@ -139,6 +144,7 @@ namespace POS
             {
                 dgvProducts.Columns["SellPrice"].HeaderText = "سعر البيع";
                 dgvProducts.Columns["SellPrice"].FillWeight = 60; // 12%
+                dgvProducts.Columns["SellPrice"].MinimumWidth = 85;
                 dgvProducts.Columns["SellPrice"].DefaultCellStyle.Format = "N2";
                 dgvProducts.Columns["SellPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }
@@ -146,12 +152,14 @@ namespace POS
             {
                 dgvProducts.Columns["StockQuantity"].HeaderText = "الكمية بالمخزن";
                 dgvProducts.Columns["StockQuantity"].FillWeight = 60; // 12%
+                dgvProducts.Columns["StockQuantity"].MinimumWidth = 95;
                 dgvProducts.Columns["StockQuantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             if (dgvProducts.Columns["MinStockAlert"] != null)
             {
                 dgvProducts.Columns["MinStockAlert"].HeaderText = "حد التنبيه";
                 dgvProducts.Columns["MinStockAlert"].FillWeight = 50; // 10%
+                dgvProducts.Columns["MinStockAlert"].MinimumWidth = 80;
                 dgvProducts.Columns["MinStockAlert"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
         }
@@ -318,7 +326,7 @@ namespace POS
             {
                 catForm.Text = "إدارة وتصنيف الأقسام";
                 catForm.Size = new Size(450, 480);
-                catForm.StartPosition = FormStartPosition.CenterParent;
+                catForm.StartPosition = FormStartPosition.CenterScreen;
                 catForm.FormBorderStyle = FormBorderStyle.FixedDialog;
                 catForm.MaximizeBox = false;
                 catForm.MinimizeBox = false;
@@ -389,7 +397,7 @@ namespace POS
 
                 refreshCats();
                 FontManager.ApplyCairoFont(catForm);
-                catForm.ShowDialog(this);
+                catForm.ShowDialog(this.FindForm() ?? this);
 
                 await LoadCategoriesAsync();
                 await LoadProductsAsync();

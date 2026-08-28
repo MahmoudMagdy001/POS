@@ -31,7 +31,7 @@ namespace POS.DesignSystem.Components
         public AppModal()
         {
             FormBorderStyle = FormBorderStyle.None;
-            StartPosition = FormStartPosition.CenterParent;
+            StartPosition = FormStartPosition.CenterScreen;
             BackColor = UIColors.AppBackground;
             RightToLeft = RightToLeft.Yes;
             RightToLeftLayout = true;
@@ -39,6 +39,12 @@ namespace POS.DesignSystem.Components
             Size = new Size(500, 400);
 
             InitializeComponents();
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            CenterToScreen();
         }
 
         private void InitializeComponents()

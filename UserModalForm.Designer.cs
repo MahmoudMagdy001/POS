@@ -49,20 +49,22 @@ namespace POS
             this.pnlHeader.Controls.Add(this.lblHeaderTitle);
             this.pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlHeader.Location = new System.Drawing.Point(0, 0);
+            this.pnlHeader.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.pnlHeader.Name = "pnlHeader";
-            this.pnlHeader.Padding = new System.Windows.Forms.Padding(20, 16, 20, 16);
-            this.pnlHeader.Size = new System.Drawing.Size(460, 75);
+            this.pnlHeader.Padding = new System.Windows.Forms.Padding(27, 11, 27, 11);
+            this.pnlHeader.Size = new System.Drawing.Size(613, 74);
             this.pnlHeader.TabIndex = 0;
             // 
             // lblHeaderSubtitle
             // 
             this.lblHeaderSubtitle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblHeaderSubtitle.AutoSize = true;
-            this.lblHeaderSubtitle.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.lblHeaderSubtitle.Font = new System.Drawing.Font("Tahoma", 8.5F);
             this.lblHeaderSubtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
-            this.lblHeaderSubtitle.Location = new System.Drawing.Point(195, 44);
+            this.lblHeaderSubtitle.Location = new System.Drawing.Point(260, 41);
+            this.lblHeaderSubtitle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblHeaderSubtitle.Name = "lblHeaderSubtitle";
-            this.lblHeaderSubtitle.Size = new System.Drawing.Size(236, 15);
+            this.lblHeaderSubtitle.Size = new System.Drawing.Size(303, 18);
             this.lblHeaderSubtitle.TabIndex = 1;
             this.lblHeaderSubtitle.Text = "يرجى تعبئة بيانات الحساب والصلاحيات المطلوبة";
             // 
@@ -70,11 +72,12 @@ namespace POS
             // 
             this.lblHeaderTitle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblHeaderTitle.AutoSize = true;
-            this.lblHeaderTitle.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Bold);
+            this.lblHeaderTitle.Font = new System.Drawing.Font("Tahoma", 13F, System.Drawing.FontStyle.Bold);
             this.lblHeaderTitle.ForeColor = System.Drawing.Color.White;
-            this.lblHeaderTitle.Location = new System.Drawing.Point(260, 16);
+            this.lblHeaderTitle.Location = new System.Drawing.Point(347, 11);
+            this.lblHeaderTitle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblHeaderTitle.Name = "lblHeaderTitle";
-            this.lblHeaderTitle.Size = new System.Drawing.Size(171, 25);
+            this.lblHeaderTitle.Size = new System.Drawing.Size(229, 27);
             this.lblHeaderTitle.TabIndex = 0;
             this.lblHeaderTitle.Text = "إضافة مستخدم جديد";
             // 
@@ -95,10 +98,11 @@ namespace POS
             this.pnlBody.Controls.Add(this.lblUsername);
             this.pnlBody.Controls.Add(this.lblStatus);
             this.pnlBody.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlBody.Location = new System.Drawing.Point(0, 75);
+            this.pnlBody.Location = new System.Drawing.Point(0, 74);
+            this.pnlBody.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.pnlBody.Name = "pnlBody";
-            this.pnlBody.Padding = new System.Windows.Forms.Padding(20, 16, 20, 16);
-            this.pnlBody.Size = new System.Drawing.Size(460, 475);
+            this.pnlBody.Padding = new System.Windows.Forms.Padding(27, 11, 27, 11);
+            this.pnlBody.Size = new System.Drawing.Size(613, 446);
             this.pnlBody.TabIndex = 1;
             // 
             // chkShowPassword
@@ -107,9 +111,10 @@ namespace POS
             this.chkShowPassword.Cursor = System.Windows.Forms.Cursors.Hand;
             this.chkShowPassword.Font = new System.Drawing.Font("Tahoma", 9F);
             this.chkShowPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.chkShowPassword.Location = new System.Drawing.Point(325, 359);
+            this.chkShowPassword.Location = new System.Drawing.Point(433, 343);
+            this.chkShowPassword.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.chkShowPassword.Name = "chkShowPassword";
-            this.chkShowPassword.Size = new System.Drawing.Size(107, 19);
+            this.chkShowPassword.Size = new System.Drawing.Size(135, 22);
             this.chkShowPassword.TabIndex = 11;
             this.chkShowPassword.Text = "إظهار كلمة المرور";
             this.chkShowPassword.UseVisualStyleBackColor = true;
@@ -121,11 +126,12 @@ namespace POS
             this.chkIsActive.Checked = true;
             this.chkIsActive.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkIsActive.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.chkIsActive.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold);
+            this.chkIsActive.Font = new System.Drawing.Font("Tahoma", 9.5F, System.Drawing.FontStyle.Bold);
             this.chkIsActive.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            this.chkIsActive.Location = new System.Drawing.Point(235, 390);
+            this.chkIsActive.Location = new System.Drawing.Point(274, 380);
+            this.chkIsActive.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.chkIsActive.Name = "chkIsActive";
-            this.chkIsActive.Size = new System.Drawing.Size(197, 21);
+            this.chkIsActive.Size = new System.Drawing.Size(294, 23);
             this.chkIsActive.TabIndex = 12;
             this.chkIsActive.Text = "حساب نشط ويمكنه تسجيل الدخول";
             this.chkIsActive.UseVisualStyleBackColor = true;
@@ -133,64 +139,66 @@ namespace POS
             // cboRole
             // 
             this.cboRole.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboRole.Font = new System.Drawing.Font("Tahoma", 12F);
+            this.cboRole.Font = new System.Drawing.Font("Tahoma", 10.5F);
             this.cboRole.FormattingEnabled = true;
-            this.cboRole.Location = new System.Drawing.Point(28, 177);
+            this.cboRole.Location = new System.Drawing.Point(37, 165);
+            this.cboRole.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.cboRole.Name = "cboRole";
-            this.cboRole.Size = new System.Drawing.Size(404, 27);
+            this.cboRole.Size = new System.Drawing.Size(537, 29);
             this.cboRole.TabIndex = 5;
             // 
             // txtConfirmPassword
             // 
-            this.txtConfirmPassword.AutoSize = false;
             this.txtConfirmPassword.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtConfirmPassword.Font = new System.Drawing.Font("Tahoma", 10.5F);
-            this.txtConfirmPassword.Location = new System.Drawing.Point(28, 313);
+            this.txtConfirmPassword.Font = new System.Drawing.Font("Tahoma", 10F);
+            this.txtConfirmPassword.Location = new System.Drawing.Point(37, 297);
+            this.txtConfirmPassword.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtConfirmPassword.Name = "txtConfirmPassword";
-            this.txtConfirmPassword.Size = new System.Drawing.Size(404, 34);
+            this.txtConfirmPassword.Size = new System.Drawing.Size(538, 32);
             this.txtConfirmPassword.TabIndex = 9;
             this.txtConfirmPassword.UseSystemPasswordChar = true;
             // 
             // txtPassword
             // 
-            this.txtPassword.AutoSize = false;
             this.txtPassword.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtPassword.Font = new System.Drawing.Font("Tahoma", 10.5F);
-            this.txtPassword.Location = new System.Drawing.Point(28, 244);
+            this.txtPassword.Font = new System.Drawing.Font("Tahoma", 10F);
+            this.txtPassword.Location = new System.Drawing.Point(37, 231);
+            this.txtPassword.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(404, 34);
+            this.txtPassword.Size = new System.Drawing.Size(538, 32);
             this.txtPassword.TabIndex = 7;
             this.txtPassword.UseSystemPasswordChar = true;
             // 
             // txtFullName
             // 
-            this.txtFullName.AutoSize = false;
             this.txtFullName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtFullName.Font = new System.Drawing.Font("Tahoma", 10.5F);
-            this.txtFullName.Location = new System.Drawing.Point(28, 108);
+            this.txtFullName.Font = new System.Drawing.Font("Tahoma", 10F);
+            this.txtFullName.Location = new System.Drawing.Point(37, 98);
+            this.txtFullName.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtFullName.Name = "txtFullName";
-            this.txtFullName.Size = new System.Drawing.Size(404, 34);
+            this.txtFullName.Size = new System.Drawing.Size(538, 32);
             this.txtFullName.TabIndex = 3;
             // 
             // txtUsername
             // 
-            this.txtUsername.AutoSize = false;
             this.txtUsername.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtUsername.Font = new System.Drawing.Font("Tahoma", 10.5F);
-            this.txtUsername.Location = new System.Drawing.Point(28, 39);
+            this.txtUsername.Font = new System.Drawing.Font("Tahoma", 10F);
+            this.txtUsername.Location = new System.Drawing.Point(37, 32);
+            this.txtUsername.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtUsername.Name = "txtUsername";
-            this.txtUsername.Size = new System.Drawing.Size(404, 34);
+            this.txtUsername.Size = new System.Drawing.Size(538, 32);
             this.txtUsername.TabIndex = 1;
             // 
             // lblConfirmPassword
             // 
             this.lblConfirmPassword.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblConfirmPassword.AutoSize = true;
-            this.lblConfirmPassword.Font = new System.Drawing.Font("Tahoma", 9.25F, System.Drawing.FontStyle.Bold);
+            this.lblConfirmPassword.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblConfirmPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
-            this.lblConfirmPassword.Location = new System.Drawing.Point(323, 290);
+            this.lblConfirmPassword.Location = new System.Drawing.Point(431, 274);
+            this.lblConfirmPassword.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblConfirmPassword.Name = "lblConfirmPassword";
-            this.lblConfirmPassword.Size = new System.Drawing.Size(109, 17);
+            this.lblConfirmPassword.Size = new System.Drawing.Size(130, 18);
             this.lblConfirmPassword.TabIndex = 8;
             this.lblConfirmPassword.Text = "تأكيد كلمة المرور:";
             // 
@@ -198,11 +206,12 @@ namespace POS
             // 
             this.lblPassword.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblPassword.AutoSize = true;
-            this.lblPassword.Font = new System.Drawing.Font("Tahoma", 9.25F, System.Drawing.FontStyle.Bold);
+            this.lblPassword.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblPassword.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
-            this.lblPassword.Location = new System.Drawing.Point(356, 221);
+            this.lblPassword.Location = new System.Drawing.Point(475, 208);
+            this.lblPassword.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblPassword.Name = "lblPassword";
-            this.lblPassword.Size = new System.Drawing.Size(76, 17);
+            this.lblPassword.Size = new System.Drawing.Size(93, 18);
             this.lblPassword.TabIndex = 6;
             this.lblPassword.Text = "كلمة المرور:";
             // 
@@ -210,11 +219,12 @@ namespace POS
             // 
             this.lblRole.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblRole.AutoSize = true;
-            this.lblRole.Font = new System.Drawing.Font("Tahoma", 9.25F, System.Drawing.FontStyle.Bold);
+            this.lblRole.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblRole.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
-            this.lblRole.Location = new System.Drawing.Point(333, 154);
+            this.lblRole.Location = new System.Drawing.Point(444, 142);
+            this.lblRole.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblRole.Name = "lblRole";
-            this.lblRole.Size = new System.Drawing.Size(99, 17);
+            this.lblRole.Size = new System.Drawing.Size(120, 18);
             this.lblRole.TabIndex = 4;
             this.lblRole.Text = "الدور والصلاحية:";
             // 
@@ -222,11 +232,12 @@ namespace POS
             // 
             this.lblFullName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblFullName.AutoSize = true;
-            this.lblFullName.Font = new System.Drawing.Font("Tahoma", 9.25F, System.Drawing.FontStyle.Bold);
+            this.lblFullName.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblFullName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
-            this.lblFullName.Location = new System.Drawing.Point(353, 85);
+            this.lblFullName.Location = new System.Drawing.Point(471, 75);
+            this.lblFullName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblFullName.Name = "lblFullName";
-            this.lblFullName.Size = new System.Drawing.Size(79, 17);
+            this.lblFullName.Size = new System.Drawing.Size(102, 18);
             this.lblFullName.TabIndex = 2;
             this.lblFullName.Text = "الاسم الكامل:";
             // 
@@ -234,21 +245,23 @@ namespace POS
             // 
             this.lblUsername.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblUsername.AutoSize = true;
-            this.lblUsername.Font = new System.Drawing.Font("Tahoma", 9.25F, System.Drawing.FontStyle.Bold);
+            this.lblUsername.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblUsername.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
-            this.lblUsername.Location = new System.Drawing.Point(343, 16);
+            this.lblUsername.Location = new System.Drawing.Point(457, 9);
+            this.lblUsername.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblUsername.Name = "lblUsername";
-            this.lblUsername.Size = new System.Drawing.Size(89, 17);
+            this.lblUsername.Size = new System.Drawing.Size(120, 18);
             this.lblUsername.TabIndex = 0;
             this.lblUsername.Text = "اسم المستخدم:";
             // 
             // lblStatus
             // 
-            this.lblStatus.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.lblStatus.Font = new System.Drawing.Font("Tahoma", 8.5F);
             this.lblStatus.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this.lblStatus.Location = new System.Drawing.Point(25, 423);
+            this.lblStatus.Location = new System.Drawing.Point(33, 406);
+            this.lblStatus.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(407, 28);
+            this.lblStatus.Size = new System.Drawing.Size(543, 29);
             this.lblStatus.TabIndex = 13;
             this.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -258,10 +271,11 @@ namespace POS
             this.pnlFooter.Controls.Add(this.btnCancel);
             this.pnlFooter.Controls.Add(this.btnSave);
             this.pnlFooter.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlFooter.Location = new System.Drawing.Point(0, 550);
+            this.pnlFooter.Location = new System.Drawing.Point(0, 520);
+            this.pnlFooter.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.pnlFooter.Name = "pnlFooter";
-            this.pnlFooter.Padding = new System.Windows.Forms.Padding(20, 12, 20, 12);
-            this.pnlFooter.Size = new System.Drawing.Size(460, 60);
+            this.pnlFooter.Padding = new System.Windows.Forms.Padding(27, 11, 27, 11);
+            this.pnlFooter.Size = new System.Drawing.Size(613, 63);
             this.pnlFooter.TabIndex = 2;
             // 
             // btnCancel
@@ -273,14 +287,13 @@ namespace POS
             this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold);
             this.btnCancel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
-            this.btnCancel.Location = new System.Drawing.Point(28, 13);
+            this.btnCancel.Location = new System.Drawing.Point(37, 11);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Padding = new System.Windows.Forms.Padding(0);
             this.btnCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnCancel.Size = new System.Drawing.Size(100, 34);
+            this.btnCancel.Size = new System.Drawing.Size(133, 39);
             this.btnCancel.TabIndex = 1;
             this.btnCancel.Text = "إلغاء";
-            this.btnCancel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnCancel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -293,14 +306,13 @@ namespace POS
             this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSave.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold);
             this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.Location = new System.Drawing.Point(140, 13);
+            this.btnSave.Location = new System.Drawing.Point(187, 11);
+            this.btnSave.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Padding = new System.Windows.Forms.Padding(0);
             this.btnSave.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnSave.Size = new System.Drawing.Size(120, 34);
+            this.btnSave.Size = new System.Drawing.Size(160, 39);
             this.btnSave.TabIndex = 0;
             this.btnSave.Text = "💾 حفظ";
-            this.btnSave.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnSave.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnSave.UseVisualStyleBackColor = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
@@ -308,21 +320,22 @@ namespace POS
             // UserModalForm
             // 
             this.AcceptButton = this.btnSave;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 14F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(460, 610);
+            this.ClientSize = new System.Drawing.Size(613, 583);
             this.Controls.Add(this.pnlBody);
             this.Controls.Add(this.pnlFooter);
             this.Controls.Add(this.pnlHeader);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "UserModalForm";
             this.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.RightToLeftLayout = true;
             this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "إدارة المستخدم";
             this.pnlHeader.ResumeLayout(false);
             this.pnlHeader.PerformLayout();

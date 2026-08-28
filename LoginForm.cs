@@ -10,11 +10,19 @@ namespace POS
         public LoginForm()
         {
             InitializeComponent();
+            this.StartPosition = FormStartPosition.CenterScreen;
+        }
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            UIStyler.CenterFormOnScreen(this);
         }
 
         private async void LoginForm_Load(object sender, EventArgs e)
         {
             UIStyler.ApplyTheme(this);
+            UIStyler.CenterFormOnScreen(this);
             lblSignInTitle.Font = FontManager.GetBold(18f);
             lblLeftTitle.Font = FontManager.GetBold(18f);
             UIStyler.StylePrimaryButton(btnLogin);

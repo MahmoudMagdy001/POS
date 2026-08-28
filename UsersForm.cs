@@ -69,6 +69,7 @@ namespace POS
         {
             if (dgvUsers.Columns.Count == 0) return;
 
+            dgvUsers.ScrollBars = ScrollBars.Both;
             dgvUsers.ColumnHeadersHeight = 48;
             dgvUsers.RowTemplate.Height = 40;
             dgvUsers.EnableHeadersVisualStyles = false;
@@ -80,28 +81,33 @@ namespace POS
             {
                 dgvUsers.Columns["FullName"].HeaderText = "الاسم الكامل";
                 dgvUsers.Columns["FullName"].FillWeight = 150; // 30%
+                dgvUsers.Columns["FullName"].MinimumWidth = 140;
             }
             if (dgvUsers.Columns["Username"] != null)
             {
                 dgvUsers.Columns["Username"].HeaderText = "اسم المستخدم";
                 dgvUsers.Columns["Username"].FillWeight = 100; // 20%
+                dgvUsers.Columns["Username"].MinimumWidth = 110;
             }
             if (dgvUsers.Columns["Role"] != null)
             {
                 dgvUsers.Columns["Role"].HeaderText = "الدور / الصلاحية";
                 dgvUsers.Columns["Role"].FillWeight = 75; // 15%
+                dgvUsers.Columns["Role"].MinimumWidth = 100;
                 dgvUsers.Columns["Role"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             if (dgvUsers.Columns["IsActive"] != null)
             {
                 dgvUsers.Columns["IsActive"].HeaderText = "الحالة";
                 dgvUsers.Columns["IsActive"].FillWeight = 40; // ~5-8%
+                dgvUsers.Columns["IsActive"].MinimumWidth = 70;
                 dgvUsers.Columns["IsActive"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
             if (dgvUsers.Columns["CreatedAt"] != null)
             {
                 dgvUsers.Columns["CreatedAt"].HeaderText = "تاريخ الإنشاء";
                 dgvUsers.Columns["CreatedAt"].FillWeight = 75; // 15%
+                dgvUsers.Columns["CreatedAt"].MinimumWidth = 125;
                 dgvUsers.Columns["CreatedAt"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm";
                 dgvUsers.Columns["CreatedAt"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
@@ -109,6 +115,7 @@ namespace POS
             {
                 dgvUsers.Columns["LastLogin"].HeaderText = "آخر تسجيل دخول";
                 dgvUsers.Columns["LastLogin"].FillWeight = 75; // 15%
+                dgvUsers.Columns["LastLogin"].MinimumWidth = 125;
                 dgvUsers.Columns["LastLogin"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm";
                 dgvUsers.Columns["LastLogin"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
@@ -141,7 +148,8 @@ namespace POS
         {
             using (UserModalForm modal = new UserModalForm())
             {
-                if (modal.ShowDialog(this) == DialogResult.OK)
+                modal.StartPosition = FormStartPosition.CenterScreen;
+                if (modal.ShowDialog(this.FindForm() ?? this) == DialogResult.OK)
                 {
                     await LoadUsersAsync(txtSearch.Text.Trim());
                 }
@@ -172,7 +180,8 @@ namespace POS
 
             using (UserModalForm modal = new UserModalForm(selectedUser))
             {
-                if (modal.ShowDialog(this) == DialogResult.OK)
+                modal.StartPosition = FormStartPosition.CenterScreen;
+                if (modal.ShowDialog(this.FindForm() ?? this) == DialogResult.OK)
                 {
                     await LoadUsersAsync(txtSearch.Text.Trim());
                 }

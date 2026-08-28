@@ -27,7 +27,58 @@ namespace POS
             form.BackColor = UIColors.AppBackground;
             form.RightToLeft = RightToLeft.Yes;
             form.RightToLeftLayout = true;
+
             FontManager.ApplyCairoFont(form);
+
+            if (form.TopLevel && !form.IsMdiContainer)
+            {
+                form.Shown -= Form_Shown_Center;
+                form.Shown += Form_Shown_Center;
+            }
+        }
+
+        private static void Form_Shown_Center(object sender, EventArgs e)
+        {
+            if (sender is Form f && f.TopLevel && f.WindowState == FormWindowState.Normal)
+            {
+                CenterFormOnScreen(f);
+            }
+        }
+
+        /// <summary>
+        /// Centers a Form precisely in the working area of the active screen,
+        /// avoiding WinForms RightToLeftLayout / WS_EX_LAYOUTRTL coordinate bugs.
+        /// </summary>
+        public static void CenterFormOnScreen(Form form)
+        {
+            if (form == null || !form.TopLevel) return;
+
+            try
+            {
+                Screen screen = null;
+                if (form.Owner != null && form.Owner.Visible)
+                {
+                    screen = Screen.FromControl(form.Owner);
+                }
+                else if (Form.ActiveForm != null && Form.ActiveForm.Visible && Form.ActiveForm != form)
+                {
+                    screen = Screen.FromControl(Form.ActiveForm);
+                }
+                else
+                {
+                    screen = Screen.FromPoint(Cursor.Position) ?? Screen.PrimaryScreen;
+                }
+
+                if (screen == null) screen = Screen.PrimaryScreen;
+                Rectangle workArea = screen.WorkingArea;
+
+                int x = workArea.Left + Math.Max(0, (workArea.Width - form.Width) / 2);
+                int y = workArea.Top + Math.Max(0, (workArea.Height - form.Height) / 2);
+
+                form.StartPosition = FormStartPosition.Manual;
+                form.Location = new Point(x, y);
+            }
+            catch { }
         }
 
         #endregion
@@ -238,6 +289,11 @@ namespace POS
             dgv.AllowUserToResizeRows = false;
             dgv.RowHeadersVisible = false;
             dgv.RightToLeft = RightToLeft.Yes;
+            dgv.ScrollBars = ScrollBars.Both;
+
+            // Ensure automatic minimum column widths so horizontal scrolling activates smoothly
+            dgv.ColumnAdded -= OnDataGridColumnAdded;
+            dgv.ColumnAdded += OnDataGridColumnAdded;
 
             // Column Header Style
             dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
@@ -268,6 +324,30 @@ namespace POS
             dgv.AlternatingRowsDefaultCellStyle.SelectionBackColor = UIColors.PrimaryLight;
             dgv.AlternatingRowsDefaultCellStyle.SelectionForeColor = UIColors.PrimaryDark;
             dgv.AlternatingRowsDefaultCellStyle.Padding = new Padding(6, 2, 6, 2);
+        }
+
+        private static void OnDataGridColumnAdded(object sender, DataGridViewColumnEventArgs e)
+        {
+            if (e.Column != null && e.Column.MinimumWidth < 50)
+            {
+                e.Column.MinimumWidth = 50;
+            }
+        }
+
+        /// <summary>
+        /// Ensures all visible columns have an adequate minimum width so they never shrink into an unreadable state
+        /// and automatically trigger the horizontal scroll bar when the DataGridView width is constrained.
+        /// </summary>
+        public static void EnsureMinimumColumnWidths(DataGridView dgv, int defaultMinimumWidth = 70)
+        {
+            if (dgv == null) return;
+            foreach (DataGridViewColumn col in dgv.Columns)
+            {
+                if (col.Visible && col.MinimumWidth < defaultMinimumWidth)
+                {
+                    col.MinimumWidth = defaultMinimumWidth;
+                }
+            }
         }
 
         #endregion

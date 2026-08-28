@@ -108,6 +108,7 @@ namespace POS
         {
             if (dgvProductsCatalog.Columns.Count == 0) return;
 
+            dgvProductsCatalog.ScrollBars = ScrollBars.Both;
             dgvProductsCatalog.ColumnHeadersHeight = 48;
             dgvProductsCatalog.RowTemplate.Height = 40;
             dgvProductsCatalog.EnableHeadersVisualStyles = false;
@@ -129,21 +130,25 @@ namespace POS
             {
                 dgvProductsCatalog.Columns["Barcode"].HeaderText = "الباركود";
                 dgvProductsCatalog.Columns["Barcode"].FillWeight = 85;
+                dgvProductsCatalog.Columns["Barcode"].MinimumWidth = 95;
             }
             if (dgvProductsCatalog.Columns["ProductName"] != null)
             {
                 dgvProductsCatalog.Columns["ProductName"].HeaderText = "اسم المنتج";
                 dgvProductsCatalog.Columns["ProductName"].FillWeight = 160;
+                dgvProductsCatalog.Columns["ProductName"].MinimumWidth = 140;
             }
             if (dgvProductsCatalog.Columns["CategoryName"] != null)
             {
                 dgvProductsCatalog.Columns["CategoryName"].HeaderText = "القسم";
                 dgvProductsCatalog.Columns["CategoryName"].FillWeight = 90;
+                dgvProductsCatalog.Columns["CategoryName"].MinimumWidth = 90;
             }
             if (dgvProductsCatalog.Columns["SellPrice"] != null)
             {
                 dgvProductsCatalog.Columns["SellPrice"].HeaderText = "السعر";
                 dgvProductsCatalog.Columns["SellPrice"].FillWeight = 75;
+                dgvProductsCatalog.Columns["SellPrice"].MinimumWidth = 80;
                 dgvProductsCatalog.Columns["SellPrice"].DefaultCellStyle.Format = "N2";
                 dgvProductsCatalog.Columns["SellPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }
@@ -151,6 +156,7 @@ namespace POS
             {
                 dgvProductsCatalog.Columns["StockQuantity"].HeaderText = "المتاح";
                 dgvProductsCatalog.Columns["StockQuantity"].FillWeight = 60;
+                dgvProductsCatalog.Columns["StockQuantity"].MinimumWidth = 65;
                 dgvProductsCatalog.Columns["StockQuantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
 
@@ -162,8 +168,13 @@ namespace POS
                 btnCol.Text = "➕";
                 btnCol.UseColumnTextForButtonValue = true;
                 btnCol.FillWeight = 50;
+                btnCol.MinimumWidth = 55;
                 btnCol.FlatStyle = FlatStyle.Flat;
                 dgvProductsCatalog.Columns.Add(btnCol);
+            }
+            else
+            {
+                dgvProductsCatalog.Columns["colAdd"].MinimumWidth = 55;
             }
         }
 
@@ -186,6 +197,7 @@ namespace POS
         {
             if (dgvCart.Columns.Count == 0) return;
 
+            dgvCart.ScrollBars = ScrollBars.Both;
             dgvCart.ColumnHeadersHeight = 48;
             dgvCart.RowTemplate.Height = 40;
             dgvCart.EnableHeadersVisualStyles = false;
@@ -200,18 +212,21 @@ namespace POS
                 dgvCart.Columns["Barcode"].HeaderText = "الباركود";
                 dgvCart.Columns["Barcode"].ReadOnly = true;
                 dgvCart.Columns["Barcode"].FillWeight = 85;
+                dgvCart.Columns["Barcode"].MinimumWidth = 90;
             }
             if (dgvCart.Columns["ProductName"] != null)
             {
                 dgvCart.Columns["ProductName"].HeaderText = "اسم الصنف";
                 dgvCart.Columns["ProductName"].ReadOnly = true;
                 dgvCart.Columns["ProductName"].FillWeight = 160;
+                dgvCart.Columns["ProductName"].MinimumWidth = 130;
             }
             if (dgvCart.Columns["UnitPrice"] != null)
             {
                 dgvCart.Columns["UnitPrice"].HeaderText = "السعر";
                 dgvCart.Columns["UnitPrice"].ReadOnly = true;
                 dgvCart.Columns["UnitPrice"].FillWeight = 75;
+                dgvCart.Columns["UnitPrice"].MinimumWidth = 75;
                 dgvCart.Columns["UnitPrice"].DefaultCellStyle.Format = "N2";
                 dgvCart.Columns["UnitPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }
@@ -224,8 +239,13 @@ namespace POS
                 btnMinus.Text = "➖";
                 btnMinus.UseColumnTextForButtonValue = true;
                 btnMinus.FillWeight = 40;
+                btnMinus.MinimumWidth = 40;
                 btnMinus.FlatStyle = FlatStyle.Flat;
                 dgvCart.Columns.Add(btnMinus);
+            }
+            else
+            {
+                dgvCart.Columns["colMinus"].MinimumWidth = 40;
             }
 
             if (dgvCart.Columns["Quantity"] != null)
@@ -233,6 +253,7 @@ namespace POS
                 dgvCart.Columns["Quantity"].HeaderText = "الكمية";
                 dgvCart.Columns["Quantity"].ReadOnly = false;
                 dgvCart.Columns["Quantity"].FillWeight = 60;
+                dgvCart.Columns["Quantity"].MinimumWidth = 55;
                 dgvCart.Columns["Quantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             }
 
@@ -244,8 +265,13 @@ namespace POS
                 btnPlus.Text = "➕";
                 btnPlus.UseColumnTextForButtonValue = true;
                 btnPlus.FillWeight = 40;
+                btnPlus.MinimumWidth = 40;
                 btnPlus.FlatStyle = FlatStyle.Flat;
                 dgvCart.Columns.Add(btnPlus);
+            }
+            else
+            {
+                dgvCart.Columns["colPlus"].MinimumWidth = 40;
             }
 
             if (dgvCart.Columns["LineTotal"] != null)
@@ -253,6 +279,7 @@ namespace POS
                 dgvCart.Columns["LineTotal"].HeaderText = "الإجمالي";
                 dgvCart.Columns["LineTotal"].ReadOnly = true;
                 dgvCart.Columns["LineTotal"].FillWeight = 80;
+                dgvCart.Columns["LineTotal"].MinimumWidth = 80;
                 dgvCart.Columns["LineTotal"].DefaultCellStyle.Format = "N2";
                 dgvCart.Columns["LineTotal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }
@@ -265,8 +292,13 @@ namespace POS
                 btnDelete.Text = "❌";
                 btnDelete.UseColumnTextForButtonValue = true;
                 btnDelete.FillWeight = 45;
+                btnDelete.MinimumWidth = 45;
                 btnDelete.FlatStyle = FlatStyle.Flat;
                 dgvCart.Columns.Add(btnDelete);
+            }
+            else
+            {
+                dgvCart.Columns["colDelete"].MinimumWidth = 45;
             }
         }
 
