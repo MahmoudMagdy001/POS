@@ -151,10 +151,13 @@ BEGIN
         [SaleDate]      DATETIME          NOT NULL DEFAULT GETDATE(),
         [TotalAmount]   DECIMAL(18,2)     NOT NULL DEFAULT 0.00,
         [Discount]      DECIMAL(18,2)     NOT NULL DEFAULT 0.00,
+        [TaxAmount]     DECIMAL(18,2)     NOT NULL DEFAULT 0.00,
         [FinalAmount]   DECIMAL(18,2)     NOT NULL DEFAULT 0.00,
         [PaidAmount]    DECIMAL(18,2)     NOT NULL DEFAULT 0.00,
         [ChangeAmount]  DECIMAL(18,2)     NOT NULL DEFAULT 0.00,
         [PaymentMethod] NVARCHAR(50)      NOT NULL DEFAULT N'نقدي',
+        [ReturnStatus]  NVARCHAR(50)      NOT NULL DEFAULT N'مكتملة',
+        [TotalRefunded] DECIMAL(18,2)     NOT NULL DEFAULT 0.00,
         CONSTRAINT [FK_Sales_Users] FOREIGN KEY ([UserId]) 
             REFERENCES [dbo].[Users] ([UserId]) ON DELETE SET NULL
     );
@@ -173,12 +176,13 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SaleDetails]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[SaleDetails] (
-        [DetailId]  INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
-        [SaleId]    INT               NOT NULL,
-        [ProductId] INT               NOT NULL,
-        [Quantity]  INT               NOT NULL,
-        [UnitPrice] DECIMAL(18,2)     NOT NULL,
-        [LineTotal] DECIMAL(18,2)     NOT NULL,
+        [DetailId]         INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        [SaleId]           INT               NOT NULL,
+        [ProductId]        INT               NOT NULL,
+        [Quantity]         INT               NOT NULL,
+        [ReturnedQuantity] INT               NOT NULL DEFAULT 0,
+        [UnitPrice]        DECIMAL(18,2)     NOT NULL,
+        [LineTotal]        DECIMAL(18,2)     NOT NULL,
         CONSTRAINT [FK_SaleDetails_Sales] FOREIGN KEY ([SaleId]) 
             REFERENCES [dbo].[Sales] ([SaleId]) ON DELETE CASCADE,
         CONSTRAINT [FK_SaleDetails_Products] FOREIGN KEY ([ProductId]) 
@@ -194,140 +198,8 @@ END
 GO
 
 -- ============================================================================
--- 10. البيانات الأولية باللغة العربية (Seed Data)
+-- 10. جدول مرتجعات المبيعات (SalesReturns & SalesReturnDetails)
 -- ============================================================================
-
--- إضافة المستخدمين الافتراضيين
-IF NOT EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [Username] = 'admin')
-BEGIN
-    INSERT INTO [dbo].[Users] ([Username], [PasswordHash], [FullName], [Role], [IsActive])
-    VALUES (
-        N'admin',
-        N'240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', -- admin123
-        N'مدير النظام العام',
-        N'Admin',
-        1
-    );
-END
-ELSE
-BEGIN
-    UPDATE [dbo].[Users] SET [FullName] = N'مدير النظام العام' WHERE [Username] = 'admin';
-END
-
-IF NOT EXISTS (SELECT 1 FROM [dbo].[Users] WHERE [Username] = 'cashier')
-BEGIN
-    INSERT INTO [dbo].[Users] ([Username], [PasswordHash], [FullName], [Role], [IsActive])
-    VALUES (
-        N'cashier',
-        N'8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', -- cashier123
-        N'كاشير الصالة الرئيسي',
-        N'Cashier',
-        1
-    );
-END
-ELSE
-BEGIN
-    UPDATE [dbo].[Users] SET [FullName] = N'كاشير الصالة الرئيسي' WHERE [Username] = 'cashier';
-END
-
--- إضافة الأقسام باللغة العربية
-IF NOT EXISTS (SELECT 1 FROM [dbo].[Categories] WHERE [CategoryName] = N'مشروبات ومياه')
-    INSERT INTO [dbo].[Categories] ([CategoryName]) VALUES (N'مشروبات ومياه');
-
-IF NOT EXISTS (SELECT 1 FROM [dbo].[Categories] WHERE [CategoryName] = N'سناكس ومقرمشات')
-    INSERT INTO [dbo].[Categories] ([CategoryName]) VALUES (N'سناكس ومقرمشات');
-
-IF NOT EXISTS (SELECT 1 FROM [dbo].[Categories] WHERE [CategoryName] = N'ألبان وجبن')
-    INSERT INTO [dbo].[Categories] ([CategoryName]) VALUES (N'ألبان وجبن');
-
-IF NOT EXISTS (SELECT 1 FROM [dbo].[Categories] WHERE [CategoryName] = N'إلكترونيات وإكسسوارات')
-    INSERT INTO [dbo].[Categories] ([CategoryName]) VALUES (N'إلكترونيات وإكسسوارات');
-
-IF NOT EXISTS (SELECT 1 FROM [dbo].[Categories] WHERE [CategoryName] = N'منظفات وعناية منزلية')
-    INSERT INTO [dbo].[Categories] ([CategoryName]) VALUES (N'منظفات وعناية منزلية');
-
--- إضافة الموردين باللغة العربية
-IF NOT EXISTS (SELECT 1 FROM [dbo].[Suppliers] WHERE [SupplierName] = N'شركة الأهرام للتوزيع والتوريدات')
-    INSERT INTO [dbo].[Suppliers] ([SupplierName], [Phone], [Address]) 
-    VALUES (N'شركة الأهرام للتوزيع والتوريدات', N'01001234567', N'المنطقة الصناعية - القاهرة');
-
-IF NOT EXISTS (SELECT 1 FROM [dbo].[Suppliers] WHERE [SupplierName] = N'مؤسسة الدلتا للمواد الغذائية')
-    INSERT INTO [dbo].[Suppliers] ([SupplierName], [Phone], [Address]) 
-    VALUES (N'مؤسسة الدلتا للمواد الغذائية', N'01129876543', N'مجمع المخازن اللوجستية - الإسكندرية');
-
--- إضافة وتحديث المنتجات باللغة العربية
-IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [Barcode] = N'6221001001')
-BEGIN
-    INSERT INTO [dbo].[Products] ([Barcode], [ProductName], [CategoryId], [BuyPrice], [SellPrice], [StockQuantity], [MinStockAlert])
-    VALUES (N'6221001001', N'مياه معدنية 1.5 لتر', 1, 8.00, 12.00, 50, 10);
-END
-ELSE
-BEGIN
-    UPDATE [dbo].[Products] SET [ProductName] = N'مياه معدنية 1.5 لتر' WHERE [Barcode] = N'6221001001';
-END
-
-IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [Barcode] = N'6221001002')
-BEGIN
-    INSERT INTO [dbo].[Products] ([Barcode], [ProductName], [CategoryId], [BuyPrice], [SellPrice], [StockQuantity], [MinStockAlert])
-    VALUES (N'6221001002', N'كانز كولا 330 مل', 1, 12.00, 18.00, 40, 10);
-END
-ELSE
-BEGIN
-    UPDATE [dbo].[Products] SET [ProductName] = N'كانز كولا 330 مل' WHERE [Barcode] = N'6221001002';
-END
-
-IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [Barcode] = N'6221001003')
-BEGIN
-    INSERT INTO [dbo].[Products] ([Barcode], [ProductName], [CategoryId], [BuyPrice], [SellPrice], [StockQuantity], [MinStockAlert])
-    VALUES (N'6221001003', N'شيبسي عائلي بالجبنة المتبلة', 2, 10.00, 15.00, 25, 8);
-END
-ELSE
-BEGIN
-    UPDATE [dbo].[Products] SET [ProductName] = N'شيبسي عائلي بالجبنة المتبلة' WHERE [Barcode] = N'6221001003';
-END
-
-IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [Barcode] = N'6221001004')
-BEGIN
-    INSERT INTO [dbo].[Products] ([Barcode], [ProductName], [CategoryId], [BuyPrice], [SellPrice], [StockQuantity], [MinStockAlert])
-    VALUES (N'6221001004', N'حليب طازج كامل الدسم 1 لتر', 3, 30.00, 42.00, 4, 10); -- مخزون حرج للتنبيه
-END
-ELSE
-BEGIN
-    UPDATE [dbo].[Products] SET [ProductName] = N'حليب طازج كامل الدسم 1 لتر' WHERE [Barcode] = N'6221001004';
-END
-
-IF NOT EXISTS (SELECT 1 FROM [dbo].[Products] WHERE [Barcode] = N'6221001005')
-BEGIN
-    INSERT INTO [dbo].[Products] ([Barcode], [ProductName], [CategoryId], [BuyPrice], [SellPrice], [StockQuantity], [MinStockAlert])
-    VALUES (N'6221001005', N'كابل شحن سريع Type-C', 4, 45.00, 75.00, 3, 5); -- مخزون حرج للتنبيه
-END
-ELSE
-BEGIN
-    UPDATE [dbo].[Products] SET [ProductName] = N'كابل شحن سريع Type-C' WHERE [Barcode] = N'6221001005';
-END
-GO
-
--- ============================================================================
--- 11. جدول مرتجعات المبيعات (SalesReturns & SalesReturnDetails)
--- ============================================================================
-IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[Sales]') AND name = 'ReturnStatus')
-BEGIN
-    ALTER TABLE [dbo].[Sales] ADD [ReturnStatus] NVARCHAR(50) NOT NULL DEFAULT N'مكتملة';
-END
-GO
-
-IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[Sales]') AND name = 'TotalRefunded')
-BEGIN
-    ALTER TABLE [dbo].[Sales] ADD [TotalRefunded] DECIMAL(18,2) NOT NULL DEFAULT 0.00;
-END
-GO
-
-IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[SaleDetails]') AND name = 'ReturnedQuantity')
-BEGIN
-    ALTER TABLE [dbo].[SaleDetails] ADD [ReturnedQuantity] INT NOT NULL DEFAULT 0;
-END
-GO
-
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SalesReturns]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[SalesReturns] (
@@ -360,7 +232,7 @@ END
 GO
 
 -- ============================================================================
--- 12. جدول إعدادات النظام العامة (SystemSettings)
+-- 11. جدول إعدادات النظام العامة (SystemSettings)
 -- ============================================================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SystemSettings]') AND type in (N'U'))
 BEGIN
@@ -372,7 +244,24 @@ END
 GO
 
 -- ============================================================================
--- 13. الفهارس المتقدمة لتحسين سرعة الاستعلامات والعمليات (High-Performance Indexes)
+-- 12. جدول الورديات وحضور وانصراف الموظفين (Shifts)
+-- ============================================================================
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Shifts]') AND type in (N'U'))
+BEGIN
+    CREATE TABLE [dbo].[Shifts] (
+        [ShiftId]      INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        [UserId]       INT               NOT NULL,
+        [ClockInTime]  DATETIME          NOT NULL DEFAULT GETDATE(),
+        [ClockOutTime] DATETIME          NULL,
+        [Notes]        NVARCHAR(500)     NULL,
+        CONSTRAINT [FK_Shifts_Users] FOREIGN KEY ([UserId]) 
+            REFERENCES [dbo].[Users] ([UserId]) ON DELETE CASCADE
+    );
+END
+GO
+
+-- ============================================================================
+-- 13. الفهارس المتقدمة لتحسين سرعة الاستعلامات والعمليات
 -- ============================================================================
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Products_CategoryId' AND object_id = OBJECT_ID(N'[dbo].[Products]'))
 BEGIN
@@ -438,23 +327,6 @@ BEGIN
 END
 GO
 
--- ============================================================================
--- 14. جدول الورديات وحضور وانصراف الموظفين (Shifts)
--- ============================================================================
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Shifts]') AND type in (N'U'))
-BEGIN
-    CREATE TABLE [dbo].[Shifts] (
-        [ShiftId]      INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
-        [UserId]       INT               NOT NULL,
-        [ClockInTime]  DATETIME          NOT NULL DEFAULT GETDATE(),
-        [ClockOutTime] DATETIME          NULL,
-        [Notes]        NVARCHAR(500)     NULL,
-        CONSTRAINT [FK_Shifts_Users] FOREIGN KEY ([UserId]) 
-            REFERENCES [dbo].[Users] ([UserId]) ON DELETE CASCADE
-    );
-END
-GO
-
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Shifts_UserId' AND object_id = OBJECT_ID(N'[dbo].[Shifts]'))
 BEGIN
     CREATE NONCLUSTERED INDEX [IX_Shifts_UserId] ON [dbo].[Shifts] ([UserId])
@@ -466,5 +338,17 @@ IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_Shifts_ClockInTime' A
 BEGIN
     CREATE NONCLUSTERED INDEX [IX_Shifts_ClockInTime] ON [dbo].[Shifts] ([ClockInTime])
     INCLUDE ([UserId], [ClockOutTime]);
+END
+GO
+
+-- ============================================================================
+-- 14. جدول تتبع إصدار قاعدة البيانات (__SchemaVersion)
+-- ============================================================================
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[__SchemaVersion]') AND type in (N'U'))
+BEGIN
+    CREATE TABLE [dbo].[__SchemaVersion] (
+        [VersionNumber] INT NOT NULL PRIMARY KEY,
+        [AppliedAt]     DATETIME NOT NULL DEFAULT GETDATE()
+    );
 END
 GO
