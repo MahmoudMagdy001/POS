@@ -26,7 +26,7 @@ namespace POS
             UIStyler.StylePrimaryButton(btnSavePurchase, "حفظ فاتورة المشتريات");
             UIStyler.StyleSecondaryButton(btnResetPurchase, "تفريغ");
             UIStyler.StyleSecondaryButton(btnQuickAddProduct, "جديد");
-            UIStyler.StyleSecondaryButton(btnQuickAddSupplier, "مورد");
+            UIStyler.StyleSecondaryButton(btnQuickAddSupplier, "اضافة مورد");
             UIStyler.StyleDataGrid(dgvPurchaseItems);
             UIStyler.StyleDataGrid(dgvPurchasesHistory);
             UIStyler.StyleDataGrid(dgvPurchaseHistoryDetails);
