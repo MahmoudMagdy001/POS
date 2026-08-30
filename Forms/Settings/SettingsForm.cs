@@ -127,6 +127,21 @@ namespace POS
                     AllowNegativeStock = chkAllowNegativeStock.Checked
                 };
 
+                // إذا كان تذييل الفاتورة يحتوي على عبارة خدمة العملاء ورقم قديم، يتم تحديثه برقم هاتف المنشأة
+                if (!string.IsNullOrWhiteSpace(newSettings.StorePhone) && !string.IsNullOrWhiteSpace(newSettings.ReceiptFooter))
+                {
+                    if (System.Text.RegularExpressions.Regex.IsMatch(newSettings.ReceiptFooter, @"خدمة\s*العملاء", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                    {
+                        newSettings.ReceiptFooter = System.Text.RegularExpressions.Regex.Replace(
+                            newSettings.ReceiptFooter,
+                            @"(خدمة\s*العملاء\s*[:\s]*)[0-9\+\-\s]{7,}",
+                            m => m.Groups[1].Value + newSettings.StorePhone,
+                            System.Text.RegularExpressions.RegexOptions.IgnoreCase
+                        );
+                        txtReceiptFooter.Text = newSettings.ReceiptFooter;
+                    }
+                }
+
                 var result = DbHelper.SaveSystemSettings(newSettings);
                 if (result.Success)
                 {

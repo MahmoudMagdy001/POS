@@ -50,7 +50,6 @@
   <ItemGroup>
     <!-- Constants -->
     <Compile Include="Constants\AppConstants.cs" />
-
     <!-- Models -->
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Models\CategoryModel.cs" />
@@ -63,28 +62,23 @@
     <Compile Include="Models\PurchaseDetailModel.cs" />
     <Compile Include="Models\ShiftModel.cs" />
     <Compile Include="Models\SystemSettingsModel.cs" />
-
     <!-- DTOs -->
     <Compile Include="DTOs\CartItemModel.cs" />
     <Compile Include="DTOs\ReturnItemModel.cs" />
     <Compile Include="DTOs\DashboardStatsModel.cs" />
     <Compile Include="DTOs\ShiftSummaryModel.cs" />
     <Compile Include="DTOs\BarcodePrintOptions.cs" />
-
     <!-- Data -->
     <Compile Include="Data\DbConnectionFactory.cs" />
     <Compile Include="Data\DbHelper.cs" />
-
     <!-- Repositories -->
     <Compile Include="Repositories\ProductRepository.cs" />
     <Compile Include="Repositories\SaleRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Repositories\ShiftRepository.cs" />
     <Compile Include="Repositories\OtherRepositories.cs" />
-
     <!-- Services -->
     <Compile Include="Services\Services.cs" />
-
     <!-- Helpers & Reports -->
     <Compile Include="Helpers\SecurityHelper.cs" />
     <Compile Include="Helpers\FontManager.cs" />
@@ -93,7 +87,6 @@
     <Compile Include="Reports\ReceiptPrinter.cs" />
     <Compile Include="Reports\BarcodePrinter.cs" />
     <Compile Include="UITheme.cs" />
-
     <!-- Forms -->
     <Compile Include="Forms\Auth\LoginForm.cs">
       <SubType>Form</SubType>
@@ -185,7 +178,6 @@
     <Compile Include="Forms\Shifts\StartShiftModalForm.Designer.cs">
       <DependentUpon>StartShiftModalForm.cs</DependentUpon>
     </Compile>
-
     <!-- Design System -->
     <Compile Include="DesignSystem\Tokens\UIColors.cs" />
     <Compile Include="DesignSystem\Tokens\UITypography.cs" />
@@ -218,7 +210,6 @@
     <Compile Include="DesignSystem\Components\AppModal.cs">
       <SubType>Form</SubType>
     </Compile>
-
     <!-- Entry & Properties -->
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -278,7 +269,6 @@
     <EmbeddedResource Include="Forms\Users\UsersForm.resx">
       <DependentUpon>UsersForm.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="prompt2.md" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

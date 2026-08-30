@@ -181,7 +181,7 @@ namespace POS
                     string storeName = !string.IsNullOrWhiteSpace(sysSettings.StoreName) ? sysSettings.StoreName : "هايبر ماركت ونقاط البيع";
                     string receiptHeader = !string.IsNullOrWhiteSpace(sysSettings.ReceiptHeader) ? sysSettings.ReceiptHeader : "فاتورة مبيعات ضريبية مبسطة";
                     string currency = !string.IsNullOrWhiteSpace(sysSettings.CurrencySymbol) ? sysSettings.CurrencySymbol : "ج.م";
-                    string footerNote = !string.IsNullOrWhiteSpace(sysSettings.ReceiptFooter) ? sysSettings.ReceiptFooter : "الأسعار تشمل ضريبة القيمة المضافة • البضاعة المباعة ترد وتستبدل خلال 14 يوماً بالفاتورة";
+                    string footerNote = GetFormattedFooter(sysSettings);
 
                     float y = 10f;
 
@@ -343,8 +343,63 @@ namespace POS
             }
         }
 
+        public static string GetFormattedFooter(SystemSettingsModel sysSettings)
+        {
+            if (sysSettings == null) return "الأسعار تشمل ضريبة القيمة المضافة • البضاعة المباعة ترد وتستبدل خلال 14 يوماً بالفاتورة";
+
+            string footerNote = !string.IsNullOrWhiteSpace(sysSettings.ReceiptFooter)
+                ? sysSettings.ReceiptFooter
+                : "نشكركم لزيارتكم • البضاعة المباعة تستبدل وترد خلال 14 يوماً بالفاتورة • خدمة العملاء: {Phone}";
+
+            string storePhone = sysSettings.StorePhone?.Trim();
+
+            if (!string.IsNullOrWhiteSpace(storePhone))
+            {
+                // استبدال المتغيرات النصية إن وجدت
+                footerNote = footerNote.Replace("{Phone}", storePhone)
+                                       .Replace("{StorePhone}", storePhone)
+                                       .Replace("{هاتف}", storePhone)
+                                       .Replace("{خدمة_العملاء}", storePhone)
+                                       .Replace("{الموبايل}", storePhone);
+
+                // استبدال أي رقم قديم يتبع خدمة العملاء تلقائياً برقم هاتف الإعدادات
+                if (System.Text.RegularExpressions.Regex.IsMatch(footerNote, @"خدمة\s*العملاء", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                {
+                    footerNote = System.Text.RegularExpressions.Regex.Replace(
+                        footerNote,
+                        @"(خدمة\s*العملاء\s*[:\s]*)[0-9\+\-\s]{7,}",
+                        m => m.Groups[1].Value + storePhone,
+                        System.Text.RegularExpressions.RegexOptions.IgnoreCase
+                    );
+                }
+                else if (System.Text.RegularExpressions.Regex.IsMatch(footerNote, @"01[0125][0-9]{8}"))
+                {
+                    // استبدال أي رقم محمول مصري قديم بالرقم المسجل بالإعدادات
+                    footerNote = System.Text.RegularExpressions.Regex.Replace(
+                        footerNote,
+                        @"01[0125][0-9]{8}",
+                        storePhone
+                    );
+                }
+            }
+            else
+            {
+                // تنظيف المتغيرات في حال عدم وجود رقم هاتف
+                footerNote = footerNote.Replace("{Phone}", "")
+                                       .Replace("{StorePhone}", "")
+                                       .Replace("{هاتف}", "")
+                                       .Replace("{خدمة_العملاء}", "")
+                                       .Replace("{الموبايل}", "");
+            }
+
+            return footerNote;
+        }
+
         private static int CalculateContentHeight(SaleModel sale, List<CartItemModel> items, int pageWidth)
         {
+            SystemSettingsModel sysSettings = DbHelper.GetSystemSettings() ?? new SystemSettingsModel();
+            string footerNote = GetFormattedFooter(sysSettings);
+
             float height = 10f;
             height += 26f + 19f + 16f + 16f + 12f; // Header
             height += 18f + 18f + 12f; // Meta
@@ -362,6 +417,10 @@ namespace POS
                         SizeF measured = g.MeasureString(item.ProductName, smallFont, (int)colProdW);
                         height += Math.Max(18f, measured.Height + 2f) + 3f;
                     }
+
+                    SizeF footerSize = g.MeasureString(footerNote, smallFont, (int)pageWidth);
+                    float footerH = Math.Max(20f, footerSize.Height + 4f);
+                    height += 20f + footerH + 16f; // Footer
                 }
             }
 
@@ -371,7 +430,6 @@ namespace POS
             if (sale.TaxAmount > 0) height += 18f;
             height += 34f; // Total box
             height += 18f + 24f + 12f; // Paid & change
-            height += 20f + 30f + 16f; // Footer
 
             return (int)Math.Ceiling(Math.Max(height, 280f));
         }
