@@ -69,6 +69,7 @@
     <Compile Include="DTOs\ReturnItemModel.cs" />
     <Compile Include="DTOs\DashboardStatsModel.cs" />
     <Compile Include="DTOs\ShiftSummaryModel.cs" />
+    <Compile Include="DTOs\BarcodePrintOptions.cs" />
 
     <!-- Data -->
     <Compile Include="Data\DbConnectionFactory.cs" />
@@ -87,8 +88,10 @@
     <!-- Helpers & Reports -->
     <Compile Include="Helpers\SecurityHelper.cs" />
     <Compile Include="Helpers\FontManager.cs" />
+    <Compile Include="Helpers\BarcodeGenerator.cs" />
     <Compile Include="Helpers\UIStyler.cs" />
     <Compile Include="Reports\ReceiptPrinter.cs" />
+    <Compile Include="Reports\BarcodePrinter.cs" />
     <Compile Include="UITheme.cs" />
 
     <!-- Forms -->
@@ -133,6 +136,12 @@
     </Compile>
     <Compile Include="Forms\Inventory\ProductsForm.Designer.cs">
       <DependentUpon>ProductsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Inventory\BarcodePrintModalForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Inventory\BarcodePrintModalForm.Designer.cs">
+      <DependentUpon>BarcodePrintModalForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Purchases\PurchasesForm.cs">
       <SubType>Form</SubType>

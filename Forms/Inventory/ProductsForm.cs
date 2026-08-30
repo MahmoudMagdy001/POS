@@ -29,6 +29,8 @@ namespace POS
             UIStyler.StylePrimaryButton(btnSaveProduct, "حفظ بيانات المنتج");
             UIStyler.StyleSecondaryButton(btnNewProduct, "صنف جديد (تفريغ الحقول)");
             UIStyler.StyleSecondaryButton(btnGenBarcode, "باركود");
+            UIStyler.StyleSecondaryButton(btnPrintBarcode, "طباعة ملصق الباركود");
+            UIStyler.StyleSecondaryButton(btnPrintBarcodeToolbar, "طباعة باركود");
             UIStyler.StyleSecondaryButton(btnManageCategories, "الأقسام");
             UIStyler.StyleDangerButton(btnDeleteProduct, "حذف الصنف المحدد");
             UIStyler.StyleSecondaryButton(btnRefresh, "تحديث");
@@ -406,6 +408,30 @@ namespace POS
             chkLowStockOnly.Checked = false;
             if (cmbCategoryFilter.Items.Count > 0) cmbCategoryFilter.SelectedIndex = 0;
             await LoadProductsAsync();
+        }
+
+        private void btnPrintBarcode_Click(object sender, EventArgs e)
+        {
+            OpenBarcodePrintDialog();
+        }
+
+        private void btnPrintBarcodeToolbar_Click(object sender, EventArgs e)
+        {
+            OpenBarcodePrintDialog();
+        }
+
+        private void OpenBarcodePrintDialog()
+        {
+            int prodId = _selectedProductId;
+            if (prodId <= 0 && dgvProducts.SelectedRows.Count > 0)
+            {
+                prodId = Convert.ToInt32(dgvProducts.SelectedRows[0].Cells["ProductId"].Value);
+            }
+
+            using (var modal = new BarcodePrintModalForm(prodId))
+            {
+                modal.ShowDialog(this.FindForm() ?? this);
+            }
         }
     }
 }

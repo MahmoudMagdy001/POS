@@ -41,6 +41,7 @@ namespace POS
             this.numMinStockAlert = new System.Windows.Forms.NumericUpDown();
             this.btnNewProduct = new System.Windows.Forms.Button();
             this.btnSaveProduct = new System.Windows.Forms.Button();
+            this.btnPrintBarcode = new System.Windows.Forms.Button();
             this.btnDeleteProduct = new System.Windows.Forms.Button();
             this.pnlList = new System.Windows.Forms.Panel();
             this.dgvProducts = new System.Windows.Forms.DataGridView();
@@ -51,6 +52,7 @@ namespace POS
             this.lblCategoryFilter = new System.Windows.Forms.Label();
             this.cmbCategoryFilter = new System.Windows.Forms.ComboBox();
             this.chkLowStockOnly = new System.Windows.Forms.CheckBox();
+            this.btnPrintBarcodeToolbar = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.tlpMain.SuspendLayout();
             this.pnlEditor.SuspendLayout();
@@ -116,11 +118,12 @@ namespace POS
             this.tlpEditor.Controls.Add(this.numMinStockAlert, 0, 14);
             this.tlpEditor.Controls.Add(this.btnNewProduct, 0, 15);
             this.tlpEditor.Controls.Add(this.btnSaveProduct, 0, 16);
-            this.tlpEditor.Controls.Add(this.btnDeleteProduct, 0, 17);
+            this.tlpEditor.Controls.Add(this.btnPrintBarcode, 0, 17);
+            this.tlpEditor.Controls.Add(this.btnDeleteProduct, 0, 18);
             this.tlpEditor.Dock = System.Windows.Forms.DockStyle.Top;
             this.tlpEditor.Location = new System.Drawing.Point(14, 14);
             this.tlpEditor.Name = "tlpEditor";
-            this.tlpEditor.RowCount = 18;
+            this.tlpEditor.RowCount = 19;
             this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
             this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 18F));
             this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
@@ -136,10 +139,11 @@ namespace POS
             this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
             this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 18F));
             this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 42F));
             this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
-            this.tlpEditor.Size = new System.Drawing.Size(389, 500);
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
+            this.tlpEditor.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
+            this.tlpEditor.Size = new System.Drawing.Size(389, 545);
             this.tlpEditor.TabIndex = 0;
             // 
             // lblEditorTitle
@@ -435,6 +439,26 @@ namespace POS
             this.btnSaveProduct.UseVisualStyleBackColor = false;
             this.btnSaveProduct.Click += new System.EventHandler(this.btnSaveProduct_Click);
             // 
+            // btnPrintBarcode
+            // 
+            this.btnPrintBarcode.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
+            this.btnPrintBarcode.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnPrintBarcode.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnPrintBarcode.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this.btnPrintBarcode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPrintBarcode.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.btnPrintBarcode.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(65)))), ((int)(((byte)(85)))));
+            this.btnPrintBarcode.Location = new System.Drawing.Point(3, 467);
+            this.btnPrintBarcode.Margin = new System.Windows.Forms.Padding(3, 3, 3, 5);
+            this.btnPrintBarcode.Name = "btnPrintBarcode";
+            this.btnPrintBarcode.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btnPrintBarcode.Size = new System.Drawing.Size(383, 30);
+            this.btnPrintBarcode.TabIndex = 17;
+            this.btnPrintBarcode.Text = "طباعة ملصق الباركود";
+            this.btnPrintBarcode.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnPrintBarcode.UseVisualStyleBackColor = false;
+            this.btnPrintBarcode.Click += new System.EventHandler(this.btnPrintBarcode_Click);
+            // 
             // btnDeleteProduct
             // 
             this.btnDeleteProduct.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
@@ -445,12 +469,12 @@ namespace POS
             this.btnDeleteProduct.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDeleteProduct.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.btnDeleteProduct.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this.btnDeleteProduct.Location = new System.Drawing.Point(3, 467);
+            this.btnDeleteProduct.Location = new System.Drawing.Point(3, 505);
             this.btnDeleteProduct.Margin = new System.Windows.Forms.Padding(3, 3, 3, 5);
             this.btnDeleteProduct.Name = "btnDeleteProduct";
             this.btnDeleteProduct.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnDeleteProduct.Size = new System.Drawing.Size(383, 30);
-            this.btnDeleteProduct.TabIndex = 17;
+            this.btnDeleteProduct.Size = new System.Drawing.Size(383, 26);
+            this.btnDeleteProduct.TabIndex = 18;
             this.btnDeleteProduct.Text = "حذف الصنف المحدد";
             this.btnDeleteProduct.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnDeleteProduct.UseVisualStyleBackColor = false;
@@ -503,17 +527,19 @@ namespace POS
             // 
             // tlpFilters
             // 
-            this.tlpFilters.ColumnCount = 4;
-            this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 42F));
-            this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 28F));
-            this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tlpFilters.ColumnCount = 5;
+            this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 35F));
+            this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 18F));
+            this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12F));
             this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
             this.tlpFilters.Controls.Add(this.lblSearch, 0, 0);
             this.tlpFilters.Controls.Add(this.txtSearch, 0, 1);
             this.tlpFilters.Controls.Add(this.lblCategoryFilter, 1, 0);
             this.tlpFilters.Controls.Add(this.cmbCategoryFilter, 1, 1);
             this.tlpFilters.Controls.Add(this.chkLowStockOnly, 2, 1);
-            this.tlpFilters.Controls.Add(this.btnRefresh, 3, 1);
+            this.tlpFilters.Controls.Add(this.btnPrintBarcodeToolbar, 3, 1);
+            this.tlpFilters.Controls.Add(this.btnRefresh, 4, 1);
             this.tlpFilters.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpFilters.Location = new System.Drawing.Point(12, 0);
             this.tlpFilters.Name = "tlpFilters";
@@ -528,9 +554,9 @@ namespace POS
             this.lblSearch.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblSearch.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblSearch.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblSearch.Location = new System.Drawing.Point(410, 0);
+            this.lblSearch.Location = new System.Drawing.Point(458, 0);
             this.lblSearch.Name = "lblSearch";
-            this.lblSearch.Size = new System.Drawing.Size(288, 22);
+            this.lblSearch.Size = new System.Drawing.Size(240, 22);
             this.lblSearch.TabIndex = 0;
             this.lblSearch.Text = "بحث بالاسم أو الباركود:";
             this.lblSearch.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -540,9 +566,9 @@ namespace POS
             this.txtSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtSearch.Font = new System.Drawing.Font("Tahoma", 10F);
-            this.txtSearch.Location = new System.Drawing.Point(410, 26);
+            this.txtSearch.Location = new System.Drawing.Point(458, 26);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(288, 28);
+            this.txtSearch.Size = new System.Drawing.Size(240, 28);
             this.txtSearch.TabIndex = 1;
             this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
             // 
@@ -551,9 +577,9 @@ namespace POS
             this.lblCategoryFilter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblCategoryFilter.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblCategoryFilter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblCategoryFilter.Location = new System.Drawing.Point(214, 0);
+            this.lblCategoryFilter.Location = new System.Drawing.Point(283, 0);
             this.lblCategoryFilter.Name = "lblCategoryFilter";
-            this.lblCategoryFilter.Size = new System.Drawing.Size(190, 22);
+            this.lblCategoryFilter.Size = new System.Drawing.Size(169, 22);
             this.lblCategoryFilter.TabIndex = 2;
             this.lblCategoryFilter.Text = "القسم:";
             this.lblCategoryFilter.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -564,9 +590,9 @@ namespace POS
             this.cmbCategoryFilter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbCategoryFilter.Font = new System.Drawing.Font("Tahoma", 10F);
             this.cmbCategoryFilter.FormattingEnabled = true;
-            this.cmbCategoryFilter.Location = new System.Drawing.Point(214, 25);
+            this.cmbCategoryFilter.Location = new System.Drawing.Point(283, 25);
             this.cmbCategoryFilter.Name = "cmbCategoryFilter";
-            this.cmbCategoryFilter.Size = new System.Drawing.Size(190, 29);
+            this.cmbCategoryFilter.Size = new System.Drawing.Size(169, 29);
             this.cmbCategoryFilter.TabIndex = 3;
             this.cmbCategoryFilter.SelectedIndexChanged += new System.EventHandler(this.cmbCategoryFilter_SelectedIndexChanged);
             // 
@@ -577,13 +603,31 @@ namespace POS
             this.chkLowStockOnly.Cursor = System.Windows.Forms.Cursors.Hand;
             this.chkLowStockOnly.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.chkLowStockOnly.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this.chkLowStockOnly.Location = new System.Drawing.Point(74, 29);
+            this.chkLowStockOnly.Location = new System.Drawing.Point(157, 29);
             this.chkLowStockOnly.Name = "chkLowStockOnly";
-            this.chkLowStockOnly.Size = new System.Drawing.Size(134, 22);
+            this.chkLowStockOnly.Size = new System.Drawing.Size(120, 22);
             this.chkLowStockOnly.TabIndex = 4;
-            this.chkLowStockOnly.Text = "عرض النواقص فقط";
+            this.chkLowStockOnly.Text = "النواقص فقط";
             this.chkLowStockOnly.UseVisualStyleBackColor = true;
             this.chkLowStockOnly.CheckedChanged += new System.EventHandler(this.chkLowStockOnly_CheckedChanged);
+            // 
+            // btnPrintBarcodeToolbar
+            // 
+            this.btnPrintBarcodeToolbar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPrintBarcodeToolbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
+            this.btnPrintBarcodeToolbar.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnPrintBarcodeToolbar.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this.btnPrintBarcodeToolbar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPrintBarcodeToolbar.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.btnPrintBarcodeToolbar.Location = new System.Drawing.Point(74, 25);
+            this.btnPrintBarcodeToolbar.Name = "btnPrintBarcodeToolbar";
+            this.btnPrintBarcodeToolbar.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btnPrintBarcodeToolbar.Size = new System.Drawing.Size(77, 30);
+            this.btnPrintBarcodeToolbar.TabIndex = 5;
+            this.btnPrintBarcodeToolbar.Text = "طباعة باركود";
+            this.btnPrintBarcodeToolbar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnPrintBarcodeToolbar.UseVisualStyleBackColor = false;
+            this.btnPrintBarcodeToolbar.Click += new System.EventHandler(this.btnPrintBarcodeToolbar_Click);
             // 
             // btnRefresh
             // 
@@ -597,7 +641,7 @@ namespace POS
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnRefresh.Size = new System.Drawing.Size(65, 30);
-            this.btnRefresh.TabIndex = 5;
+            this.btnRefresh.TabIndex = 6;
             this.btnRefresh.Text = "تحديث";
             this.btnRefresh.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnRefresh.UseVisualStyleBackColor = false;
@@ -664,6 +708,7 @@ namespace POS
         private System.Windows.Forms.NumericUpDown numMinStockAlert;
         private System.Windows.Forms.Button btnNewProduct;
         private System.Windows.Forms.Button btnSaveProduct;
+        private System.Windows.Forms.Button btnPrintBarcode;
         private System.Windows.Forms.Button btnDeleteProduct;
         private System.Windows.Forms.Panel pnlList;
         private System.Windows.Forms.DataGridView dgvProducts;
@@ -674,6 +719,7 @@ namespace POS
         private System.Windows.Forms.Label lblCategoryFilter;
         private System.Windows.Forms.ComboBox cmbCategoryFilter;
         private System.Windows.Forms.CheckBox chkLowStockOnly;
+        private System.Windows.Forms.Button btnPrintBarcodeToolbar;
         private System.Windows.Forms.Button btnRefresh;
     }
 }
