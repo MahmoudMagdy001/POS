@@ -32,8 +32,8 @@ namespace POS
         private async void POSForm_Load(object sender, EventArgs e)
         {
             UIStyler.ApplyTheme(this);
-            lblFinalTotalVal.Font = FontManager.GetBold(20f);
-            lblFinalTotalTitle.Font = FontManager.GetBold(12f);
+            lblFinalTotalVal.Font = FontManager.GetBold(18f);
+            lblFinalTotalTitle.Font = FontManager.GetBold(11.5f);
             UIStyler.StyleSuccessButton(btnCheckout, "إتمام وطباعة الفاتورة [F12]");
             UIStyler.StyleDangerButton(btnClearCart, "تفريغ السلة");
             UIStyler.StyleDataGrid(dgvProductsCatalog);
@@ -259,8 +259,8 @@ namespace POS
             if (dgvProductsCatalog.Columns.Count == 0) return;
 
             dgvProductsCatalog.ScrollBars = ScrollBars.Both;
-            dgvProductsCatalog.ColumnHeadersHeight = 44;
-            dgvProductsCatalog.RowTemplate.Height = 38;
+            dgvProductsCatalog.ColumnHeadersHeight = 40;
+            dgvProductsCatalog.RowTemplate.Height = 36;
             dgvProductsCatalog.EnableHeadersVisualStyles = false;
 
             dgvProductsCatalog.HideColumn("ProductId");
@@ -270,12 +270,12 @@ namespace POS
             dgvProductsCatalog.HideColumn("CreatedAt");
             dgvProductsCatalog.HideColumn("IsLowStock");
 
-            dgvProductsCatalog.ConfigureCenterColumn("Barcode", "الباركود", fillWeight: 85, minWidth: 95);
-            dgvProductsCatalog.ConfigureTextColumn("ProductName", "اسم المنتج", fillWeight: 160, minWidth: 140);
-            dgvProductsCatalog.ConfigureTextColumn("CategoryName", "القسم", fillWeight: 90, minWidth: 90);
-            dgvProductsCatalog.ConfigureCurrencyColumn("SellPrice", "السعر", fillWeight: 75, minWidth: 80);
-            dgvProductsCatalog.ConfigureNumericColumn("StockQuantity", "المتاح", fillWeight: 60, minWidth: 65);
-            dgvProductsCatalog.ConfigureButtonColumn("colAdd", "إضافة", "+", fillWeight: 50, minWidth: 55);
+            dgvProductsCatalog.ConfigureCenterColumn("Barcode", "الباركود", fillWeight: 90, minWidth: 95);
+            dgvProductsCatalog.ConfigureTextColumn("ProductName", "اسم المنتج", fillWeight: 165, minWidth: 135);
+            dgvProductsCatalog.ConfigureTextColumn("CategoryName", "القسم", fillWeight: 85, minWidth: 85);
+            dgvProductsCatalog.ConfigureCurrencyColumn("SellPrice", "السعر", fillWeight: 70, minWidth: 65);
+            dgvProductsCatalog.ConfigureNumericColumn("StockQuantity", "المتاح", fillWeight: 55, minWidth: 55);
+            dgvProductsCatalog.ConfigureButtonColumn("colAdd", "إضافة", "+", fillWeight: 45, minWidth: 48);
         }
 
         private void InitCartTable()
@@ -298,33 +298,33 @@ namespace POS
             if (dgvCart.Columns.Count == 0) return;
 
             dgvCart.ScrollBars = ScrollBars.Both;
-            dgvCart.ColumnHeadersHeight = 44;
-            dgvCart.RowTemplate.Height = 38;
+            dgvCart.ColumnHeadersHeight = 40;
+            dgvCart.RowTemplate.Height = 36;
             dgvCart.EnableHeadersVisualStyles = false;
 
             dgvCart.HideColumn("ProductId");
             dgvCart.HideColumn("AvailableStock");
 
-            var colB = dgvCart.ConfigureCenterColumn("Barcode", "الباركود", fillWeight: 85, minWidth: 90);
+            var colB = dgvCart.ConfigureCenterColumn("Barcode", "الباركود", fillWeight: 95, minWidth: 95);
             if (colB != null) colB.ReadOnly = true;
 
-            var colP = dgvCart.ConfigureTextColumn("ProductName", "اسم الصنف", fillWeight: 160, minWidth: 130);
+            var colP = dgvCart.ConfigureTextColumn("ProductName", "اسم الصنف", fillWeight: 180, minWidth: 140);
             if (colP != null) colP.ReadOnly = true;
 
-            var colU = dgvCart.ConfigureCurrencyColumn("UnitPrice", "السعر", fillWeight: 75, minWidth: 75);
+            var colU = dgvCart.ConfigureCurrencyColumn("UnitPrice", "السعر", fillWeight: 70, minWidth: 65);
             if (colU != null) colU.ReadOnly = true;
 
-            dgvCart.ConfigureButtonColumn("colMinus", "-", "-", fillWeight: 40, minWidth: 40);
+            dgvCart.ConfigureButtonColumn("colMinus", "-", "-", fillWeight: 35, minWidth: 35);
 
-            var colQ = dgvCart.ConfigureNumericColumn("Quantity", "الكمية", fillWeight: 60, minWidth: 55);
+            var colQ = dgvCart.ConfigureNumericColumn("Quantity", "الكمية", fillWeight: 55, minWidth: 50);
             if (colQ != null) colQ.ReadOnly = false;
 
-            dgvCart.ConfigureButtonColumn("colPlus", "+", "+", fillWeight: 40, minWidth: 40);
+            dgvCart.ConfigureButtonColumn("colPlus", "+", "+", fillWeight: 35, minWidth: 35);
 
-            var colT = dgvCart.ConfigureCurrencyColumn("LineTotal", "الإجمالي", fillWeight: 80, minWidth: 80);
+            var colT = dgvCart.ConfigureCurrencyColumn("LineTotal", "الإجمالي", fillWeight: 75, minWidth: 70);
             if (colT != null) colT.ReadOnly = true;
 
-            dgvCart.ConfigureButtonColumn("colDelete", "حذف", "حذف", fillWeight: 50, minWidth: 50, textColor: Color.FromArgb(220, 38, 38));
+            dgvCart.ConfigureButtonColumn("colDelete", "حذف", "حذف", fillWeight: 45, minWidth: 45, textColor: Color.FromArgb(220, 38, 38));
         }
 
         private void AddProductToCart(ProductModel product, int quantityToAdd = 1)

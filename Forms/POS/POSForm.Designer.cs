@@ -151,8 +151,8 @@ namespace POS
             // tlpMain
             // 
             this.tlpMain.ColumnCount = 2;
-            this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45F));
-            this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55F));
+            this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44F));
+            this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 56F));
             this.tlpMain.Controls.Add(this.pnlProductsCatalog, 0, 0);
             this.tlpMain.Controls.Add(this.pnlCart, 1, 0);
             this.tlpMain.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -361,10 +361,10 @@ namespace POS
             this.pnlCartSummary.Controls.Add(this.pnlPaymentDetails);
             this.pnlCartSummary.Controls.Add(this.pnlFinalTotal);
             this.pnlCartSummary.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlCartSummary.Location = new System.Drawing.Point(12, 292);
+            this.pnlCartSummary.Location = new System.Drawing.Point(12, 335);
             this.pnlCartSummary.Name = "pnlCartSummary";
-            this.pnlCartSummary.Padding = new System.Windows.Forms.Padding(12);
-            this.pnlCartSummary.Size = new System.Drawing.Size(618, 248);
+            this.pnlCartSummary.Padding = new System.Windows.Forms.Padding(10, 6, 10, 6);
+            this.pnlCartSummary.Size = new System.Drawing.Size(618, 205);
             this.pnlCartSummary.TabIndex = 2;
             // 
             // tlpCartActions
@@ -375,11 +375,11 @@ namespace POS
             this.tlpCartActions.Controls.Add(this.btnCheckout, 0, 0);
             this.tlpCartActions.Controls.Add(this.btnClearCart, 1, 0);
             this.tlpCartActions.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tlpCartActions.Location = new System.Drawing.Point(12, 186);
+            this.tlpCartActions.Location = new System.Drawing.Point(10, 153);
             this.tlpCartActions.Name = "tlpCartActions";
             this.tlpCartActions.RowCount = 1;
             this.tlpCartActions.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpCartActions.Size = new System.Drawing.Size(594, 50);
+            this.tlpCartActions.Size = new System.Drawing.Size(598, 46);
             this.tlpCartActions.TabIndex = 2;
             // 
             // btnCheckout
@@ -389,12 +389,12 @@ namespace POS
             this.btnCheckout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnCheckout.FlatAppearance.BorderSize = 0;
             this.btnCheckout.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCheckout.Font = new System.Drawing.Font("Tahoma", 11.5F, System.Drawing.FontStyle.Bold);
+            this.btnCheckout.Font = new System.Drawing.Font("Tahoma", 11F, System.Drawing.FontStyle.Bold);
             this.btnCheckout.ForeColor = System.Drawing.Color.White;
-            this.btnCheckout.Location = new System.Drawing.Point(170, 3);
+            this.btnCheckout.Location = new System.Drawing.Point(171, 2);
             this.btnCheckout.Name = "btnCheckout";
             this.btnCheckout.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnCheckout.Size = new System.Drawing.Size(421, 44);
+            this.btnCheckout.Size = new System.Drawing.Size(425, 42);
             this.btnCheckout.TabIndex = 0;
             this.btnCheckout.Text = "إتمام البيع وطباعة الفاتورة (F5)";
             this.btnCheckout.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -410,10 +410,10 @@ namespace POS
             this.btnClearCart.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClearCart.Font = new System.Drawing.Font("Tahoma", 9.5F, System.Drawing.FontStyle.Bold);
             this.btnClearCart.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(116)))), ((int)(((byte)(139)))));
-            this.btnClearCart.Location = new System.Drawing.Point(3, 3);
+            this.btnClearCart.Location = new System.Drawing.Point(2, 2);
             this.btnClearCart.Name = "btnClearCart";
             this.btnClearCart.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnClearCart.Size = new System.Drawing.Size(161, 44);
+            this.btnClearCart.Size = new System.Drawing.Size(163, 42);
             this.btnClearCart.TabIndex = 1;
             this.btnClearCart.Text = "تفريغ السلة (F4)";
             this.btnClearCart.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -424,10 +424,10 @@ namespace POS
             // 
             this.pnlPaymentDetails.Controls.Add(this.tlpPaymentGrid);
             this.pnlPaymentDetails.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlPaymentDetails.Location = new System.Drawing.Point(12, 74);
+            this.pnlPaymentDetails.Location = new System.Drawing.Point(10, 58);
             this.pnlPaymentDetails.Name = "pnlPaymentDetails";
-            this.pnlPaymentDetails.Padding = new System.Windows.Forms.Padding(0, 6, 0, 6);
-            this.pnlPaymentDetails.Size = new System.Drawing.Size(594, 106);
+            this.pnlPaymentDetails.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
+            this.pnlPaymentDetails.Size = new System.Drawing.Size(598, 88);
             this.pnlPaymentDetails.TabIndex = 1;
             // 
             // tlpPaymentGrid
@@ -621,20 +621,20 @@ namespace POS
             this.pnlFinalTotal.Controls.Add(this.lblFinalTotalVal);
             this.pnlFinalTotal.Controls.Add(this.lblFinalTotalTitle);
             this.pnlFinalTotal.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlFinalTotal.Location = new System.Drawing.Point(12, 12);
+            this.pnlFinalTotal.Location = new System.Drawing.Point(10, 6);
             this.pnlFinalTotal.Name = "pnlFinalTotal";
-            this.pnlFinalTotal.Padding = new System.Windows.Forms.Padding(15, 6, 15, 6);
-            this.pnlFinalTotal.Size = new System.Drawing.Size(594, 62);
+            this.pnlFinalTotal.Padding = new System.Windows.Forms.Padding(12, 4, 12, 4);
+            this.pnlFinalTotal.Size = new System.Drawing.Size(598, 50);
             this.pnlFinalTotal.TabIndex = 0;
             // 
             // lblFinalTotalVal
             // 
             this.lblFinalTotalVal.Dock = System.Windows.Forms.DockStyle.Left;
-            this.lblFinalTotalVal.Font = new System.Drawing.Font("Tahoma", 20F, System.Drawing.FontStyle.Bold);
+            this.lblFinalTotalVal.Font = new System.Drawing.Font("Tahoma", 18F, System.Drawing.FontStyle.Bold);
             this.lblFinalTotalVal.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(74)))), ((int)(((byte)(222)))), ((int)(((byte)(128)))));
-            this.lblFinalTotalVal.Location = new System.Drawing.Point(15, 6);
+            this.lblFinalTotalVal.Location = new System.Drawing.Point(12, 4);
             this.lblFinalTotalVal.Name = "lblFinalTotalVal";
-            this.lblFinalTotalVal.Size = new System.Drawing.Size(280, 50);
+            this.lblFinalTotalVal.Size = new System.Drawing.Size(260, 42);
             this.lblFinalTotalVal.TabIndex = 1;
             this.lblFinalTotalVal.Text = "0.00 ج.م";
             this.lblFinalTotalVal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -642,11 +642,11 @@ namespace POS
             // lblFinalTotalTitle
             // 
             this.lblFinalTotalTitle.Dock = System.Windows.Forms.DockStyle.Right;
-            this.lblFinalTotalTitle.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
+            this.lblFinalTotalTitle.Font = new System.Drawing.Font("Tahoma", 11.5F, System.Drawing.FontStyle.Bold);
             this.lblFinalTotalTitle.ForeColor = System.Drawing.Color.White;
-            this.lblFinalTotalTitle.Location = new System.Drawing.Point(279, 6);
+            this.lblFinalTotalTitle.Location = new System.Drawing.Point(306, 4);
             this.lblFinalTotalTitle.Name = "lblFinalTotalTitle";
-            this.lblFinalTotalTitle.Size = new System.Drawing.Size(300, 50);
+            this.lblFinalTotalTitle.Size = new System.Drawing.Size(280, 42);
             this.lblFinalTotalTitle.TabIndex = 0;
             this.lblFinalTotalTitle.Text = "الإجمالي النهائي المستحق:";
             this.lblFinalTotalTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;

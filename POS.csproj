@@ -48,96 +48,136 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DbHelper.cs" />
-    <Compile Include="Models.cs" />
-    <Compile Include="ReceiptPrinter.cs" />
-    <Compile Include="LoginForm.cs">
+    <!-- Constants -->
+    <Compile Include="Constants\AppConstants.cs" />
+
+    <!-- Models -->
+    <Compile Include="Models\UserModel.cs" />
+    <Compile Include="Models\CategoryModel.cs" />
+    <Compile Include="Models\ProductModel.cs" />
+    <Compile Include="Models\SupplierModel.cs" />
+    <Compile Include="Models\SaleModel.cs" />
+    <Compile Include="Models\SaleDetailModel.cs" />
+    <Compile Include="Models\SalesReturnModel.cs" />
+    <Compile Include="Models\PurchaseModel.cs" />
+    <Compile Include="Models\PurchaseDetailModel.cs" />
+    <Compile Include="Models\ShiftModel.cs" />
+    <Compile Include="Models\SystemSettingsModel.cs" />
+
+    <!-- DTOs -->
+    <Compile Include="DTOs\CartItemModel.cs" />
+    <Compile Include="DTOs\ReturnItemModel.cs" />
+    <Compile Include="DTOs\DashboardStatsModel.cs" />
+    <Compile Include="DTOs\ShiftSummaryModel.cs" />
+
+    <!-- Data -->
+    <Compile Include="Data\DbConnectionFactory.cs" />
+    <Compile Include="Data\DbHelper.cs" />
+
+    <!-- Repositories -->
+    <Compile Include="Repositories\ProductRepository.cs" />
+    <Compile Include="Repositories\SaleRepository.cs" />
+    <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="Repositories\ShiftRepository.cs" />
+    <Compile Include="Repositories\OtherRepositories.cs" />
+
+    <!-- Services -->
+    <Compile Include="Services\Services.cs" />
+
+    <!-- Helpers & Reports -->
+    <Compile Include="Helpers\SecurityHelper.cs" />
+    <Compile Include="Helpers\FontManager.cs" />
+    <Compile Include="Helpers\UIStyler.cs" />
+    <Compile Include="Reports\ReceiptPrinter.cs" />
+    <Compile Include="UITheme.cs" />
+
+    <!-- Forms -->
+    <Compile Include="Forms\Auth\LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LoginForm.Designer.cs">
+    <Compile Include="Forms\Auth\LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainForm.cs">
+    <Compile Include="Forms\Main\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="Forms\Main\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DashboardForm.cs">
+    <Compile Include="Forms\Dashboard\DashboardForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DashboardForm.Designer.cs">
+    <Compile Include="Forms\Dashboard\DashboardForm.Designer.cs">
       <DependentUpon>DashboardForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="POSForm.cs">
+    <Compile Include="Forms\POS\POSForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="POSForm.Designer.cs">
+    <Compile Include="Forms\POS\POSForm.Designer.cs">
       <DependentUpon>POSForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SalesForm.cs">
+    <Compile Include="Forms\Sales\SalesForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SalesForm.Designer.cs">
+    <Compile Include="Forms\Sales\SalesForm.Designer.cs">
       <DependentUpon>SalesForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ProductsForm.cs">
+    <Compile Include="Forms\Sales\ReturnModalForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ProductsForm.Designer.cs">
-      <DependentUpon>ProductsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PurchasesForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PurchasesForm.Designer.cs">
-      <DependentUpon>PurchasesForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UsersForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UsersForm.Designer.cs">
-      <DependentUpon>UsersForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserModalForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UserModalForm.Designer.cs">
-      <DependentUpon>UserModalForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ReturnModalForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ReturnModalForm.Designer.cs">
+    <Compile Include="Forms\Sales\ReturnModalForm.Designer.cs">
       <DependentUpon>ReturnModalForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SettingsForm.cs">
+    <Compile Include="Forms\Inventory\ProductsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SettingsForm.Designer.cs">
+    <Compile Include="Forms\Inventory\ProductsForm.Designer.cs">
+      <DependentUpon>ProductsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Purchases\PurchasesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Purchases\PurchasesForm.Designer.cs">
+      <DependentUpon>PurchasesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Users\UsersForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Users\UsersForm.Designer.cs">
+      <DependentUpon>UsersForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Users\UserModalForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Users\UserModalForm.Designer.cs">
+      <DependentUpon>UserModalForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Settings\SettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Settings\SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ShiftsForm.cs">
+    <Compile Include="Forms\Shifts\ShiftsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ShiftsForm.Designer.cs">
+    <Compile Include="Forms\Shifts\ShiftsForm.Designer.cs">
       <DependentUpon>ShiftsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ShiftEditForm.cs">
+    <Compile Include="Forms\Shifts\ShiftEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ShiftEditForm.Designer.cs">
+    <Compile Include="Forms\Shifts\ShiftEditForm.Designer.cs">
       <DependentUpon>ShiftEditForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="StartShiftModalForm.cs">
+    <Compile Include="Forms\Shifts\StartShiftModalForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="StartShiftModalForm.Designer.cs">
+    <Compile Include="Forms\Shifts\StartShiftModalForm.Designer.cs">
       <DependentUpon>StartShiftModalForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="FontManager.cs" />
-    <Compile Include="UITheme.cs" />
-    <Compile Include="UIStyler.cs" />
+
+    <!-- Design System -->
     <Compile Include="DesignSystem\Tokens\UIColors.cs" />
     <Compile Include="DesignSystem\Tokens\UITypography.cs" />
     <Compile Include="DesignSystem\Tokens\UISpacing.cs" />
@@ -169,9 +209,11 @@
     <Compile Include="DesignSystem\Components\AppModal.cs">
       <SubType>Form</SubType>
     </Compile>
+
+    <!-- Entry & Properties -->
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="DashboardForm.resx">
+    <EmbeddedResource Include="Forms\Dashboard\DashboardForm.resx">
       <DependentUpon>DashboardForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="fonts\Cairo-Black.ttf" />
@@ -182,22 +224,22 @@
     <EmbeddedResource Include="fonts\Cairo-Medium.ttf" />
     <EmbeddedResource Include="fonts\Cairo-Regular.ttf" />
     <EmbeddedResource Include="fonts\Cairo-SemiBold.ttf" />
-    <EmbeddedResource Include="LoginForm.resx">
+    <EmbeddedResource Include="Forms\Auth\LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
+    <EmbeddedResource Include="Forms\Main\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="POSForm.resx">
+    <EmbeddedResource Include="Forms\POS\POSForm.resx">
       <DependentUpon>POSForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SalesForm.resx">
+    <EmbeddedResource Include="Forms\Sales\SalesForm.resx">
       <DependentUpon>SalesForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ReturnModalForm.resx">
+    <EmbeddedResource Include="Forms\Sales\ReturnModalForm.resx">
       <DependentUpon>ReturnModalForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProductsForm.resx">
+    <EmbeddedResource Include="Forms\Inventory\ProductsForm.resx">
       <DependentUpon>ProductsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -209,22 +251,22 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="PurchasesForm.resx">
+    <EmbeddedResource Include="Forms\Purchases\PurchasesForm.resx">
       <DependentUpon>PurchasesForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SettingsForm.resx">
+    <EmbeddedResource Include="Forms\Settings\SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ShiftsForm.resx">
+    <EmbeddedResource Include="Forms\Shifts\ShiftsForm.resx">
       <DependentUpon>ShiftsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ShiftEditForm.resx">
+    <EmbeddedResource Include="Forms\Shifts\ShiftEditForm.resx">
       <DependentUpon>ShiftEditForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserModalForm.resx">
+    <EmbeddedResource Include="Forms\Users\UserModalForm.resx">
       <DependentUpon>UserModalForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsersForm.resx">
+    <EmbeddedResource Include="Forms\Users\UsersForm.resx">
       <DependentUpon>UsersForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="prompt2.md" />
