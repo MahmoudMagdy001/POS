@@ -29,8 +29,8 @@ namespace POS.DesignSystem.Tokens
         public const int InputHeightDefault = 36;
         public const int SearchBoxHeight = 34;
 
-        public const int GridHeaderHeight = 38;
-        public const int GridRowHeight = 36;
+        public const int GridHeaderHeight = 44;
+        public const int GridRowHeight = 40;
 
         public const int KpiCardHeight = 100;
         public const int HeaderHeight = 56;

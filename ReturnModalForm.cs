@@ -36,9 +36,9 @@ namespace POS
         {
             UIStyler.ApplyTheme(this);
             UIStyler.CenterFormOnScreen(this);
-            UIStyler.StyleDangerButton(btnConfirmReturn, "↩️ تأكيد عملية الإرجاع");
-            UIStyler.StyleSecondaryButton(btnReturnAll, "⚡ إرجاع الكل");
-            UIStyler.StyleSecondaryButton(btnResetAll, "🔄 تصفير الكل");
+            UIStyler.StyleDangerButton(btnConfirmReturn, "تأكيد عملية الإرجاع");
+            UIStyler.StyleSecondaryButton(btnReturnAll, "إرجاع الكل");
+            UIStyler.StyleSecondaryButton(btnResetAll, "تصفير الكل");
             UIStyler.StyleSecondaryButton(btnCancel, "إلغاء");
             UIStyler.StyleDataGrid(dgvReturnItems);
 
@@ -94,7 +94,7 @@ namespace POS
                 ReadOnly = true,
                 FillWeight = 160,
                 MinimumWidth = 140,
-                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleRight }
+                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter }
             });
 
             dgvReturnItems.Columns.Add(new DataGridViewTextBoxColumn
@@ -142,7 +142,7 @@ namespace POS
             {
                 Name = "colBtnDec",
                 HeaderText = "-",
-                Text = "➖",
+                Text = "-",
                 UseColumnTextForButtonValue = true,
                 ReadOnly = true,
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
@@ -161,7 +161,7 @@ namespace POS
             var colReturnQty = new DataGridViewTextBoxColumn
             {
                 Name = "colReturnQty",
-                HeaderText = "كمية الإرجاع ✍️",
+                HeaderText = "كمية الإرجاع",
                 ReadOnly = false,
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
                 Width = 85,
@@ -183,7 +183,7 @@ namespace POS
             {
                 Name = "colBtnInc",
                 HeaderText = "+",
-                Text = "➕",
+                Text = "+",
                 UseColumnTextForButtonValue = true,
                 ReadOnly = true,
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.None,
@@ -254,9 +254,9 @@ namespace POS
                     item.OriginalQuantity,
                     item.AlreadyReturnedQuantity,
                     item.AvailableToReturn,
-                    "➖",
+                    "-",
                     item.ReturnQuantity,
-                    "➕",
+                    "+",
                     "الكل",
                     item.RefundAmount
                 );

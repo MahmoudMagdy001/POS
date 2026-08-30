@@ -20,12 +20,12 @@ namespace POS
         private void SettingsForm_Load(object sender, EventArgs e)
         {
             UIStyler.ApplyTheme(this);
-            UIStyler.StylePrimaryButton(btnSave, "💾 حفظ وتطبيق الإعدادات");
-            UIStyler.StyleSecondaryButton(btnResetDefaults, "🔄 استعادة الافتراضي");
-            UIStyler.StyleSecondaryButton(btnTestReceipt, "🖨️ فحص طباعة إيصال");
-            UIStyler.StyleSecondaryButton(btnBackupDb, "📦 أخذ نسخة احتياطية الآن");
-            UIStyler.StyleSecondaryButton(btnRestoreDb, "📥 استرجاع نسخة سابقة");
-            UIStyler.StyleDangerButton(btnClearHistory, "⚠️ تفريغ كافة سجلات المبيعات والمشتريات");
+            UIStyler.StylePrimaryButton(btnSave, "حفظ وتطبيق الإعدادات");
+            UIStyler.StyleSecondaryButton(btnResetDefaults, "استعادة الافتراضي");
+            UIStyler.StyleSecondaryButton(btnTestReceipt, "فحص طباعة إيصال");
+            UIStyler.StyleSecondaryButton(btnBackupDb, "أخذ نسخة احتياطية الآن");
+            UIStyler.StyleSecondaryButton(btnRestoreDb, "استرجاع نسخة سابقة");
+            UIStyler.StyleDangerButton(btnClearHistory, "تفريغ كافة سجلات المبيعات والمشتريات");
             VerifyAdminAccess();
             LoadSettings();
         }
@@ -44,7 +44,7 @@ namespace POS
                 pnlMain.Enabled = false;
                 flpActions.Enabled = false;
                 lblStatus.ForeColor = POS.DesignSystem.Tokens.UIColors.Danger;
-                lblStatus.Text = "⛔ وصول مقيد: هذه الشاشة مخصصة فقط لمدير النظام.";
+                lblStatus.Text = "وصول مقيد: هذه الشاشة مخصصة فقط لمدير النظام.";
                 MessageBox.Show(
                     "عذراً، هذه الشاشة مخصصة لمدير النظام فقط. لا تملك الصلاحية الكافية لتعديل إعدادات النظام.",
                     "تنبيه أمني",
@@ -132,13 +132,23 @@ namespace POS
                 {
                     _currentSettings = newSettings;
                     lblStatus.ForeColor = POS.DesignSystem.Tokens.UIColors.Success;
-                    lblStatus.Text = "✔ تم حفظ كافة الإعدادات بنجاح!";
+                    lblStatus.Text = "تم حفظ كافة الإعدادات بنجاح!";
+
+                    // تحديث اسم وهوية النظام في الشاشة الرئيسية فوراً
+                    foreach (Form openForm in Application.OpenForms)
+                    {
+                        if (openForm is MainForm mainForm)
+                        {
+                            mainForm.UpdateStoreBrand();
+                        }
+                    }
+
                     MessageBox.Show("تم حفظ وتطبيق كافة إعدادات النظام بنجاح.", "تم الحفظ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
                     lblStatus.ForeColor = POS.DesignSystem.Tokens.UIColors.Danger;
-                    lblStatus.Text = "❌ " + result.Message;
+                    lblStatus.Text = result.Message;
                     MessageBox.Show(result.Message, "خطأ في الحفظ", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -293,7 +303,7 @@ namespace POS
             if (!IsAdminUser()) return;
 
             var confirm1 = MessageBox.Show(
-                "⚠️ تحذير شديد الخطورة:\n\nسيتم حذف جميع فواتير المبيعات، وتفاصيلها، والمرتجعات، وفواتير المشتريات بالكامل بشكل نهائي، وتصفير عداد الفواتير ليبدأ من رقم 1.\n(لن يتم حذف الأصناف أو الأقسام أو المستخدمين).\n\nهل ترغب في المتابعة؟",
+                "تحذير شديد الخطورة:\n\nسيتم حذف جميع فواتير المبيعات، وتفاصيلها، والمرتجعات، وفواتير المشتريات بالكامل بشكل نهائي، وتصفير عداد الفواتير ليبدأ من رقم 1.\n(لن يتم حذف الأصناف أو الأقسام أو المستخدمين).\n\nهل ترغب في المتابعة؟",
                 "تأكيد تصفير المعاملات",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning);

@@ -28,11 +28,11 @@ namespace POS
             UIStyler.ApplyTheme(this);
             lblTitle.Font = FontManager.GetBold(16f);
             lblSubtitle.Font = FontManager.GetRegular(9f);
-            UIStyler.StylePrimaryButton(btnCreateUser, "➕ إضافة مستخدم جديد");
-            UIStyler.StyleSecondaryButton(btnEditUser, "✏️ تعديل");
-            UIStyler.StyleSecondaryButton(btnToggleStatus, "🔄 تفعيل / تعطيل");
-            UIStyler.StyleDangerButton(btnDeleteUser, "🗑️ حذف");
-            UIStyler.StyleSecondaryButton(btnRefresh, "🔄 تحديث");
+            UIStyler.StylePrimaryButton(btnCreateUser, "إضافة مستخدم جديد");
+            UIStyler.StyleSecondaryButton(btnEditUser, "تعديل");
+            UIStyler.StyleSecondaryButton(btnToggleStatus, "تفعيل / تعطيل");
+            UIStyler.StyleDangerButton(btnDeleteUser, "حذف");
+            UIStyler.StyleSecondaryButton(btnRefresh, "تحديث");
             UIStyler.StyleDataGrid(dgvUsers);
 
             await LoadUsersAsync();
@@ -70,55 +70,18 @@ namespace POS
             if (dgvUsers.Columns.Count == 0) return;
 
             dgvUsers.ScrollBars = ScrollBars.Both;
-            dgvUsers.ColumnHeadersHeight = 48;
-            dgvUsers.RowTemplate.Height = 40;
+            dgvUsers.ColumnHeadersHeight = 44;
+            dgvUsers.RowTemplate.Height = 38;
             dgvUsers.EnableHeadersVisualStyles = false;
 
-            if (dgvUsers.Columns["UserId"] != null)
-                dgvUsers.Columns["UserId"].Visible = false;
+            dgvUsers.HideColumn("UserId");
 
-            if (dgvUsers.Columns["FullName"] != null)
-            {
-                dgvUsers.Columns["FullName"].HeaderText = "الاسم الكامل";
-                dgvUsers.Columns["FullName"].FillWeight = 150; // 30%
-                dgvUsers.Columns["FullName"].MinimumWidth = 140;
-            }
-            if (dgvUsers.Columns["Username"] != null)
-            {
-                dgvUsers.Columns["Username"].HeaderText = "اسم المستخدم";
-                dgvUsers.Columns["Username"].FillWeight = 100; // 20%
-                dgvUsers.Columns["Username"].MinimumWidth = 110;
-            }
-            if (dgvUsers.Columns["Role"] != null)
-            {
-                dgvUsers.Columns["Role"].HeaderText = "الدور / الصلاحية";
-                dgvUsers.Columns["Role"].FillWeight = 75; // 15%
-                dgvUsers.Columns["Role"].MinimumWidth = 100;
-                dgvUsers.Columns["Role"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-            if (dgvUsers.Columns["IsActive"] != null)
-            {
-                dgvUsers.Columns["IsActive"].HeaderText = "الحالة";
-                dgvUsers.Columns["IsActive"].FillWeight = 40; // ~5-8%
-                dgvUsers.Columns["IsActive"].MinimumWidth = 70;
-                dgvUsers.Columns["IsActive"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-            if (dgvUsers.Columns["CreatedAt"] != null)
-            {
-                dgvUsers.Columns["CreatedAt"].HeaderText = "تاريخ الإنشاء";
-                dgvUsers.Columns["CreatedAt"].FillWeight = 75; // 15%
-                dgvUsers.Columns["CreatedAt"].MinimumWidth = 125;
-                dgvUsers.Columns["CreatedAt"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm";
-                dgvUsers.Columns["CreatedAt"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-            if (dgvUsers.Columns["LastLogin"] != null)
-            {
-                dgvUsers.Columns["LastLogin"].HeaderText = "آخر تسجيل دخول";
-                dgvUsers.Columns["LastLogin"].FillWeight = 75; // 15%
-                dgvUsers.Columns["LastLogin"].MinimumWidth = 125;
-                dgvUsers.Columns["LastLogin"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm";
-                dgvUsers.Columns["LastLogin"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
+            dgvUsers.ConfigureTextColumn("FullName", "الاسم الكامل", fillWeight: 150, minWidth: 140);
+            dgvUsers.ConfigureTextColumn("Username", "اسم المستخدم", fillWeight: 100, minWidth: 110);
+            dgvUsers.ConfigureCenterColumn("Role", "الدور / الصلاحية", fillWeight: 75, minWidth: 100);
+            dgvUsers.ConfigureCenterColumn("IsActive", "الحالة", fillWeight: 50, minWidth: 70);
+            dgvUsers.ConfigureDateColumn("CreatedAt", "تاريخ الإنشاء", fillWeight: 75, minWidth: 125);
+            dgvUsers.ConfigureDateColumn("LastLogin", "آخر تسجيل دخول", fillWeight: 75, minWidth: 125);
         }
 
         private void UpdateActionButtonsState()

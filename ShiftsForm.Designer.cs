@@ -87,7 +87,7 @@ namespace POS
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(473, 33);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "⏰ نظام الورديات والحضور والانصراف";
+            this.lblTitle.Text = "نظام الورديات والحضور والانصراف";
             // 
             // pnlToolbar
             // 
@@ -114,7 +114,7 @@ namespace POS
             this.btnClockIn.Name = "btnClockIn";
             this.btnClockIn.Size = new System.Drawing.Size(140, 32);
             this.btnClockIn.TabIndex = 0;
-            this.btnClockIn.Text = "🟢 تسجيل حضور";
+            this.btnClockIn.Text = "تسجيل حضور";
             this.btnClockIn.UseVisualStyleBackColor = true;
             this.btnClockIn.Click += new System.EventHandler(this.btnClockIn_Click);
             // 
@@ -127,7 +127,7 @@ namespace POS
             this.btnClockOut.Name = "btnClockOut";
             this.btnClockOut.Size = new System.Drawing.Size(140, 32);
             this.btnClockOut.TabIndex = 1;
-            this.btnClockOut.Text = "🔴 تسجيل انصراف";
+            this.btnClockOut.Text = "تسجيل انصراف";
             this.btnClockOut.UseVisualStyleBackColor = true;
             this.btnClockOut.Click += new System.EventHandler(this.btnClockOut_Click);
             // 
@@ -140,7 +140,7 @@ namespace POS
             this.btnEditShift.Name = "btnEditShift";
             this.btnEditShift.Size = new System.Drawing.Size(100, 32);
             this.btnEditShift.TabIndex = 2;
-            this.btnEditShift.Text = "✏️ تعديل";
+            this.btnEditShift.Text = "تعديل";
             this.btnEditShift.UseVisualStyleBackColor = true;
             this.btnEditShift.Click += new System.EventHandler(this.btnEditShift_Click);
             // 
@@ -153,7 +153,7 @@ namespace POS
             this.btnDeleteShift.Name = "btnDeleteShift";
             this.btnDeleteShift.Size = new System.Drawing.Size(100, 32);
             this.btnDeleteShift.TabIndex = 3;
-            this.btnDeleteShift.Text = "🗑️ حذف";
+            this.btnDeleteShift.Text = "حذف";
             this.btnDeleteShift.UseVisualStyleBackColor = true;
             this.btnDeleteShift.Click += new System.EventHandler(this.btnDeleteShift_Click);
             // 
@@ -166,7 +166,7 @@ namespace POS
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.Size = new System.Drawing.Size(100, 32);
             this.btnRefresh.TabIndex = 4;
-            this.btnRefresh.Text = "🔄 تحديث";
+            this.btnRefresh.Text = "تحديث";
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
@@ -275,7 +275,7 @@ namespace POS
             this.btnApplyFilter.Name = "btnApplyFilter";
             this.btnApplyFilter.Size = new System.Drawing.Size(80, 30);
             this.btnApplyFilter.TabIndex = 7;
-            this.btnApplyFilter.Text = "🔍 فلتر";
+            this.btnApplyFilter.Text = "فلتر";
             this.btnApplyFilter.UseVisualStyleBackColor = true;
             this.btnApplyFilter.Click += new System.EventHandler(this.btnApplyFilter_Click);
             // 
@@ -289,7 +289,7 @@ namespace POS
             this.btnClearFilter.Name = "btnClearFilter";
             this.btnClearFilter.Size = new System.Drawing.Size(100, 30);
             this.btnClearFilter.TabIndex = 8;
-            this.btnClearFilter.Text = "✖ مسح الفلتر";
+            this.btnClearFilter.Text = "مسح الفلتر";
             this.btnClearFilter.UseVisualStyleBackColor = true;
             this.btnClearFilter.Click += new System.EventHandler(this.btnClearFilter_Click);
             // 
@@ -315,7 +315,7 @@ namespace POS
             this.tabDetails.Padding = new System.Windows.Forms.Padding(8);
             this.tabDetails.Size = new System.Drawing.Size(992, 356);
             this.tabDetails.TabIndex = 0;
-            this.tabDetails.Text = "📋 سجل الورديات التفصيلي";
+            this.tabDetails.Text = "سجل الورديات التفصيلي";
             this.tabDetails.UseVisualStyleBackColor = true;
             // 
             // dgvShifts
@@ -348,7 +348,7 @@ namespace POS
             this.tabSummary.Padding = new System.Windows.Forms.Padding(8);
             this.tabSummary.Size = new System.Drawing.Size(992, 356);
             this.tabSummary.TabIndex = 1;
-            this.tabSummary.Text = "📊 ملخص ساعات العمل";
+            this.tabSummary.Text = "ملخص ساعات العمل";
             this.tabSummary.UseVisualStyleBackColor = true;
             // 
             // dgvSummary

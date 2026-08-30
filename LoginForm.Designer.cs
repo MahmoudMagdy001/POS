@@ -76,7 +76,7 @@ namespace POS
             this.lblFeature3.Name = "lblFeature3";
             this.lblFeature3.Size = new System.Drawing.Size(256, 21);
             this.lblFeature3.TabIndex = 4;
-            this.lblFeature3.Text = "🔒 حماية وصلاحيات مستخدمين";
+            this.lblFeature3.Text = "حماية وصلاحيات مستخدمين";
             // 
             // lblFeature2
             // 
@@ -87,7 +87,7 @@ namespace POS
             this.lblFeature2.Name = "lblFeature2";
             this.lblFeature2.Size = new System.Drawing.Size(258, 21);
             this.lblFeature2.TabIndex = 3;
-            this.lblFeature2.Text = "📦 جرد المخزون وتنبيه النواقص";
+            this.lblFeature2.Text = "جرد المخزون وتنبيه النواقص";
             // 
             // lblFeature1
             // 
@@ -98,29 +98,29 @@ namespace POS
             this.lblFeature1.Name = "lblFeature1";
             this.lblFeature1.Size = new System.Drawing.Size(256, 21);
             this.lblFeature1.TabIndex = 2;
-            this.lblFeature1.Text = "⚡ كاشير وفواتير فائقة السرعة";
+            this.lblFeature1.Text = "كاشير وفواتير فائقة السرعة";
             // 
             // lblLeftSubTitle
             // 
-            this.lblLeftSubTitle.AutoSize = true;
-            this.lblLeftSubTitle.Font = new System.Drawing.Font("Tahoma", 9.5F);
+            this.lblLeftSubTitle.Font = new System.Drawing.Font("Tahoma", 9F);
             this.lblLeftSubTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
-            this.lblLeftSubTitle.Location = new System.Drawing.Point(25, 95);
+            this.lblLeftSubTitle.Location = new System.Drawing.Point(15, 100);
             this.lblLeftSubTitle.Name = "lblLeftSubTitle";
-            this.lblLeftSubTitle.Size = new System.Drawing.Size(279, 19);
+            this.lblLeftSubTitle.Size = new System.Drawing.Size(280, 42);
             this.lblLeftSubTitle.TabIndex = 1;
             this.lblLeftSubTitle.Text = "إدارة متكاملة للمبيعات والمخازن والفواتير";
+            this.lblLeftSubTitle.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // lblLeftTitle
             // 
-            this.lblLeftTitle.AutoSize = true;
-            this.lblLeftTitle.Font = new System.Drawing.Font("Tahoma", 20F, System.Drawing.FontStyle.Bold);
+            this.lblLeftTitle.Font = new System.Drawing.Font("Tahoma", 15F, System.Drawing.FontStyle.Bold);
             this.lblLeftTitle.ForeColor = System.Drawing.Color.White;
-            this.lblLeftTitle.Location = new System.Drawing.Point(20, 45);
+            this.lblLeftTitle.Location = new System.Drawing.Point(15, 30);
             this.lblLeftTitle.Name = "lblLeftTitle";
-            this.lblLeftTitle.Size = new System.Drawing.Size(308, 41);
+            this.lblLeftTitle.Size = new System.Drawing.Size(280, 65);
             this.lblLeftTitle.TabIndex = 0;
-            this.lblLeftTitle.Text = "🛒 نظام نقاط البيع";
+            this.lblLeftTitle.Text = "نظام نقاط البيع";
+            this.lblLeftTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // pnlLeft
             // 
@@ -144,6 +144,7 @@ namespace POS
             // 
             // btnExit
             // 
+            this.btnExit.BackColor = System.Drawing.Color.White;
             this.btnExit.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnExit.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnExit.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
@@ -155,7 +156,7 @@ namespace POS
             this.btnExit.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnExit.Size = new System.Drawing.Size(460, 38);
             this.btnExit.TabIndex = 9;
-            this.btnExit.Text = "🚪 إغلاق التطبيق";
+            this.btnExit.Text = "إغلاق التطبيق";
             this.btnExit.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnExit.UseVisualStyleBackColor = true;
             this.btnExit.Click += new System.EventHandler(this.btnExit_Click);

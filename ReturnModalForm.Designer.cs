@@ -86,7 +86,7 @@ namespace POS
             this.lblHeaderTitle.Name = "lblHeaderTitle";
             this.lblHeaderTitle.Size = new System.Drawing.Size(1024, 24);
             this.lblHeaderTitle.TabIndex = 0;
-            this.lblHeaderTitle.Text = "🔄 عمل إرجاع مبيعات (مرتجع أصناف / فاتورة)";
+            this.lblHeaderTitle.Text = "عمل إرجاع مبيعات (مرتجع أصناف / فاتورة)";
             // 
             // pnlSaleInfo
             // 
@@ -126,7 +126,7 @@ namespace POS
             this.btnReturnAll.Name = "btnReturnAll";
             this.btnReturnAll.Size = new System.Drawing.Size(120, 32);
             this.btnReturnAll.TabIndex = 4;
-            this.btnReturnAll.Text = "⚡ إرجاع الكل";
+            this.btnReturnAll.Text = "إرجاع الكل";
             this.btnReturnAll.UseVisualStyleBackColor = false;
             this.btnReturnAll.Click += new System.EventHandler(this.btnReturnAll_Click);
             // 
@@ -143,7 +143,7 @@ namespace POS
             this.btnResetAll.Name = "btnResetAll";
             this.btnResetAll.Size = new System.Drawing.Size(110, 32);
             this.btnResetAll.TabIndex = 5;
-            this.btnResetAll.Text = "🔄 تصفير الكل";
+            this.btnResetAll.Text = "تصفير الكل";
             this.btnResetAll.UseVisualStyleBackColor = false;
             this.btnResetAll.Click += new System.EventHandler(this.btnResetAll_Click);
             // 
@@ -360,7 +360,7 @@ namespace POS
             this.lblReturnHint.Name = "lblReturnHint";
             this.lblReturnHint.Size = new System.Drawing.Size(405, 18);
             this.lblReturnHint.TabIndex = 6;
-            this.lblReturnHint.Text = "💡 ملاحظة: سيتم إعادة الأصناف المرتجعة تلقائياً إلى رصيد المخزن.";
+            this.lblReturnHint.Text = "ملاحظة: سيتم إعادة الأصناف المرتجعة تلقائياً إلى رصيد المخزن.";
             // 
             // btnConfirmReturn
             // 
@@ -374,7 +374,7 @@ namespace POS
             this.btnConfirmReturn.Name = "btnConfirmReturn";
             this.btnConfirmReturn.Size = new System.Drawing.Size(225, 40);
             this.btnConfirmReturn.TabIndex = 4;
-            this.btnConfirmReturn.Text = "✅ تأكيد إرجاع الأصناف";
+            this.btnConfirmReturn.Text = "تأكيد إرجاع الأصناف";
             this.btnConfirmReturn.UseVisualStyleBackColor = false;
             this.btnConfirmReturn.Click += new System.EventHandler(this.btnConfirmReturn_Click);
             // 
@@ -391,7 +391,7 @@ namespace POS
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(115, 40);
             this.btnCancel.TabIndex = 5;
-            this.btnCancel.Text = "❌ إلغاء";
+            this.btnCancel.Text = "إلغاء";
             this.btnCancel.UseVisualStyleBackColor = false;
             // 
             // ReturnModalForm

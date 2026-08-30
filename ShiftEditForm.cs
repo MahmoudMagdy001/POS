@@ -30,7 +30,7 @@ namespace POS
         {
             UIStyler.ApplyTheme(this);
             lblTitle.Font = FontManager.GetBold(14f);
-            UIStyler.StylePrimaryButton(btnSave, "💾 حفظ التعديلات");
+            UIStyler.StylePrimaryButton(btnSave, "حفظ التعديلات");
             UIStyler.StyleSecondaryButton(btnCancel, "إلغاء");
         }
 

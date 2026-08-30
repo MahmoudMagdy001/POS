@@ -312,7 +312,7 @@ namespace POS
             this.btnSave.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnSave.Size = new System.Drawing.Size(160, 39);
             this.btnSave.TabIndex = 0;
-            this.btnSave.Text = "💾 حفظ";
+            this.btnSave.Text = "حفظ";
             this.btnSave.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnSave.UseVisualStyleBackColor = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);

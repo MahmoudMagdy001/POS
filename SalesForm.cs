@@ -30,10 +30,10 @@ namespace POS
             lblCardRevenueVal.Font = FontManager.GetBold(15f);
             lblCardCountVal.Font = FontManager.GetBold(15f);
             lblCardItemsVal.Font = FontManager.GetBold(15f);
-            UIStyler.StyleSecondaryButton(btnRefresh, "🔄 تحديث");
-            UIStyler.StylePrimaryButton(btnPrintReceipt, "🖨️ طباعة إيصال");
-            UIStyler.StyleSecondaryButton(btnExportImage, "🖼️ تصدير كصورة");
-            UIStyler.StyleDangerButton(btnReturn, "↩️ إرجاع أصناف");
+            UIStyler.StyleSecondaryButton(btnRefresh, "تحديث");
+            UIStyler.StylePrimaryButton(btnPrintReceipt, "طباعة إيصال");
+            UIStyler.StyleSecondaryButton(btnExportImage, "تصدير كصورة");
+            UIStyler.StyleDangerButton(btnReturn, "إرجاع أصناف");
             UIStyler.StyleDataGrid(dgvSalesList);
             UIStyler.StyleDataGrid(dgvSaleDetails);
             cmbPeriod.SelectedIndex = 0; // اليوم
@@ -84,7 +84,7 @@ namespace POS
                 if (dt.Rows.Count == 0)
                 {
                     dgvSaleDetails.DataSource = null;
-                    lblSaleDetailsTitle.Text = "📦 تفاصيل وأصناف الفاتورة المحددة (لا توجد بيانات)";
+                    lblSaleDetailsTitle.Text = "تفاصيل وأصناف الفاتورة المحددة (لا توجد بيانات)";
                 }
             }
             catch (Exception ex)
@@ -107,96 +107,32 @@ namespace POS
             dgvSalesList.RowTemplate.Height = 38;
             dgvSalesList.EnableHeadersVisualStyles = false;
 
-            if (dgvSalesList.Columns["SaleId"] != null)
+            dgvSalesList.HideColumn("TotalAmount");
+            dgvSalesList.HideColumn("Discount");
+            dgvSalesList.HideColumn("TaxAmount");
+            dgvSalesList.HideColumn("PaidAmount");
+            dgvSalesList.HideColumn("ChangeAmount");
+
+            dgvSalesList.ConfigureIdColumn("SaleId", "رقم الفاتورة", fillWeight: 65, minWidth: 85);
+            dgvSalesList.ConfigureDateColumn("SaleDate", "تاريخ ووقت البيع", fillWeight: 110, minWidth: 140);
+            dgvSalesList.ConfigureTextColumn("CashierName", "الكاشير", fillWeight: 90, minWidth: 110);
+            dgvSalesList.ConfigureCurrencyColumn("FinalAmount", "المبلغ الأصلي", fillWeight: 75, minWidth: 95);
+            
+            var colRef = dgvSalesList.ConfigureCurrencyColumn("TotalRefunded", "المسترد", fillWeight: 65, minWidth: 85);
+            if (colRef != null) colRef.DefaultCellStyle.ForeColor = Color.FromArgb(220, 38, 38);
+
+            var colNet = dgvSalesList.ConfigureCurrencyColumn("NetFinalAmount", "الصافي المستحق", fillWeight: 85, minWidth: 110);
+            if (colNet != null)
             {
-                dgvSalesList.Columns["SaleId"].HeaderText = "رقم الفاتورة";
-                dgvSalesList.Columns["SaleId"].FillWeight = 65;
-                dgvSalesList.Columns["SaleId"].MinimumWidth = 85;
-                dgvSalesList.Columns["SaleId"].DefaultCellStyle.Format = "D5";
-                dgvSalesList.Columns["SaleId"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                colNet.DefaultCellStyle.Font = FontManager.GetBold(9.5f);
+                colNet.DefaultCellStyle.ForeColor = Color.FromArgb(22, 163, 74);
             }
-            if (dgvSalesList.Columns["SaleDate"] != null)
-            {
-                dgvSalesList.Columns["SaleDate"].HeaderText = "تاريخ ووقت البيع";
-                dgvSalesList.Columns["SaleDate"].FillWeight = 110;
-                dgvSalesList.Columns["SaleDate"].MinimumWidth = 140;
-                dgvSalesList.Columns["SaleDate"].DefaultCellStyle.Format = "yyyy-MM-dd HH:mm";
-            }
-            if (dgvSalesList.Columns["CashierName"] != null)
-            {
-                dgvSalesList.Columns["CashierName"].HeaderText = "الكاشير";
-                dgvSalesList.Columns["CashierName"].FillWeight = 90;
-                dgvSalesList.Columns["CashierName"].MinimumWidth = 110;
-            }
-            if (dgvSalesList.Columns["TotalAmount"] != null)
-            {
-                dgvSalesList.Columns["TotalAmount"].Visible = false;
-            }
-            if (dgvSalesList.Columns["Discount"] != null)
-            {
-                dgvSalesList.Columns["Discount"].Visible = false;
-            }
-            if (dgvSalesList.Columns["TaxAmount"] != null)
-            {
-                dgvSalesList.Columns["TaxAmount"].Visible = false;
-            }
-            if (dgvSalesList.Columns["FinalAmount"] != null)
-            {
-                dgvSalesList.Columns["FinalAmount"].HeaderText = "المبلغ الأصلي";
-                dgvSalesList.Columns["FinalAmount"].FillWeight = 75;
-                dgvSalesList.Columns["FinalAmount"].MinimumWidth = 95;
-                dgvSalesList.Columns["FinalAmount"].DefaultCellStyle.Format = "N2";
-                dgvSalesList.Columns["FinalAmount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            }
-            if (dgvSalesList.Columns["TotalRefunded"] != null)
-            {
-                dgvSalesList.Columns["TotalRefunded"].HeaderText = "المسترد";
-                dgvSalesList.Columns["TotalRefunded"].FillWeight = 65;
-                dgvSalesList.Columns["TotalRefunded"].MinimumWidth = 85;
-                dgvSalesList.Columns["TotalRefunded"].DefaultCellStyle.Format = "N2";
-                dgvSalesList.Columns["TotalRefunded"].DefaultCellStyle.ForeColor = Color.FromArgb(220, 38, 38);
-                dgvSalesList.Columns["TotalRefunded"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            }
-            if (dgvSalesList.Columns["NetFinalAmount"] != null)
-            {
-                dgvSalesList.Columns["NetFinalAmount"].HeaderText = "الصافي المستحق";
-                dgvSalesList.Columns["NetFinalAmount"].FillWeight = 85;
-                dgvSalesList.Columns["NetFinalAmount"].MinimumWidth = 110;
-                dgvSalesList.Columns["NetFinalAmount"].DefaultCellStyle.Format = "N2";
-                dgvSalesList.Columns["NetFinalAmount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-                dgvSalesList.Columns["NetFinalAmount"].DefaultCellStyle.Font = FontManager.GetBold(9.5f);
-                dgvSalesList.Columns["NetFinalAmount"].DefaultCellStyle.ForeColor = Color.FromArgb(22, 163, 74);
-            }
-            if (dgvSalesList.Columns["ReturnStatus"] != null)
-            {
-                dgvSalesList.Columns["ReturnStatus"].HeaderText = "حالة الفاتورة";
-                dgvSalesList.Columns["ReturnStatus"].FillWeight = 80;
-                dgvSalesList.Columns["ReturnStatus"].MinimumWidth = 105;
-                dgvSalesList.Columns["ReturnStatus"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dgvSalesList.Columns["ReturnStatus"].DefaultCellStyle.Font = FontManager.GetBold(9f);
-            }
-            if (dgvSalesList.Columns["PaidAmount"] != null)
-            {
-                dgvSalesList.Columns["PaidAmount"].Visible = false;
-            }
-            if (dgvSalesList.Columns["ChangeAmount"] != null)
-            {
-                dgvSalesList.Columns["ChangeAmount"].Visible = false;
-            }
-            if (dgvSalesList.Columns["PaymentMethod"] != null)
-            {
-                dgvSalesList.Columns["PaymentMethod"].HeaderText = "الدفع";
-                dgvSalesList.Columns["PaymentMethod"].FillWeight = 60;
-                dgvSalesList.Columns["PaymentMethod"].MinimumWidth = 75;
-                dgvSalesList.Columns["PaymentMethod"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-            if (dgvSalesList.Columns["ItemsCount"] != null)
-            {
-                dgvSalesList.Columns["ItemsCount"].HeaderText = "الأصناف";
-                dgvSalesList.Columns["ItemsCount"].FillWeight = 50;
-                dgvSalesList.Columns["ItemsCount"].MinimumWidth = 65;
-                dgvSalesList.Columns["ItemsCount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
+
+            var colStat = dgvSalesList.ConfigureCenterColumn("ReturnStatus", "حالة الفاتورة", fillWeight: 80, minWidth: 105);
+            if (colStat != null) colStat.DefaultCellStyle.Font = FontManager.GetBold(9f);
+
+            dgvSalesList.ConfigureCenterColumn("PaymentMethod", "الدفع", fillWeight: 60, minWidth: 75);
+            dgvSalesList.ConfigureNumericColumn("ItemsCount", "الأصناف", fillWeight: 50, minWidth: 65);
 
             dgvSalesList.CellFormatting -= DgvSalesList_CellFormatting;
             dgvSalesList.CellFormatting += DgvSalesList_CellFormatting;
@@ -249,7 +185,7 @@ namespace POS
 
                 dgvSaleDetails.DataSource = dt;
                 FormatSaleDetailsGrid();
-                lblSaleDetailsTitle.Text = $"📦 تفاصيل وأصناف الفاتورة #{saleId:D5}";
+                lblSaleDetailsTitle.Text = $"تفاصيل وأصناف الفاتورة #{saleId:D5}";
             }
             catch { }
         }
@@ -263,65 +199,26 @@ namespace POS
             dgvSaleDetails.RowTemplate.Height = 38;
             dgvSaleDetails.EnableHeadersVisualStyles = false;
 
-            if (dgvSaleDetails.Columns["DetailId"] != null)
-                dgvSaleDetails.Columns["DetailId"].Visible = false;
-            if (dgvSaleDetails.Columns["SaleId"] != null)
-                dgvSaleDetails.Columns["SaleId"].Visible = false;
-            if (dgvSaleDetails.Columns["ProductId"] != null)
-                dgvSaleDetails.Columns["ProductId"].Visible = false;
+            dgvSaleDetails.HideColumn("DetailId");
+            dgvSaleDetails.HideColumn("SaleId");
+            dgvSaleDetails.HideColumn("ProductId");
 
-            if (dgvSaleDetails.Columns["Barcode"] != null)
+            dgvSaleDetails.ConfigureCenterColumn("Barcode", "الباركود", fillWeight: 75, minWidth: 90);
+            dgvSaleDetails.ConfigureTextColumn("ProductName", "اسم الصنف", fillWeight: 160, minWidth: 150);
+            dgvSaleDetails.ConfigureCurrencyColumn("UnitPrice", "سعر الوحدة", fillWeight: 65, minWidth: 85);
+            dgvSaleDetails.ConfigureNumericColumn("Quantity", "المباع", fillWeight: 50, minWidth: 60);
+
+            var colRet = dgvSaleDetails.ConfigureNumericColumn("ReturnedQuantity", "المرتجع", fillWeight: 50, minWidth: 65);
+            if (colRet != null) colRet.DefaultCellStyle.ForeColor = Color.FromArgb(220, 38, 38);
+
+            var colAct = dgvSaleDetails.ConfigureNumericColumn("ActiveQuantity", "الصافي", fillWeight: 50, minWidth: 65);
+            if (colAct != null)
             {
-                dgvSaleDetails.Columns["Barcode"].HeaderText = "الباركود";
-                dgvSaleDetails.Columns["Barcode"].FillWeight = 75;
-                dgvSaleDetails.Columns["Barcode"].MinimumWidth = 90;
+                colAct.DefaultCellStyle.Font = FontManager.GetBold(9f);
+                colAct.DefaultCellStyle.ForeColor = Color.FromArgb(22, 163, 74);
             }
-            if (dgvSaleDetails.Columns["ProductName"] != null)
-            {
-                dgvSaleDetails.Columns["ProductName"].HeaderText = "اسم الصنف";
-                dgvSaleDetails.Columns["ProductName"].FillWeight = 160;
-                dgvSaleDetails.Columns["ProductName"].MinimumWidth = 150;
-            }
-            if (dgvSaleDetails.Columns["UnitPrice"] != null)
-            {
-                dgvSaleDetails.Columns["UnitPrice"].HeaderText = "سعر الوحدة";
-                dgvSaleDetails.Columns["UnitPrice"].FillWeight = 65;
-                dgvSaleDetails.Columns["UnitPrice"].MinimumWidth = 85;
-                dgvSaleDetails.Columns["UnitPrice"].DefaultCellStyle.Format = "N2";
-                dgvSaleDetails.Columns["UnitPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            }
-            if (dgvSaleDetails.Columns["Quantity"] != null)
-            {
-                dgvSaleDetails.Columns["Quantity"].HeaderText = "المباع";
-                dgvSaleDetails.Columns["Quantity"].FillWeight = 50;
-                dgvSaleDetails.Columns["Quantity"].MinimumWidth = 60;
-                dgvSaleDetails.Columns["Quantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-            if (dgvSaleDetails.Columns["ReturnedQuantity"] != null)
-            {
-                dgvSaleDetails.Columns["ReturnedQuantity"].HeaderText = "المرتجع";
-                dgvSaleDetails.Columns["ReturnedQuantity"].FillWeight = 50;
-                dgvSaleDetails.Columns["ReturnedQuantity"].MinimumWidth = 65;
-                dgvSaleDetails.Columns["ReturnedQuantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dgvSaleDetails.Columns["ReturnedQuantity"].DefaultCellStyle.ForeColor = Color.FromArgb(220, 38, 38);
-            }
-            if (dgvSaleDetails.Columns["ActiveQuantity"] != null)
-            {
-                dgvSaleDetails.Columns["ActiveQuantity"].HeaderText = "الصافي";
-                dgvSaleDetails.Columns["ActiveQuantity"].FillWeight = 50;
-                dgvSaleDetails.Columns["ActiveQuantity"].MinimumWidth = 65;
-                dgvSaleDetails.Columns["ActiveQuantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                dgvSaleDetails.Columns["ActiveQuantity"].DefaultCellStyle.Font = FontManager.GetBold(9f);
-                dgvSaleDetails.Columns["ActiveQuantity"].DefaultCellStyle.ForeColor = Color.FromArgb(22, 163, 74);
-            }
-            if (dgvSaleDetails.Columns["LineTotal"] != null)
-            {
-                dgvSaleDetails.Columns["LineTotal"].HeaderText = "الإجمالي (ج.م)";
-                dgvSaleDetails.Columns["LineTotal"].FillWeight = 75;
-                dgvSaleDetails.Columns["LineTotal"].MinimumWidth = 95;
-                dgvSaleDetails.Columns["LineTotal"].DefaultCellStyle.Format = "N2";
-                dgvSaleDetails.Columns["LineTotal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            }
+
+            dgvSaleDetails.ConfigureCurrencyColumn("LineTotal", "الإجمالي (ج.م)", fillWeight: 75, minWidth: 95);
         }
 
         private async void cmbPeriod_SelectedIndexChanged(object sender, EventArgs e)

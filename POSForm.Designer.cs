@@ -17,10 +17,10 @@ namespace POS
 
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             this.pnlBarcodeTop = new System.Windows.Forms.Panel();
             this.tlpBarcodeHeader = new System.Windows.Forms.TableLayoutPanel();
             this.lblBarcodeTitle = new System.Windows.Forms.Label();
@@ -59,6 +59,10 @@ namespace POS
             this.lblFinalTotalVal = new System.Windows.Forms.Label();
             this.lblFinalTotalTitle = new System.Windows.Forms.Label();
             this.lblCartTitle = new System.Windows.Forms.Label();
+            this.pnlShiftBanner = new System.Windows.Forms.Panel();
+            this.btnShiftBannerAction = new System.Windows.Forms.Button();
+            this.lblShiftBannerText = new System.Windows.Forms.Label();
+            this.lblShiftBannerIcon = new System.Windows.Forms.Label();
             this.pnlBarcodeTop.SuspendLayout();
             this.tlpBarcodeHeader.SuspendLayout();
             this.tlpMain.SuspendLayout();
@@ -75,6 +79,7 @@ namespace POS
             ((System.ComponentModel.ISupportInitialize)(this.numDiscount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numCashPaid)).BeginInit();
             this.pnlFinalTotal.SuspendLayout();
+            this.pnlShiftBanner.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlBarcodeTop
@@ -82,10 +87,10 @@ namespace POS
             this.pnlBarcodeTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
             this.pnlBarcodeTop.Controls.Add(this.tlpBarcodeHeader);
             this.pnlBarcodeTop.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlBarcodeTop.Location = new System.Drawing.Point(14, 14);
+            this.pnlBarcodeTop.Location = new System.Drawing.Point(14, 58);
             this.pnlBarcodeTop.Name = "pnlBarcodeTop";
             this.pnlBarcodeTop.Padding = new System.Windows.Forms.Padding(12, 8, 12, 8);
-            this.pnlBarcodeTop.Size = new System.Drawing.Size(1172, 56);
+            this.pnlBarcodeTop.Size = new System.Drawing.Size(1172, 80);
             this.pnlBarcodeTop.TabIndex = 0;
             // 
             // tlpBarcodeHeader
@@ -102,7 +107,7 @@ namespace POS
             this.tlpBarcodeHeader.Name = "tlpBarcodeHeader";
             this.tlpBarcodeHeader.RowCount = 1;
             this.tlpBarcodeHeader.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpBarcodeHeader.Size = new System.Drawing.Size(1148, 40);
+            this.tlpBarcodeHeader.Size = new System.Drawing.Size(1148, 64);
             this.tlpBarcodeHeader.TabIndex = 0;
             // 
             // lblBarcodeTitle
@@ -112,10 +117,10 @@ namespace POS
             this.lblBarcodeTitle.ForeColor = System.Drawing.Color.White;
             this.lblBarcodeTitle.Location = new System.Drawing.Point(926, 0);
             this.lblBarcodeTitle.Name = "lblBarcodeTitle";
-            this.lblBarcodeTitle.Size = new System.Drawing.Size(219, 40);
+            this.lblBarcodeTitle.Size = new System.Drawing.Size(219, 64);
             this.lblBarcodeTitle.TabIndex = 0;
-            this.lblBarcodeTitle.Text = "⚡ قارئ الباركود السريع (F2):";
-            this.lblBarcodeTitle.TextAlign = System.Drawing.ContentAlignment.BottomRight;
+            this.lblBarcodeTitle.Text = "قارئ الباركود السريع (F2):";
+            this.lblBarcodeTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.lblBarcodeTitle.Click += new System.EventHandler(this.lblBarcodeTitle_Click);
             // 
             // txtBarcodeScan
@@ -125,7 +130,7 @@ namespace POS
             this.txtBarcodeScan.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtBarcodeScan.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.txtBarcodeScan.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(56)))), ((int)(((byte)(189)))), ((int)(((byte)(248)))));
-            this.txtBarcodeScan.Location = new System.Drawing.Point(586, 4);
+            this.txtBarcodeScan.Location = new System.Drawing.Point(586, 16);
             this.txtBarcodeScan.Name = "txtBarcodeScan";
             this.txtBarcodeScan.Size = new System.Drawing.Size(334, 32);
             this.txtBarcodeScan.TabIndex = 1;
@@ -138,9 +143,9 @@ namespace POS
             this.lblBarcodeHint.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
             this.lblBarcodeHint.Location = new System.Drawing.Point(3, 0);
             this.lblBarcodeHint.Name = "lblBarcodeHint";
-            this.lblBarcodeHint.Size = new System.Drawing.Size(577, 40);
+            this.lblBarcodeHint.Size = new System.Drawing.Size(577, 64);
             this.lblBarcodeHint.TabIndex = 2;
-            this.lblBarcodeHint.Text = "💡 امسح باركود المنتج واضغط Enter لإضافته مباشرة إلى سلة المبيعات";
+            this.lblBarcodeHint.Text = "امسح باركود المنتج واضغط Enter لإضافته مباشرة إلى سلة المبيعات";
             this.lblBarcodeHint.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tlpMain
@@ -151,12 +156,12 @@ namespace POS
             this.tlpMain.Controls.Add(this.pnlProductsCatalog, 0, 0);
             this.tlpMain.Controls.Add(this.pnlCart, 1, 0);
             this.tlpMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tlpMain.Location = new System.Drawing.Point(14, 70);
+            this.tlpMain.Location = new System.Drawing.Point(14, 138);
             this.tlpMain.Name = "tlpMain";
             this.tlpMain.Padding = new System.Windows.Forms.Padding(0, 10, 0, 0);
             this.tlpMain.RowCount = 1;
             this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpMain.Size = new System.Drawing.Size(1172, 636);
+            this.tlpMain.Size = new System.Drawing.Size(1172, 568);
             this.tlpMain.TabIndex = 1;
             // 
             // pnlProductsCatalog
@@ -169,7 +174,7 @@ namespace POS
             this.pnlProductsCatalog.Margin = new System.Windows.Forms.Padding(3, 3, 0, 3);
             this.pnlProductsCatalog.Name = "pnlProductsCatalog";
             this.pnlProductsCatalog.Padding = new System.Windows.Forms.Padding(12);
-            this.pnlProductsCatalog.Size = new System.Drawing.Size(524, 620);
+            this.pnlProductsCatalog.Size = new System.Drawing.Size(524, 552);
             this.pnlProductsCatalog.TabIndex = 0;
             // 
             // dgvProductsCatalog
@@ -181,26 +186,26 @@ namespace POS
             this.dgvProductsCatalog.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgvProductsCatalog.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.dgvProductsCatalog.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Tahoma", 9.5F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            dataGridViewCellStyle1.Padding = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvProductsCatalog.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("Tahoma", 9.5F);
+            dataGridViewCellStyle9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            dataGridViewCellStyle9.Padding = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvProductsCatalog.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle9;
             this.dgvProductsCatalog.ColumnHeadersHeight = 38;
             this.dgvProductsCatalog.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Tahoma", 9.5F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvProductsCatalog.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle10.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("Tahoma", 9.5F);
+            dataGridViewCellStyle10.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle10.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
+            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
+            dataGridViewCellStyle10.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvProductsCatalog.DefaultCellStyle = dataGridViewCellStyle10;
             this.dgvProductsCatalog.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvProductsCatalog.EnableHeadersVisualStyles = false;
             this.dgvProductsCatalog.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
@@ -212,7 +217,7 @@ namespace POS
             this.dgvProductsCatalog.RowHeadersWidth = 51;
             this.dgvProductsCatalog.RowTemplate.Height = 36;
             this.dgvProductsCatalog.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvProductsCatalog.Size = new System.Drawing.Size(500, 538);
+            this.dgvProductsCatalog.Size = new System.Drawing.Size(500, 470);
             this.dgvProductsCatalog.TabIndex = 1;
             this.dgvProductsCatalog.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvProductsCatalog_CellContentClick);
             this.dgvProductsCatalog.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvProductsCatalog_CellDoubleClick);
@@ -253,7 +258,7 @@ namespace POS
             this.lblSearchProduct.Name = "lblSearchProduct";
             this.lblSearchProduct.Size = new System.Drawing.Size(319, 22);
             this.lblSearchProduct.TabIndex = 0;
-            this.lblSearchProduct.Text = "🔍 بحث بالاسم أو الباركود:";
+            this.lblSearchProduct.Text = "بحث بالاسم أو الباركود:";
             this.lblSearchProduct.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtSearchProduct
@@ -302,7 +307,7 @@ namespace POS
             this.pnlCart.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
             this.pnlCart.Name = "pnlCart";
             this.pnlCart.Padding = new System.Windows.Forms.Padding(12);
-            this.pnlCart.Size = new System.Drawing.Size(642, 620);
+            this.pnlCart.Size = new System.Drawing.Size(642, 552);
             this.pnlCart.TabIndex = 1;
             // 
             // dgvCart
@@ -314,26 +319,26 @@ namespace POS
             this.dgvCart.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgvCart.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.dgvCart.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Tahoma", 9.5F);
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            dataGridViewCellStyle3.Padding = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvCart.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            dataGridViewCellStyle11.Font = new System.Drawing.Font("Tahoma", 9.5F);
+            dataGridViewCellStyle11.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            dataGridViewCellStyle11.Padding = new System.Windows.Forms.Padding(5, 4, 5, 4);
+            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
+            dataGridViewCellStyle11.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
+            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvCart.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle11;
             this.dgvCart.ColumnHeadersHeight = 38;
             this.dgvCart.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Tahoma", 9.5F);
-            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle4.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvCart.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle12.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle12.Font = new System.Drawing.Font("Tahoma", 9.5F);
+            dataGridViewCellStyle12.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
+            dataGridViewCellStyle12.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
+            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
+            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvCart.DefaultCellStyle = dataGridViewCellStyle12;
             this.dgvCart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvCart.EnableHeadersVisualStyles = false;
             this.dgvCart.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
@@ -344,7 +349,7 @@ namespace POS
             this.dgvCart.RowHeadersWidth = 51;
             this.dgvCart.RowTemplate.Height = 36;
             this.dgvCart.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvCart.Size = new System.Drawing.Size(618, 316);
+            this.dgvCart.Size = new System.Drawing.Size(618, 248);
             this.dgvCart.TabIndex = 1;
             this.dgvCart.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCart_CellContentClick);
             this.dgvCart.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCart_CellValueChanged);
@@ -356,7 +361,7 @@ namespace POS
             this.pnlCartSummary.Controls.Add(this.pnlPaymentDetails);
             this.pnlCartSummary.Controls.Add(this.pnlFinalTotal);
             this.pnlCartSummary.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlCartSummary.Location = new System.Drawing.Point(12, 360);
+            this.pnlCartSummary.Location = new System.Drawing.Point(12, 292);
             this.pnlCartSummary.Name = "pnlCartSummary";
             this.pnlCartSummary.Padding = new System.Windows.Forms.Padding(12);
             this.pnlCartSummary.Size = new System.Drawing.Size(618, 248);
@@ -391,7 +396,7 @@ namespace POS
             this.btnCheckout.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnCheckout.Size = new System.Drawing.Size(421, 44);
             this.btnCheckout.TabIndex = 0;
-            this.btnCheckout.Text = "💳 إتمام البيع وطباعة الفاتورة (F5)";
+            this.btnCheckout.Text = "إتمام البيع وطباعة الفاتورة (F5)";
             this.btnCheckout.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnCheckout.UseVisualStyleBackColor = false;
             this.btnCheckout.Click += new System.EventHandler(this.btnCheckout_Click);
@@ -410,7 +415,7 @@ namespace POS
             this.btnClearCart.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnClearCart.Size = new System.Drawing.Size(161, 44);
             this.btnClearCart.TabIndex = 1;
-            this.btnClearCart.Text = "🗑️ تفريغ السلة (F4)";
+            this.btnClearCart.Text = "تفريغ السلة (F4)";
             this.btnClearCart.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnClearCart.UseVisualStyleBackColor = false;
             this.btnClearCart.Click += new System.EventHandler(this.btnClearCart_Click);
@@ -655,8 +660,64 @@ namespace POS
             this.lblCartTitle.Name = "lblCartTitle";
             this.lblCartTitle.Size = new System.Drawing.Size(618, 32);
             this.lblCartTitle.TabIndex = 0;
-            this.lblCartTitle.Text = "🛒 سلة مشتريات العميل الحالية";
+            this.lblCartTitle.Text = "سلة مشتريات العميل الحالية";
             this.lblCartTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // pnlShiftBanner
+            // 
+            this.pnlShiftBanner.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
+            this.pnlShiftBanner.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pnlShiftBanner.Controls.Add(this.btnShiftBannerAction);
+            this.pnlShiftBanner.Controls.Add(this.lblShiftBannerText);
+            this.pnlShiftBanner.Controls.Add(this.lblShiftBannerIcon);
+            this.pnlShiftBanner.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlShiftBanner.Location = new System.Drawing.Point(14, 14);
+            this.pnlShiftBanner.Name = "pnlShiftBanner";
+            this.pnlShiftBanner.Padding = new System.Windows.Forms.Padding(12, 4, 12, 4);
+            this.pnlShiftBanner.Size = new System.Drawing.Size(1172, 44);
+            this.pnlShiftBanner.TabIndex = 2;
+            // 
+            // btnShiftBannerAction
+            // 
+            this.btnShiftBannerAction.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(163)))), ((int)(((byte)(74)))));
+            this.btnShiftBannerAction.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnShiftBannerAction.Dock = System.Windows.Forms.DockStyle.Left;
+            this.btnShiftBannerAction.FlatAppearance.BorderSize = 0;
+            this.btnShiftBannerAction.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnShiftBannerAction.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.btnShiftBannerAction.ForeColor = System.Drawing.Color.White;
+            this.btnShiftBannerAction.Location = new System.Drawing.Point(12, 4);
+            this.btnShiftBannerAction.Name = "btnShiftBannerAction";
+            this.btnShiftBannerAction.Size = new System.Drawing.Size(180, 34);
+            this.btnShiftBannerAction.TabIndex = 2;
+            this.btnShiftBannerAction.Text = "بدء وردية العمل الآن";
+            this.btnShiftBannerAction.UseVisualStyleBackColor = false;
+            this.btnShiftBannerAction.Click += new System.EventHandler(this.btnShiftBannerAction_Click);
+            // 
+            // lblShiftBannerText
+            // 
+            this.lblShiftBannerText.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblShiftBannerText.Font = new System.Drawing.Font("Tahoma", 9.5F, System.Drawing.FontStyle.Bold);
+            this.lblShiftBannerText.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(27)))), ((int)(((byte)(27)))));
+            this.lblShiftBannerText.Location = new System.Drawing.Point(12, 4);
+            this.lblShiftBannerText.Name = "lblShiftBannerText";
+            this.lblShiftBannerText.Padding = new System.Windows.Forms.Padding(0, 0, 8, 0);
+            this.lblShiftBannerText.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.lblShiftBannerText.Size = new System.Drawing.Size(1118, 34);
+            this.lblShiftBannerText.TabIndex = 1;
+            this.lblShiftBannerText.Text = "تنبيه: لا توجد وردية عمل مفتوحة حالياً. يجب بدء وردية العمل أولاً للبدء في استخدا" +
+    "م نقطة البيع.";
+            this.lblShiftBannerText.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblShiftBannerIcon
+            // 
+            this.lblShiftBannerIcon.Dock = System.Windows.Forms.DockStyle.Right;
+            this.lblShiftBannerIcon.Font = new System.Drawing.Font("Tahoma", 11F);
+            this.lblShiftBannerIcon.Location = new System.Drawing.Point(1130, 4);
+            this.lblShiftBannerIcon.Name = "lblShiftBannerIcon";
+            this.lblShiftBannerIcon.Size = new System.Drawing.Size(28, 34);
+            this.lblShiftBannerIcon.TabIndex = 0;
+            this.lblShiftBannerIcon.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // POSForm
             // 
@@ -666,6 +727,7 @@ namespace POS
             this.ClientSize = new System.Drawing.Size(1200, 720);
             this.Controls.Add(this.tlpMain);
             this.Controls.Add(this.pnlBarcodeTop);
+            this.Controls.Add(this.pnlShiftBanner);
             this.Font = new System.Drawing.Font("Tahoma", 9.5F);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.KeyPreview = true;
@@ -694,12 +756,17 @@ namespace POS
             ((System.ComponentModel.ISupportInitialize)(this.numDiscount)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numCashPaid)).EndInit();
             this.pnlFinalTotal.ResumeLayout(false);
+            this.pnlShiftBanner.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
+        private System.Windows.Forms.Panel pnlShiftBanner;
+        private System.Windows.Forms.Label lblShiftBannerIcon;
+        private System.Windows.Forms.Label lblShiftBannerText;
+        private System.Windows.Forms.Button btnShiftBannerAction;
         private System.Windows.Forms.Panel pnlBarcodeTop;
         private System.Windows.Forms.TableLayoutPanel tlpBarcodeHeader;
         private System.Windows.Forms.Label lblBarcodeTitle;

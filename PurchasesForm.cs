@@ -23,10 +23,10 @@ namespace POS
         private async void PurchasesForm_Load(object sender, EventArgs e)
         {
             UIStyler.ApplyTheme(this);
-            UIStyler.StylePrimaryButton(btnSavePurchase, "💾 حفظ فاتورة المشتريات");
-            UIStyler.StyleSecondaryButton(btnResetPurchase, "🔄 تفريغ");
-            UIStyler.StyleSecondaryButton(btnQuickAddProduct, "➕ جديد");
-            UIStyler.StyleSecondaryButton(btnQuickAddSupplier, "➕ مورد");
+            UIStyler.StylePrimaryButton(btnSavePurchase, "حفظ فاتورة المشتريات");
+            UIStyler.StyleSecondaryButton(btnResetPurchase, "تفريغ");
+            UIStyler.StyleSecondaryButton(btnQuickAddProduct, "جديد");
+            UIStyler.StyleSecondaryButton(btnQuickAddSupplier, "مورد");
             UIStyler.StyleDataGrid(dgvPurchaseItems);
             UIStyler.StyleDataGrid(dgvPurchasesHistory);
             UIStyler.StyleDataGrid(dgvPurchaseHistoryDetails);
@@ -63,67 +63,18 @@ namespace POS
             if (dgvPurchaseItems.Columns.Count == 0) return;
 
             dgvPurchaseItems.ScrollBars = ScrollBars.Both;
-            dgvPurchaseItems.ColumnHeadersHeight = 48;
-            dgvPurchaseItems.RowTemplate.Height = 40;
+            dgvPurchaseItems.ColumnHeadersHeight = 44;
+            dgvPurchaseItems.RowTemplate.Height = 38;
             dgvPurchaseItems.EnableHeadersVisualStyles = false;
 
-            if (dgvPurchaseItems.Columns["ProductId"] != null)
-                dgvPurchaseItems.Columns["ProductId"].Visible = false;
+            dgvPurchaseItems.HideColumn("ProductId");
 
-            if (dgvPurchaseItems.Columns["Barcode"] != null)
-            {
-                dgvPurchaseItems.Columns["Barcode"].HeaderText = "الباركود";
-                dgvPurchaseItems.Columns["Barcode"].FillWeight = 75; // 15%
-                dgvPurchaseItems.Columns["Barcode"].MinimumWidth = 95;
-            }
-            if (dgvPurchaseItems.Columns["ProductName"] != null)
-            {
-                dgvPurchaseItems.Columns["ProductName"].HeaderText = "اسم الصنف";
-                dgvPurchaseItems.Columns["ProductName"].FillWeight = 175; // 35%
-                dgvPurchaseItems.Columns["ProductName"].MinimumWidth = 160;
-            }
-            if (dgvPurchaseItems.Columns["UnitPrice"] != null)
-            {
-                dgvPurchaseItems.Columns["UnitPrice"].HeaderText = "سعر الشراء للوحدة";
-                dgvPurchaseItems.Columns["UnitPrice"].FillWeight = 75; // 15%
-                dgvPurchaseItems.Columns["UnitPrice"].MinimumWidth = 110;
-                dgvPurchaseItems.Columns["UnitPrice"].DefaultCellStyle.Format = "N2";
-                dgvPurchaseItems.Columns["UnitPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            }
-            if (dgvPurchaseItems.Columns["Quantity"] != null)
-            {
-                dgvPurchaseItems.Columns["Quantity"].HeaderText = "الكمية المشتراة";
-                dgvPurchaseItems.Columns["Quantity"].FillWeight = 60; // 12%
-                dgvPurchaseItems.Columns["Quantity"].MinimumWidth = 95;
-                dgvPurchaseItems.Columns["Quantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-            if (dgvPurchaseItems.Columns["LineTotal"] != null)
-            {
-                dgvPurchaseItems.Columns["LineTotal"].HeaderText = "الإجمالي (ج.م)";
-                dgvPurchaseItems.Columns["LineTotal"].FillWeight = 75; // 15%
-                dgvPurchaseItems.Columns["LineTotal"].MinimumWidth = 100;
-                dgvPurchaseItems.Columns["LineTotal"].DefaultCellStyle.Format = "N2";
-                dgvPurchaseItems.Columns["LineTotal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            }
-
-            if (dgvPurchaseItems.Columns["colDelete"] == null)
-            {
-                DataGridViewButtonColumn btnDel = new DataGridViewButtonColumn();
-                btnDel.Name = "colDelete";
-                btnDel.HeaderText = "إجراء";
-                btnDel.Text = "❌ حذف";
-                btnDel.UseColumnTextForButtonValue = true;
-                btnDel.FillWeight = 40; // 8%
-                btnDel.MinimumWidth = 75;
-                btnDel.FlatStyle = FlatStyle.Flat;
-                btnDel.DefaultCellStyle.ForeColor = Color.FromArgb(220, 38, 38);
-                btnDel.DefaultCellStyle.SelectionForeColor = Color.FromArgb(220, 38, 38);
-                dgvPurchaseItems.Columns.Add(btnDel);
-            }
-            else
-            {
-                dgvPurchaseItems.Columns["colDelete"].MinimumWidth = 75;
-            }
+            dgvPurchaseItems.ConfigureCenterColumn("Barcode", "الباركود", fillWeight: 75, minWidth: 95);
+            dgvPurchaseItems.ConfigureTextColumn("ProductName", "اسم الصنف", fillWeight: 175, minWidth: 160);
+            dgvPurchaseItems.ConfigureCurrencyColumn("UnitPrice", "سعر الشراء للوحدة", fillWeight: 75, minWidth: 110);
+            dgvPurchaseItems.ConfigureNumericColumn("Quantity", "الكمية المشتراة", fillWeight: 60, minWidth: 95);
+            dgvPurchaseItems.ConfigureCurrencyColumn("LineTotal", "الإجمالي (ج.م)", fillWeight: 75, minWidth: 100);
+            dgvPurchaseItems.ConfigureButtonColumn("colDelete", "إجراء", "حذف", fillWeight: 40, minWidth: 75, textColor: Color.FromArgb(220, 38, 38));
         }
 
         private async Task LoadSuppliersAsync()
@@ -332,8 +283,8 @@ namespace POS
                 Label lblAddress = new Label { Text = "العنوان:", Location = new Point(20, 140), AutoSize = true, Font = FontManager.GetBold(9f) };
                 TextBox txtAddress = new TextBox { Location = new Point(20, 165), Size = new Size(360, 25), Font = FontManager.GetRegular(10f) };
 
-                Button btnSave = new Button { Text = "💾 حفظ المورد", Location = new Point(20, 215), Size = new Size(360, 42) };
-                UIStyler.StylePrimaryButton(btnSave, "💾 حفظ المورد", false);
+                Button btnSave = new Button { Text = "حفظ المورد", Location = new Point(20, 215), Size = new Size(360, 42) };
+                UIStyler.StylePrimaryButton(btnSave, "حفظ المورد", false);
 
                 btnSave.Click += (s, ev) =>
                 {
@@ -414,51 +365,16 @@ namespace POS
             if (dgvPurchasesHistory.Columns.Count == 0) return;
 
             dgvPurchasesHistory.ScrollBars = ScrollBars.Both;
-            dgvPurchasesHistory.ColumnHeadersHeight = 48;
-            dgvPurchasesHistory.RowTemplate.Height = 40;
+            dgvPurchasesHistory.ColumnHeadersHeight = 44;
+            dgvPurchasesHistory.RowTemplate.Height = 38;
             dgvPurchasesHistory.EnableHeadersVisualStyles = false;
 
-            if (dgvPurchasesHistory.Columns["PurchaseId"] != null)
-            {
-                dgvPurchasesHistory.Columns["PurchaseId"].HeaderText = "رقم الفاتورة";
-                dgvPurchasesHistory.Columns["PurchaseId"].FillWeight = 70; // 14%
-                dgvPurchasesHistory.Columns["PurchaseId"].MinimumWidth = 85;
-                dgvPurchasesHistory.Columns["PurchaseId"].DefaultCellStyle.Format = "D5";
-            }
-            if (dgvPurchasesHistory.Columns["PurchaseDate"] != null)
-            {
-                dgvPurchasesHistory.Columns["PurchaseDate"].HeaderText = "تاريخ الشراء";
-                dgvPurchasesHistory.Columns["PurchaseDate"].FillWeight = 100; // 20%
-                dgvPurchasesHistory.Columns["PurchaseDate"].MinimumWidth = 110;
-                dgvPurchasesHistory.Columns["PurchaseDate"].DefaultCellStyle.Format = "yyyy-MM-dd";
-            }
-            if (dgvPurchasesHistory.Columns["SupplierName"] != null)
-            {
-                dgvPurchasesHistory.Columns["SupplierName"].HeaderText = "المورد";
-                dgvPurchasesHistory.Columns["SupplierName"].FillWeight = 140; // 28%
-                dgvPurchasesHistory.Columns["SupplierName"].MinimumWidth = 130;
-            }
-            if (dgvPurchasesHistory.Columns["TotalAmount"] != null)
-            {
-                dgvPurchasesHistory.Columns["TotalAmount"].HeaderText = "الإجمالي (ج.م)";
-                dgvPurchasesHistory.Columns["TotalAmount"].FillWeight = 100; // 20%
-                dgvPurchasesHistory.Columns["TotalAmount"].MinimumWidth = 100;
-                dgvPurchasesHistory.Columns["TotalAmount"].DefaultCellStyle.Format = "N2";
-                dgvPurchasesHistory.Columns["TotalAmount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            }
-            if (dgvPurchasesHistory.Columns["ItemsCount"] != null)
-            {
-                dgvPurchasesHistory.Columns["ItemsCount"].HeaderText = "عدد الأصناف";
-                dgvPurchasesHistory.Columns["ItemsCount"].FillWeight = 90; // 18%
-                dgvPurchasesHistory.Columns["ItemsCount"].MinimumWidth = 85;
-                dgvPurchasesHistory.Columns["ItemsCount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-            if (dgvPurchasesHistory.Columns["Notes"] != null)
-            {
-                dgvPurchasesHistory.Columns["Notes"].HeaderText = "ملاحظات";
-                dgvPurchasesHistory.Columns["Notes"].FillWeight = 90;
-                dgvPurchasesHistory.Columns["Notes"].MinimumWidth = 100;
-            }
+            dgvPurchasesHistory.ConfigureIdColumn("PurchaseId", "رقم الفاتورة", fillWeight: 70, minWidth: 85);
+            dgvPurchasesHistory.ConfigureDateColumn("PurchaseDate", "تاريخ الشراء", fillWeight: 100, minWidth: 110, format: "yyyy-MM-dd");
+            dgvPurchasesHistory.ConfigureTextColumn("SupplierName", "المورد", fillWeight: 140, minWidth: 130);
+            dgvPurchasesHistory.ConfigureCurrencyColumn("TotalAmount", "الإجمالي (ج.م)", fillWeight: 100, minWidth: 100);
+            dgvPurchasesHistory.ConfigureNumericColumn("ItemsCount", "عدد الأصناف", fillWeight: 90, minWidth: 90);
+            dgvPurchasesHistory.ConfigureTextColumn("Notes", "ملاحظات", fillWeight: 90, minWidth: 100);
         }
 
         private async void dgvPurchasesHistory_SelectionChanged(object sender, EventArgs e)
@@ -483,7 +399,7 @@ namespace POS
 
                 dgvPurchaseHistoryDetails.DataSource = dt;
                 FormatHistoryDetailsGrid();
-                lblHistoryDetailsTitle.Text = $"📦 تفاصيل وأصناف الفاتورة #{purchaseId:D5}";
+                lblHistoryDetailsTitle.Text = $"تفاصيل وأصناف الفاتورة #{purchaseId:D5}";
             }
             catch { }
         }
@@ -493,52 +409,19 @@ namespace POS
             if (dgvPurchaseHistoryDetails.Columns.Count == 0) return;
 
             dgvPurchaseHistoryDetails.ScrollBars = ScrollBars.Both;
-            dgvPurchaseHistoryDetails.ColumnHeadersHeight = 48;
-            dgvPurchaseHistoryDetails.RowTemplate.Height = 40;
+            dgvPurchaseHistoryDetails.ColumnHeadersHeight = 44;
+            dgvPurchaseHistoryDetails.RowTemplate.Height = 38;
             dgvPurchaseHistoryDetails.EnableHeadersVisualStyles = false;
 
-            if (dgvPurchaseHistoryDetails.Columns["DetailId"] != null)
-                dgvPurchaseHistoryDetails.Columns["DetailId"].Visible = false;
-            if (dgvPurchaseHistoryDetails.Columns["PurchaseId"] != null)
-                dgvPurchaseHistoryDetails.Columns["PurchaseId"].Visible = false;
-            if (dgvPurchaseHistoryDetails.Columns["ProductId"] != null)
-                dgvPurchaseHistoryDetails.Columns["ProductId"].Visible = false;
+            dgvPurchaseHistoryDetails.HideColumn("DetailId");
+            dgvPurchaseHistoryDetails.HideColumn("PurchaseId");
+            dgvPurchaseHistoryDetails.HideColumn("ProductId");
 
-            if (dgvPurchaseHistoryDetails.Columns["Barcode"] != null)
-            {
-                dgvPurchaseHistoryDetails.Columns["Barcode"].HeaderText = "الباركود";
-                dgvPurchaseHistoryDetails.Columns["Barcode"].FillWeight = 80; // 16%
-                dgvPurchaseHistoryDetails.Columns["Barcode"].MinimumWidth = 95;
-            }
-            if (dgvPurchaseHistoryDetails.Columns["ProductName"] != null)
-            {
-                dgvPurchaseHistoryDetails.Columns["ProductName"].HeaderText = "اسم الصنف";
-                dgvPurchaseHistoryDetails.Columns["ProductName"].FillWeight = 200; // 40%
-                dgvPurchaseHistoryDetails.Columns["ProductName"].MinimumWidth = 160;
-            }
-            if (dgvPurchaseHistoryDetails.Columns["UnitPrice"] != null)
-            {
-                dgvPurchaseHistoryDetails.Columns["UnitPrice"].HeaderText = "سعر الوحدة";
-                dgvPurchaseHistoryDetails.Columns["UnitPrice"].FillWeight = 80; // 16%
-                dgvPurchaseHistoryDetails.Columns["UnitPrice"].MinimumWidth = 90;
-                dgvPurchaseHistoryDetails.Columns["UnitPrice"].DefaultCellStyle.Format = "N2";
-                dgvPurchaseHistoryDetails.Columns["UnitPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            }
-            if (dgvPurchaseHistoryDetails.Columns["Quantity"] != null)
-            {
-                dgvPurchaseHistoryDetails.Columns["Quantity"].HeaderText = "الكمية";
-                dgvPurchaseHistoryDetails.Columns["Quantity"].FillWeight = 60; // 12%
-                dgvPurchaseHistoryDetails.Columns["Quantity"].MinimumWidth = 70;
-                dgvPurchaseHistoryDetails.Columns["Quantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-            if (dgvPurchaseHistoryDetails.Columns["LineTotal"] != null)
-            {
-                dgvPurchaseHistoryDetails.Columns["LineTotal"].HeaderText = "الإجمالي (ج.م)";
-                dgvPurchaseHistoryDetails.Columns["LineTotal"].FillWeight = 80; // 16%
-                dgvPurchaseHistoryDetails.Columns["LineTotal"].MinimumWidth = 95;
-                dgvPurchaseHistoryDetails.Columns["LineTotal"].DefaultCellStyle.Format = "N2";
-                dgvPurchaseHistoryDetails.Columns["LineTotal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            }
+            dgvPurchaseHistoryDetails.ConfigureCenterColumn("Barcode", "الباركود", fillWeight: 80, minWidth: 95);
+            dgvPurchaseHistoryDetails.ConfigureTextColumn("ProductName", "اسم الصنف", fillWeight: 200, minWidth: 160);
+            dgvPurchaseHistoryDetails.ConfigureCurrencyColumn("UnitPrice", "سعر الوحدة", fillWeight: 80, minWidth: 90);
+            dgvPurchaseHistoryDetails.ConfigureNumericColumn("Quantity", "الكمية", fillWeight: 60, minWidth: 70);
+            dgvPurchaseHistoryDetails.ConfigureCurrencyColumn("LineTotal", "الإجمالي (ج.م)", fillWeight: 80, minWidth: 95);
         }
 
         #endregion

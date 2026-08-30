@@ -22,13 +22,13 @@ namespace POS
             UIStyler.ApplyTheme(this);
             lblTitle.Font = FontManager.GetBold(16f);
             lblSubtitle.Font = FontManager.GetRegular(9f);
-            UIStyler.StyleSuccessButton(btnClockIn, "🟢 تسجيل حضور");
-            UIStyler.StyleDangerButton(btnClockOut, "🔴 تسجيل انصراف");
-            UIStyler.StyleSecondaryButton(btnEditShift, "✏️ تعديل");
-            UIStyler.StyleDangerButton(btnDeleteShift, "🗑️ حذف");
-            UIStyler.StyleSecondaryButton(btnRefresh, "🔄 تحديث");
-            UIStyler.StylePrimaryButton(btnApplyFilter, "🔍 فلتر");
-            UIStyler.StyleSecondaryButton(btnClearFilter, "✖ مسح الفلتر");
+            UIStyler.StyleSuccessButton(btnClockIn, "تسجيل حضور");
+            UIStyler.StyleDangerButton(btnClockOut, "تسجيل انصراف");
+            UIStyler.StyleSecondaryButton(btnEditShift, "تعديل");
+            UIStyler.StyleDangerButton(btnDeleteShift, "حذف");
+            UIStyler.StyleSecondaryButton(btnRefresh, "تحديث");
+            UIStyler.StylePrimaryButton(btnApplyFilter, "فلتر");
+            UIStyler.StyleSecondaryButton(btnClearFilter, "مسح الفلتر");
             UIStyler.StyleDataGrid(dgvShifts);
             UIStyler.StyleDataGrid(dgvSummary);
 
@@ -141,66 +141,20 @@ namespace POS
             if (dgvShifts.Columns.Count == 0) return;
 
             dgvShifts.ScrollBars = ScrollBars.Both;
-            dgvShifts.ColumnHeadersHeight = 48;
-            dgvShifts.RowTemplate.Height = 40;
+            dgvShifts.ColumnHeadersHeight = 44;
+            dgvShifts.RowTemplate.Height = 38;
             dgvShifts.EnableHeadersVisualStyles = false;
 
-            if (dgvShifts.Columns["ShiftId"] != null)
-            {
-                dgvShifts.Columns["ShiftId"].HeaderText = "#";
-                dgvShifts.Columns["ShiftId"].FillWeight = 40;
-                dgvShifts.Columns["ShiftId"].MinimumWidth = 50;
-                dgvShifts.Columns["ShiftId"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-            if (dgvShifts.Columns["UserId"] != null)
-                dgvShifts.Columns["UserId"].Visible = false;
-            if (dgvShifts.Columns["FullName"] != null)
-            {
-                dgvShifts.Columns["FullName"].HeaderText = "اسم الموظف";
-                dgvShifts.Columns["FullName"].FillWeight = 130;
-                dgvShifts.Columns["FullName"].MinimumWidth = 130;
-            }
-            if (dgvShifts.Columns["Username"] != null)
-            {
-                dgvShifts.Columns["Username"].HeaderText = "المستخدم";
-                dgvShifts.Columns["Username"].FillWeight = 80;
-                dgvShifts.Columns["Username"].MinimumWidth = 90;
-            }
-            if (dgvShifts.Columns["ClockInTime"] != null)
-            {
-                dgvShifts.Columns["ClockInTime"].HeaderText = "وقت الحضور";
-                dgvShifts.Columns["ClockInTime"].FillWeight = 120;
-                dgvShifts.Columns["ClockInTime"].MinimumWidth = 140;
-                dgvShifts.Columns["ClockInTime"].DefaultCellStyle.Format = "yyyy-MM-dd  hh:mm tt";
-            }
-            if (dgvShifts.Columns["ClockOutTime"] != null)
-            {
-                dgvShifts.Columns["ClockOutTime"].HeaderText = "وقت الانصراف";
-                dgvShifts.Columns["ClockOutTime"].FillWeight = 120;
-                dgvShifts.Columns["ClockOutTime"].MinimumWidth = 140;
-                dgvShifts.Columns["ClockOutTime"].DefaultCellStyle.Format = "yyyy-MM-dd  hh:mm tt";
-            }
-            if (dgvShifts.Columns["Duration"] != null)
-            {
-                dgvShifts.Columns["Duration"].HeaderText = "المدة";
-                dgvShifts.Columns["Duration"].FillWeight = 70;
-                dgvShifts.Columns["Duration"].MinimumWidth = 90;
-                dgvShifts.Columns["Duration"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-            if (dgvShifts.Columns["TotalHours"] != null)
-            {
-                dgvShifts.Columns["TotalHours"].HeaderText = "الساعات";
-                dgvShifts.Columns["TotalHours"].FillWeight = 60;
-                dgvShifts.Columns["TotalHours"].MinimumWidth = 70;
-                dgvShifts.Columns["TotalHours"].DefaultCellStyle.Format = "N2";
-                dgvShifts.Columns["TotalHours"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-            if (dgvShifts.Columns["Notes"] != null)
-            {
-                dgvShifts.Columns["Notes"].HeaderText = "ملاحظات";
-                dgvShifts.Columns["Notes"].FillWeight = 100;
-                dgvShifts.Columns["Notes"].MinimumWidth = 100;
-            }
+            dgvShifts.HideColumn("UserId");
+
+            dgvShifts.ConfigureIdColumn("ShiftId", "#", fillWeight: 40, minWidth: 50, format: null);
+            dgvShifts.ConfigureTextColumn("FullName", "اسم الموظف", fillWeight: 130, minWidth: 130);
+            dgvShifts.ConfigureTextColumn("Username", "المستخدم", fillWeight: 80, minWidth: 90);
+            dgvShifts.ConfigureDateColumn("ClockInTime", "وقت الحضور", fillWeight: 120, minWidth: 140, format: "yyyy-MM-dd hh:mm tt");
+            dgvShifts.ConfigureDateColumn("ClockOutTime", "وقت الانصراف", fillWeight: 120, minWidth: 140, format: "yyyy-MM-dd hh:mm tt");
+            dgvShifts.ConfigureCenterColumn("Duration", "المدة", fillWeight: 70, minWidth: 90);
+            dgvShifts.ConfigureNumericColumn("TotalHours", "الساعات", fillWeight: 60, minWidth: 70, format: "N2");
+            dgvShifts.ConfigureTextColumn("Notes", "ملاحظات", fillWeight: 100, minWidth: 100);
 
             // Highlight open shifts in green
             foreach (DataGridViewRow row in dgvShifts.Rows)
@@ -218,48 +172,17 @@ namespace POS
             if (dgvSummary.Columns.Count == 0) return;
 
             dgvSummary.ScrollBars = ScrollBars.Both;
-            dgvSummary.ColumnHeadersHeight = 48;
-            dgvSummary.RowTemplate.Height = 40;
+            dgvSummary.ColumnHeadersHeight = 44;
+            dgvSummary.RowTemplate.Height = 38;
             dgvSummary.EnableHeadersVisualStyles = false;
 
-            if (dgvSummary.Columns["UserId"] != null)
-                dgvSummary.Columns["UserId"].Visible = false;
-            if (dgvSummary.Columns["FullName"] != null)
-            {
-                dgvSummary.Columns["FullName"].HeaderText = "اسم الموظف";
-                dgvSummary.Columns["FullName"].FillWeight = 150;
-                dgvSummary.Columns["FullName"].MinimumWidth = 140;
-            }
-            if (dgvSummary.Columns["TotalShifts"] != null)
-            {
-                dgvSummary.Columns["TotalShifts"].HeaderText = "عدد الورديات";
-                dgvSummary.Columns["TotalShifts"].FillWeight = 80;
-                dgvSummary.Columns["TotalShifts"].MinimumWidth = 90;
-                dgvSummary.Columns["TotalShifts"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-            if (dgvSummary.Columns["TotalHours"] != null)
-            {
-                dgvSummary.Columns["TotalHours"].HeaderText = "إجمالي الساعات";
-                dgvSummary.Columns["TotalHours"].FillWeight = 100;
-                dgvSummary.Columns["TotalHours"].MinimumWidth = 100;
-                dgvSummary.Columns["TotalHours"].DefaultCellStyle.Format = "N2";
-                dgvSummary.Columns["TotalHours"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-            if (dgvSummary.Columns["AvgHoursPerShift"] != null)
-            {
-                dgvSummary.Columns["AvgHoursPerShift"].HeaderText = "متوسط ساعات/وردية";
-                dgvSummary.Columns["AvgHoursPerShift"].FillWeight = 100;
-                dgvSummary.Columns["AvgHoursPerShift"].MinimumWidth = 110;
-                dgvSummary.Columns["AvgHoursPerShift"].DefaultCellStyle.Format = "N2";
-                dgvSummary.Columns["AvgHoursPerShift"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-            if (dgvSummary.Columns["LastClockIn"] != null)
-            {
-                dgvSummary.Columns["LastClockIn"].HeaderText = "آخر حضور";
-                dgvSummary.Columns["LastClockIn"].FillWeight = 120;
-                dgvSummary.Columns["LastClockIn"].MinimumWidth = 140;
-                dgvSummary.Columns["LastClockIn"].DefaultCellStyle.Format = "yyyy-MM-dd  hh:mm tt";
-            }
+            dgvSummary.HideColumn("UserId");
+
+            dgvSummary.ConfigureTextColumn("FullName", "اسم الموظف", fillWeight: 150, minWidth: 140);
+            dgvSummary.ConfigureNumericColumn("TotalShifts", "عدد الورديات", fillWeight: 80, minWidth: 90, format: "N0");
+            dgvSummary.ConfigureNumericColumn("TotalHours", "إجمالي الساعات", fillWeight: 100, minWidth: 100, format: "N2");
+            dgvSummary.ConfigureNumericColumn("AvgHoursPerShift", "متوسط ساعات/وردية", fillWeight: 100, minWidth: 110, format: "N2");
+            dgvSummary.ConfigureDateColumn("LastClockIn", "آخر تسجيل حضور", fillWeight: 120, minWidth: 140, format: "yyyy-MM-dd hh:mm tt");
         }
 
         private void UpdateShiftStatus()
@@ -269,7 +192,7 @@ namespace POS
             if (activeShift != null)
             {
                 TimeSpan elapsed = DateTime.Now - activeShift.ClockInTime;
-                lblShiftStatus.Text = $"⏰ وردية مفتوحة منذ: {activeShift.ClockInTime:hh:mm tt} ({(int)elapsed.TotalHours}:{elapsed.Minutes:D2} ساعة)";
+                lblShiftStatus.Text = $"وردية مفتوحة منذ: {activeShift.ClockInTime:hh:mm tt} ({(int)elapsed.TotalHours}:{elapsed.Minutes:D2} ساعة)";
                 lblShiftStatus.ForeColor = Color.FromArgb(22, 101, 52);
                 btnClockIn.Enabled = false;
                 btnClockOut.Enabled = true;
@@ -286,16 +209,14 @@ namespace POS
         private async void btnClockIn_Click(object sender, EventArgs e)
         {
             if (_currentUser == null) return;
-            var result = DbHelper.ClockIn(_currentUser.UserId);
-            if (result.Success)
+
+            using (var startShiftModal = new StartShiftModalForm(_currentUser))
             {
-                MessageBox.Show(result.Message, "تسجيل حضور", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                await LoadShiftsAsync();
-                UpdateShiftStatus();
-            }
-            else
-            {
-                MessageBox.Show(result.Message, "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (startShiftModal.ShowDialog(this) == DialogResult.OK)
+                {
+                    await LoadShiftsAsync();
+                    UpdateShiftStatus();
+                }
             }
         }
 

@@ -62,7 +62,7 @@ namespace POS.DesignSystem.Components
                 ForeColor = UIColors.TextPrimary,
                 Font = UITypography.GridHeader,
                 Alignment = DataGridViewContentAlignment.MiddleCenter,
-                Padding = new Padding(4, 0, 4, 0),
+                Padding = new Padding(6, 4, 6, 4),
                 WrapMode = DataGridViewTriState.False
             };
 
@@ -76,7 +76,7 @@ namespace POS.DesignSystem.Components
                 Alignment = DataGridViewContentAlignment.MiddleCenter,
                 SelectionBackColor = UIColors.PrimaryLight,
                 SelectionForeColor = UIColors.PrimaryDark,
-                Padding = new Padding(2, 0, 2, 0)
+                Padding = new Padding(6, 2, 6, 2)
             };
 
             // Alternating Row Style
@@ -88,9 +88,18 @@ namespace POS.DesignSystem.Components
                 Alignment = DataGridViewContentAlignment.MiddleCenter,
                 SelectionBackColor = UIColors.PrimaryLight,
                 SelectionForeColor = UIColors.PrimaryDark,
-                Padding = new Padding(2, 0, 2, 0)
+                Padding = new Padding(6, 2, 6, 2)
             };
         }
+
+        public void HideColumn(string colName) => GridExtensions.HideColumn(this, colName);
+        public DataGridViewColumn ConfigureTextColumn(string colName, string headerText, int fillWeight = 100, int minWidth = 100) => GridExtensions.ConfigureTextColumn(this, colName, headerText, fillWeight, minWidth);
+        public DataGridViewColumn ConfigureCenterColumn(string colName, string headerText, int fillWeight = 80, int minWidth = 80, string format = null) => GridExtensions.ConfigureCenterColumn(this, colName, headerText, fillWeight, minWidth, format);
+        public DataGridViewColumn ConfigureNumericColumn(string colName, string headerText, int fillWeight = 60, int minWidth = 75, string format = "N0") => GridExtensions.ConfigureNumericColumn(this, colName, headerText, fillWeight, minWidth, format);
+        public DataGridViewColumn ConfigureCurrencyColumn(string colName, string headerText, int fillWeight = 75, int minWidth = 85, string format = "N2") => GridExtensions.ConfigureCurrencyColumn(this, colName, headerText, fillWeight, minWidth, format);
+        public DataGridViewColumn ConfigureDateColumn(string colName, string headerText, int fillWeight = 100, int minWidth = 120, string format = "yyyy-MM-dd HH:mm") => GridExtensions.ConfigureDateColumn(this, colName, headerText, fillWeight, minWidth, format);
+        public DataGridViewColumn ConfigureIdColumn(string colName, string headerText, int fillWeight = 65, int minWidth = 80, string format = "D5") => GridExtensions.ConfigureIdColumn(this, colName, headerText, fillWeight, minWidth, format);
+        public DataGridViewButtonColumn ConfigureButtonColumn(string colName, string headerText, string buttonText, int fillWeight = 50, int minWidth = 70, Color? textColor = null) => GridExtensions.ConfigureButtonColumn(this, colName, headerText, buttonText, fillWeight, minWidth, textColor);
 
         protected override void OnColumnAdded(DataGridViewColumnEventArgs e)
         {

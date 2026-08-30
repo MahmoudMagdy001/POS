@@ -17,8 +17,6 @@ namespace POS
 
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tlpMain = new System.Windows.Forms.TableLayoutPanel();
             this.pnlEditor = new System.Windows.Forms.Panel();
             this.tlpEditor = new System.Windows.Forms.TableLayoutPanel();
@@ -153,7 +151,7 @@ namespace POS
             this.lblEditorTitle.Name = "lblEditorTitle";
             this.lblEditorTitle.Size = new System.Drawing.Size(383, 32);
             this.lblEditorTitle.TabIndex = 0;
-            this.lblEditorTitle.Text = "📝 بيانات الصنف / المنتج";
+            this.lblEditorTitle.Text = "بيانات الصنف / المنتج";
             this.lblEditorTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblBarcode
@@ -189,7 +187,6 @@ namespace POS
             this.txtBarcode.Name = "txtBarcode";
             this.txtBarcode.Size = new System.Drawing.Size(266, 28);
             this.txtBarcode.TabIndex = 0;
-            this.txtBarcode.Text = "d";
             // 
             // btnGenBarcode
             // 
@@ -413,7 +410,7 @@ namespace POS
             this.btnNewProduct.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNewProduct.Size = new System.Drawing.Size(383, 32);
             this.btnNewProduct.TabIndex = 15;
-            this.btnNewProduct.Text = "➕ صنف جديد (تفريغ الحقول)";
+            this.btnNewProduct.Text = "صنف جديد (تفريغ الحقول)";
             this.btnNewProduct.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNewProduct.UseVisualStyleBackColor = false;
             this.btnNewProduct.Click += new System.EventHandler(this.btnNewProduct_Click);
@@ -433,7 +430,7 @@ namespace POS
             this.btnSaveProduct.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnSaveProduct.Size = new System.Drawing.Size(383, 34);
             this.btnSaveProduct.TabIndex = 16;
-            this.btnSaveProduct.Text = "💾 حفظ بيانات المنتج";
+            this.btnSaveProduct.Text = "حفظ بيانات المنتج";
             this.btnSaveProduct.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnSaveProduct.UseVisualStyleBackColor = false;
             this.btnSaveProduct.Click += new System.EventHandler(this.btnSaveProduct_Click);
@@ -454,7 +451,7 @@ namespace POS
             this.btnDeleteProduct.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnDeleteProduct.Size = new System.Drawing.Size(383, 30);
             this.btnDeleteProduct.TabIndex = 17;
-            this.btnDeleteProduct.Text = "🗑️ حذف الصنف المحدد";
+            this.btnDeleteProduct.Text = "حذف الصنف المحدد";
             this.btnDeleteProduct.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnDeleteProduct.UseVisualStyleBackColor = false;
             this.btnDeleteProduct.Click += new System.EventHandler(this.btnDeleteProduct_Click);
@@ -468,7 +465,7 @@ namespace POS
             this.pnlList.Location = new System.Drawing.Point(3, 3);
             this.pnlList.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
             this.pnlList.Name = "pnlList";
-            this.pnlList.Padding = new System.Windows.Forms.Padding(14);
+            this.pnlList.Padding = new System.Windows.Forms.Padding(12);
             this.pnlList.Size = new System.Drawing.Size(749, 686);
             this.pnlList.TabIndex = 1;
             // 
@@ -479,51 +476,29 @@ namespace POS
             this.dgvProducts.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvProducts.BackgroundColor = System.Drawing.Color.White;
             this.dgvProducts.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.dgvProducts.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
-            this.dgvProducts.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Tahoma", 9.5F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            dataGridViewCellStyle1.Padding = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvProducts.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            this.dgvProducts.ColumnHeadersHeight = 48;
-            this.dgvProducts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Tahoma", 9.5F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(41)))), ((int)(((byte)(59)))));
-            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(5, 3, 5, 3);
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(23)))), ((int)(((byte)(42)))));
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvProducts.DefaultCellStyle = dataGridViewCellStyle2;
+            this.dgvProducts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvProducts.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvProducts.EnableHeadersVisualStyles = false;
-            this.dgvProducts.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
-            this.dgvProducts.Location = new System.Drawing.Point(14, 76);
+            this.dgvProducts.Location = new System.Drawing.Point(12, 70);
             this.dgvProducts.MultiSelect = false;
             this.dgvProducts.Name = "dgvProducts";
             this.dgvProducts.ReadOnly = true;
             this.dgvProducts.RowHeadersVisible = false;
             this.dgvProducts.RowHeadersWidth = 51;
-            this.dgvProducts.RowTemplate.Height = 40;
+            this.dgvProducts.RowTemplate.Height = 24;
             this.dgvProducts.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvProducts.Size = new System.Drawing.Size(721, 596);
+            this.dgvProducts.Size = new System.Drawing.Size(725, 604);
             this.dgvProducts.TabIndex = 1;
-            this.dgvProducts.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvProducts_CellFormatting);
             this.dgvProducts.SelectionChanged += new System.EventHandler(this.dgvProducts_SelectionChanged);
             // 
             // pnlFilters
             // 
+            this.pnlFilters.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this.pnlFilters.Controls.Add(this.tlpFilters);
             this.pnlFilters.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlFilters.Location = new System.Drawing.Point(14, 14);
+            this.pnlFilters.Location = new System.Drawing.Point(12, 12);
             this.pnlFilters.Name = "pnlFilters";
-            this.pnlFilters.Size = new System.Drawing.Size(721, 62);
+            this.pnlFilters.Padding = new System.Windows.Forms.Padding(12, 0, 12, 0);
+            this.pnlFilters.Size = new System.Drawing.Size(725, 58);
             this.pnlFilters.TabIndex = 0;
             // 
             // tlpFilters
@@ -540,12 +515,12 @@ namespace POS
             this.tlpFilters.Controls.Add(this.chkLowStockOnly, 2, 1);
             this.tlpFilters.Controls.Add(this.btnRefresh, 3, 1);
             this.tlpFilters.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tlpFilters.Location = new System.Drawing.Point(0, 0);
+            this.tlpFilters.Location = new System.Drawing.Point(12, 0);
             this.tlpFilters.Name = "tlpFilters";
             this.tlpFilters.RowCount = 2;
             this.tlpFilters.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.tlpFilters.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpFilters.Size = new System.Drawing.Size(721, 62);
+            this.tlpFilters.Size = new System.Drawing.Size(701, 58);
             this.tlpFilters.TabIndex = 0;
             // 
             // lblSearch
@@ -553,11 +528,11 @@ namespace POS
             this.lblSearch.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblSearch.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblSearch.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblSearch.Location = new System.Drawing.Point(422, 0);
+            this.lblSearch.Location = new System.Drawing.Point(410, 0);
             this.lblSearch.Name = "lblSearch";
-            this.lblSearch.Size = new System.Drawing.Size(296, 22);
+            this.lblSearch.Size = new System.Drawing.Size(288, 22);
             this.lblSearch.TabIndex = 0;
-            this.lblSearch.Text = "🔍 بحث بالاسم أو الباركود:";
+            this.lblSearch.Text = "بحث بالاسم أو الباركود:";
             this.lblSearch.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtSearch
@@ -565,9 +540,9 @@ namespace POS
             this.txtSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtSearch.Font = new System.Drawing.Font("Tahoma", 10F);
-            this.txtSearch.Location = new System.Drawing.Point(422, 28);
+            this.txtSearch.Location = new System.Drawing.Point(410, 26);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(296, 28);
+            this.txtSearch.Size = new System.Drawing.Size(288, 28);
             this.txtSearch.TabIndex = 1;
             this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
             // 
@@ -576,9 +551,9 @@ namespace POS
             this.lblCategoryFilter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblCategoryFilter.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblCategoryFilter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblCategoryFilter.Location = new System.Drawing.Point(221, 0);
+            this.lblCategoryFilter.Location = new System.Drawing.Point(214, 0);
             this.lblCategoryFilter.Name = "lblCategoryFilter";
-            this.lblCategoryFilter.Size = new System.Drawing.Size(195, 22);
+            this.lblCategoryFilter.Size = new System.Drawing.Size(190, 22);
             this.lblCategoryFilter.TabIndex = 2;
             this.lblCategoryFilter.Text = "القسم:";
             this.lblCategoryFilter.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -589,9 +564,9 @@ namespace POS
             this.cmbCategoryFilter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbCategoryFilter.Font = new System.Drawing.Font("Tahoma", 10F);
             this.cmbCategoryFilter.FormattingEnabled = true;
-            this.cmbCategoryFilter.Location = new System.Drawing.Point(221, 27);
+            this.cmbCategoryFilter.Location = new System.Drawing.Point(214, 25);
             this.cmbCategoryFilter.Name = "cmbCategoryFilter";
-            this.cmbCategoryFilter.Size = new System.Drawing.Size(195, 29);
+            this.cmbCategoryFilter.Size = new System.Drawing.Size(190, 29);
             this.cmbCategoryFilter.TabIndex = 3;
             this.cmbCategoryFilter.SelectedIndexChanged += new System.EventHandler(this.cmbCategoryFilter_SelectedIndexChanged);
             // 
@@ -602,11 +577,11 @@ namespace POS
             this.chkLowStockOnly.Cursor = System.Windows.Forms.Cursors.Hand;
             this.chkLowStockOnly.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.chkLowStockOnly.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this.chkLowStockOnly.Location = new System.Drawing.Point(77, 31);
+            this.chkLowStockOnly.Location = new System.Drawing.Point(74, 29);
             this.chkLowStockOnly.Name = "chkLowStockOnly";
-            this.chkLowStockOnly.Size = new System.Drawing.Size(138, 22);
+            this.chkLowStockOnly.Size = new System.Drawing.Size(134, 22);
             this.chkLowStockOnly.TabIndex = 4;
-            this.chkLowStockOnly.Text = "⚠️ عرض النواقص فقط";
+            this.chkLowStockOnly.Text = "عرض النواقص فقط";
             this.chkLowStockOnly.UseVisualStyleBackColor = true;
             this.chkLowStockOnly.CheckedChanged += new System.EventHandler(this.chkLowStockOnly_CheckedChanged);
             // 
@@ -618,12 +593,12 @@ namespace POS
             this.btnRefresh.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
             this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRefresh.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.btnRefresh.Location = new System.Drawing.Point(3, 27);
+            this.btnRefresh.Location = new System.Drawing.Point(3, 25);
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnRefresh.Size = new System.Drawing.Size(68, 30);
+            this.btnRefresh.Size = new System.Drawing.Size(65, 30);
             this.btnRefresh.TabIndex = 5;
-            this.btnRefresh.Text = "🔄 تحديث";
+            this.btnRefresh.Text = "تحديث";
             this.btnRefresh.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnRefresh.UseVisualStyleBackColor = false;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);

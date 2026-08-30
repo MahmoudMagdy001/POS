@@ -33,10 +33,11 @@ namespace POS
             this.lblUserName = new System.Windows.Forms.Label();
             this.lblUserAvatar = new System.Windows.Forms.Label();
             this.pnlBrand = new System.Windows.Forms.Panel();
-            this.lblAppSubtitle = new System.Windows.Forms.Label();
             this.lblAppBrand = new System.Windows.Forms.Label();
+            this.lblAppSubtitle = new System.Windows.Forms.Label();
             this.pnlTopHeader = new System.Windows.Forms.Panel();
             this.lblCurrentTime = new System.Windows.Forms.Label();
+            this.btnTopShift = new System.Windows.Forms.Button();
             this.btnLogout = new System.Windows.Forms.Button();
             this.lblCurrentSectionTitle = new System.Windows.Forms.Label();
             this.pnlMainContent = new System.Windows.Forms.Panel();
@@ -93,7 +94,7 @@ namespace POS
             this.btnNavSettings.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNavSettings.Size = new System.Drawing.Size(256, 48);
             this.btnNavSettings.TabIndex = 7;
-            this.btnNavSettings.Text = "⚙️  إعدادات النظام";
+            this.btnNavSettings.Text = "إعدادات النظام";
             this.btnNavSettings.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavSettings.UseVisualStyleBackColor = false;
             this.btnNavSettings.Click += new System.EventHandler(this.btnNav_Click);
@@ -112,7 +113,7 @@ namespace POS
             this.btnNavUsers.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNavUsers.Size = new System.Drawing.Size(256, 48);
             this.btnNavUsers.TabIndex = 6;
-            this.btnNavUsers.Text = "👥  المستخدمين والموظفين";
+            this.btnNavUsers.Text = "المستخدمين والموظفين";
             this.btnNavUsers.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavUsers.UseVisualStyleBackColor = false;
             this.btnNavUsers.Click += new System.EventHandler(this.btnNav_Click);
@@ -131,7 +132,7 @@ namespace POS
             this.btnNavShifts.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNavShifts.Size = new System.Drawing.Size(256, 48);
             this.btnNavShifts.TabIndex = 5;
-            this.btnNavShifts.Text = "⏰  الورديات والحضور";
+            this.btnNavShifts.Text = "الورديات والحضور";
             this.btnNavShifts.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavShifts.UseVisualStyleBackColor = false;
             this.btnNavShifts.Click += new System.EventHandler(this.btnNav_Click);
@@ -150,7 +151,7 @@ namespace POS
             this.btnNavSales.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNavSales.Size = new System.Drawing.Size(256, 48);
             this.btnNavSales.TabIndex = 4;
-            this.btnNavSales.Text = "🧾  فواتير وسجل المبيعات";
+            this.btnNavSales.Text = "فواتير وسجل المبيعات";
             this.btnNavSales.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavSales.UseVisualStyleBackColor = false;
             this.btnNavSales.Click += new System.EventHandler(this.btnNav_Click);
@@ -169,7 +170,7 @@ namespace POS
             this.btnNavPurchases.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNavPurchases.Size = new System.Drawing.Size(256, 48);
             this.btnNavPurchases.TabIndex = 3;
-            this.btnNavPurchases.Text = "📥  فواتير المشتريات";
+            this.btnNavPurchases.Text = "فواتير المشتريات";
             this.btnNavPurchases.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavPurchases.UseVisualStyleBackColor = false;
             this.btnNavPurchases.Click += new System.EventHandler(this.btnNav_Click);
@@ -188,7 +189,7 @@ namespace POS
             this.btnNavProducts.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNavProducts.Size = new System.Drawing.Size(256, 48);
             this.btnNavProducts.TabIndex = 2;
-            this.btnNavProducts.Text = "📦  المنتجات والمخزون";
+            this.btnNavProducts.Text = "المنتجات والمخزون";
             this.btnNavProducts.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavProducts.UseVisualStyleBackColor = false;
             this.btnNavProducts.Click += new System.EventHandler(this.btnNav_Click);
@@ -207,7 +208,7 @@ namespace POS
             this.btnNavPOS.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNavPOS.Size = new System.Drawing.Size(256, 48);
             this.btnNavPOS.TabIndex = 1;
-            this.btnNavPOS.Text = "🛒  شاشة الكاشير (POS)";
+            this.btnNavPOS.Text = "شاشة الكاشير (POS)";
             this.btnNavPOS.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavPOS.UseVisualStyleBackColor = false;
             this.btnNavPOS.Click += new System.EventHandler(this.btnNav_Click);
@@ -226,7 +227,7 @@ namespace POS
             this.btnNavDashboard.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnNavDashboard.Size = new System.Drawing.Size(256, 48);
             this.btnNavDashboard.TabIndex = 0;
-            this.btnNavDashboard.Text = "📊  لوحة التحكم العامة";
+            this.btnNavDashboard.Text = "لوحة التحكم العامة";
             this.btnNavDashboard.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnNavDashboard.UseVisualStyleBackColor = false;
             this.btnNavDashboard.Click += new System.EventHandler(this.btnNav_Click);
@@ -289,37 +290,38 @@ namespace POS
             this.pnlBrand.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlBrand.Location = new System.Drawing.Point(0, 0);
             this.pnlBrand.Name = "pnlBrand";
-            this.pnlBrand.Padding = new System.Windows.Forms.Padding(18, 15, 18, 15);
+            this.pnlBrand.Padding = new System.Windows.Forms.Padding(12, 10, 12, 10);
             this.pnlBrand.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.pnlBrand.Size = new System.Drawing.Size(280, 80);
             this.pnlBrand.TabIndex = 0;
             // 
-            // lblAppSubtitle
-            // 
-            this.lblAppSubtitle.AutoSize = true;
-            this.lblAppSubtitle.Font = new System.Drawing.Font("Tahoma", 8F);
-            this.lblAppSubtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
-            this.lblAppSubtitle.Location = new System.Drawing.Point(50, 50);
-            this.lblAppSubtitle.Name = "lblAppSubtitle";
-            this.lblAppSubtitle.Size = new System.Drawing.Size(197, 17);
-            this.lblAppSubtitle.TabIndex = 1;
-            this.lblAppSubtitle.Text = "إدارة المبيعات والمخازن والتحصيل";
-            // 
             // lblAppBrand
             // 
-            this.lblAppBrand.AutoSize = true;
-            this.lblAppBrand.Font = new System.Drawing.Font("Tahoma", 13.5F, System.Drawing.FontStyle.Bold);
+            this.lblAppBrand.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold);
             this.lblAppBrand.ForeColor = System.Drawing.Color.White;
-            this.lblAppBrand.Location = new System.Drawing.Point(34, 16);
+            this.lblAppBrand.Location = new System.Drawing.Point(10, 10);
             this.lblAppBrand.Name = "lblAppBrand";
-            this.lblAppBrand.Size = new System.Drawing.Size(221, 28);
+            this.lblAppBrand.Size = new System.Drawing.Size(260, 32);
             this.lblAppBrand.TabIndex = 0;
-            this.lblAppBrand.Text = "🛒 كاشير ونقاط بيع";
+            this.lblAppBrand.Text = "كاشير ونقاط بيع";
+            this.lblAppBrand.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // lblAppSubtitle
+            // 
+            this.lblAppSubtitle.Font = new System.Drawing.Font("Tahoma", 8F);
+            this.lblAppSubtitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
+            this.lblAppSubtitle.Location = new System.Drawing.Point(10, 44);
+            this.lblAppSubtitle.Name = "lblAppSubtitle";
+            this.lblAppSubtitle.Size = new System.Drawing.Size(260, 24);
+            this.lblAppSubtitle.TabIndex = 1;
+            this.lblAppSubtitle.Text = "إدارة المبيعات والمخازن والتحصيل";
+            this.lblAppSubtitle.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // pnlTopHeader
             // 
             this.pnlTopHeader.BackColor = System.Drawing.Color.White;
             this.pnlTopHeader.Controls.Add(this.lblCurrentTime);
+            this.pnlTopHeader.Controls.Add(this.btnTopShift);
             this.pnlTopHeader.Controls.Add(this.btnLogout);
             this.pnlTopHeader.Controls.Add(this.lblCurrentSectionTitle);
             this.pnlTopHeader.Dock = System.Windows.Forms.DockStyle.Top;
@@ -335,12 +337,29 @@ namespace POS
             this.lblCurrentTime.AutoSize = true;
             this.lblCurrentTime.Font = new System.Drawing.Font("Tahoma", 9.5F, System.Drawing.FontStyle.Bold);
             this.lblCurrentTime.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblCurrentTime.Location = new System.Drawing.Point(150, 18);
+            this.lblCurrentTime.Location = new System.Drawing.Point(330, 18);
             this.lblCurrentTime.Name = "lblCurrentTime";
-            this.lblCurrentTime.Size = new System.Drawing.Size(420, 24);
+            this.lblCurrentTime.Size = new System.Drawing.Size(180, 19);
             this.lblCurrentTime.TabIndex = 2;
             this.lblCurrentTime.Text = "2026-08-25 16:00:00";
             this.lblCurrentTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // btnTopShift
+            // 
+            this.btnTopShift.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(253)))), ((int)(((byte)(244)))));
+            this.btnTopShift.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnTopShift.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(187)))), ((int)(((byte)(247)))), ((int)(((byte)(208)))));
+            this.btnTopShift.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnTopShift.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.btnTopShift.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(101)))), ((int)(((byte)(52)))));
+            this.btnTopShift.Location = new System.Drawing.Point(145, 14);
+            this.btnTopShift.Name = "btnTopShift";
+            this.btnTopShift.Size = new System.Drawing.Size(175, 32);
+            this.btnTopShift.TabIndex = 3;
+            this.btnTopShift.Text = "الوردية نشطة";
+            this.btnTopShift.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnTopShift.UseVisualStyleBackColor = false;
+            this.btnTopShift.Click += new System.EventHandler(this.btnTopShift_Click);
             // 
             // btnLogout
             // 
@@ -354,7 +373,7 @@ namespace POS
             this.btnLogout.Name = "btnLogout";
             this.btnLogout.Size = new System.Drawing.Size(115, 32);
             this.btnLogout.TabIndex = 1;
-            this.btnLogout.Text = "🚪 خروج";
+            this.btnLogout.Text = "تسجيل خروج";
             this.btnLogout.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnLogout.UseVisualStyleBackColor = false;
             this.btnLogout.Click += new System.EventHandler(this.btnLogout_Click);
@@ -437,6 +456,7 @@ namespace POS
         private System.Windows.Forms.Panel pnlTopHeader;
         private System.Windows.Forms.Label lblCurrentSectionTitle;
         private System.Windows.Forms.Button btnLogout;
+        private System.Windows.Forms.Button btnTopShift;
         private System.Windows.Forms.Label lblCurrentTime;
         private System.Windows.Forms.Panel pnlMainContent;
         private System.Windows.Forms.Timer timerClock;

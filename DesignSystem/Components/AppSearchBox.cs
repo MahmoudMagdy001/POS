@@ -138,12 +138,15 @@ namespace POS.DesignSystem.Components
                 GraphicsHelper.DrawRoundedRectangle(g, pen, rect, _borderRadius);
             }
 
-            // Draw Search Icon (🔍 glyph / indicator on right side in RTL)
-            int iconX = Width - 24;
-            int iconY = (Height - 16) / 2;
-            Rectangle iconRect = new Rectangle(iconX, iconY, 18, 18);
-            TextRenderer.DrawText(g, "🔍", new Font("Segoe UI Emoji", 9f), iconRect, UIColors.TextMuted,
-                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+            // Draw Search Icon (Vector indicator on right side in RTL)
+            using (var iconPen = new Pen(UIColors.TextMuted, 1.6f))
+            {
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                int cx = Width - 16;
+                int cy = Height / 2;
+                g.DrawEllipse(iconPen, cx - 8, cy - 7, 7, 7);
+                g.DrawLine(iconPen, cx - 3, cy - 2, cx + 1, cy + 2);
+            }
 
             // Draw Placeholder if empty
             if (string.IsNullOrEmpty(_txtSearch.Text) && !_isFocused)

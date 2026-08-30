@@ -129,6 +129,12 @@
     <Compile Include="ShiftEditForm.Designer.cs">
       <DependentUpon>ShiftEditForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="StartShiftModalForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="StartShiftModalForm.Designer.cs">
+      <DependentUpon>StartShiftModalForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FontManager.cs" />
     <Compile Include="UITheme.cs" />
     <Compile Include="UIStyler.cs" />
@@ -235,6 +241,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="Database\Schema.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Database\Seed_New_Data.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

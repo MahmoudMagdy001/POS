@@ -131,7 +131,7 @@ namespace POS
             this.lblCardItemsTitle.Name = "lblCardItemsTitle";
             this.lblCardItemsTitle.Size = new System.Drawing.Size(361, 24);
             this.lblCardItemsTitle.TabIndex = 0;
-            this.lblCardItemsTitle.Text = "📦 إجمالي الأصناف المباعة بالفترة:";
+            this.lblCardItemsTitle.Text = "إجمالي الأصناف المباعة بالفترة:";
             this.lblCardItemsTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnlCardCount
@@ -168,7 +168,7 @@ namespace POS
             this.lblCardCountTitle.Name = "lblCardCountTitle";
             this.lblCardCountTitle.Size = new System.Drawing.Size(356, 24);
             this.lblCardCountTitle.TabIndex = 0;
-            this.lblCardCountTitle.Text = "🧾 إجمالي عدد فواتير المبيعات:";
+            this.lblCardCountTitle.Text = "إجمالي عدد فواتير المبيعات:";
             this.lblCardCountTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnlCardRevenue
@@ -205,7 +205,7 @@ namespace POS
             this.lblCardRevenueTitle.Name = "lblCardRevenueTitle";
             this.lblCardRevenueTitle.Size = new System.Drawing.Size(363, 24);
             this.lblCardRevenueTitle.TabIndex = 0;
-            this.lblCardRevenueTitle.Text = "💵 إجمالي إيراد المبيعات المحصل:";
+            this.lblCardRevenueTitle.Text = "إجمالي إيراد المبيعات المحصل:";
             this.lblCardRevenueTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnlFilterBar
@@ -255,7 +255,7 @@ namespace POS
             this.btnRefresh.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnRefresh.Size = new System.Drawing.Size(120, 32);
             this.btnRefresh.TabIndex = 4;
-            this.btnRefresh.Text = "🔄 تحديث";
+            this.btnRefresh.Text = "تحديث";
             this.btnRefresh.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnRefresh.UseVisualStyleBackColor = false;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
@@ -402,7 +402,7 @@ namespace POS
             this.lblSalesListTitle.Name = "lblSalesListTitle";
             this.lblSalesListTitle.Size = new System.Drawing.Size(562, 32);
             this.lblSalesListTitle.TabIndex = 0;
-            this.lblSalesListTitle.Text = "📋 قائمة فواتير المبيعات المسجلة";
+            this.lblSalesListTitle.Text = "قائمة فواتير المبيعات المسجلة";
             this.lblSalesListTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnlSaleDetails
@@ -495,7 +495,7 @@ namespace POS
             this.btnReturn.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnReturn.Size = new System.Drawing.Size(170, 36);
             this.btnReturn.TabIndex = 2;
-            this.btnReturn.Text = "🔄 عمل إرجاع / مرتجع";
+            this.btnReturn.Text = "عمل إرجاع / مرتجع";
             this.btnReturn.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnReturn.UseVisualStyleBackColor = false;
             this.btnReturn.Click += new System.EventHandler(this.btnReturn_Click);
@@ -513,7 +513,7 @@ namespace POS
             this.btnPrintReceipt.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnPrintReceipt.Size = new System.Drawing.Size(174, 36);
             this.btnPrintReceipt.TabIndex = 0;
-            this.btnPrintReceipt.Text = "🖨️ طباعة إيصال الفاتورة";
+            this.btnPrintReceipt.Text = "طباعة إيصال الفاتورة";
             this.btnPrintReceipt.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnPrintReceipt.UseVisualStyleBackColor = false;
             this.btnPrintReceipt.Click += new System.EventHandler(this.btnPrintReceipt_Click);
@@ -531,7 +531,7 @@ namespace POS
             this.btnExportImage.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnExportImage.Size = new System.Drawing.Size(164, 36);
             this.btnExportImage.TabIndex = 1;
-            this.btnExportImage.Text = "🖼️ تصدير كصورة PNG";
+            this.btnExportImage.Text = "تصدير كصورة PNG";
             this.btnExportImage.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnExportImage.UseVisualStyleBackColor = false;
             this.btnExportImage.Click += new System.EventHandler(this.btnExportImage_Click);
@@ -545,7 +545,7 @@ namespace POS
             this.lblSaleDetailsTitle.Name = "lblSaleDetailsTitle";
             this.lblSaleDetailsTitle.Size = new System.Drawing.Size(550, 32);
             this.lblSaleDetailsTitle.TabIndex = 0;
-            this.lblSaleDetailsTitle.Text = "📦 تفاصيل وأصناف الفاتورة المحددة";
+            this.lblSaleDetailsTitle.Text = "تفاصيل وأصناف الفاتورة المحددة";
             this.lblSaleDetailsTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // SalesForm

@@ -205,7 +205,7 @@ namespace POS
             this.btnRefresh.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnRefresh.Size = new System.Drawing.Size(95, 30);
             this.btnRefresh.TabIndex = 5;
-            this.btnRefresh.Text = "🔄 تحديث";
+            this.btnRefresh.Text = "تحديث";
             this.btnRefresh.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnRefresh.UseVisualStyleBackColor = false;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
@@ -313,7 +313,7 @@ namespace POS
             this.lblKpiProductsTitle.Name = "lblKpiProductsTitle";
             this.lblKpiProductsTitle.Size = new System.Drawing.Size(267, 22);
             this.lblKpiProductsTitle.TabIndex = 0;
-            this.lblKpiProductsTitle.Text = "📦 رصيد وقيمة المخزون:";
+            this.lblKpiProductsTitle.Text = "رصيد وقيمة المخزون:";
             this.lblKpiProductsTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // pnlKpiProfit
@@ -363,7 +363,7 @@ namespace POS
             this.lblKpiProfitTitle.Name = "lblKpiProfitTitle";
             this.lblKpiProfitTitle.Size = new System.Drawing.Size(262, 22);
             this.lblKpiProfitTitle.TabIndex = 0;
-            this.lblKpiProfitTitle.Text = "🏆 صافي الربح والمكسب:";
+            this.lblKpiProfitTitle.Text = "صافي الربح والمكسب:";
             this.lblKpiProfitTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // pnlKpiPurchases
@@ -413,7 +413,7 @@ namespace POS
             this.lblKpiPurchasesTitle.Name = "lblKpiPurchasesTitle";
             this.lblKpiPurchasesTitle.Size = new System.Drawing.Size(262, 22);
             this.lblKpiPurchasesTitle.TabIndex = 0;
-            this.lblKpiPurchasesTitle.Text = "📥 إجمالي المشتريات (الشراء):";
+            this.lblKpiPurchasesTitle.Text = "إجمالي المشتريات (الشراء):";
             this.lblKpiPurchasesTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // pnlKpiSales
@@ -463,7 +463,7 @@ namespace POS
             this.lblKpiSalesTitle.Name = "lblKpiSalesTitle";
             this.lblKpiSalesTitle.Size = new System.Drawing.Size(267, 22);
             this.lblKpiSalesTitle.TabIndex = 0;
-            this.lblKpiSalesTitle.Text = "💵 إجمالي المبيعات (البيع):";
+            this.lblKpiSalesTitle.Text = "إجمالي المبيعات (البيع):";
             this.lblKpiSalesTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // tableLayoutPanelMain
@@ -685,7 +685,7 @@ namespace POS
             this.lblCardLowStockTitle.Name = "lblCardLowStockTitle";
             this.lblCardLowStockTitle.Size = new System.Drawing.Size(1144, 28);
             this.lblCardLowStockTitle.TabIndex = 0;
-            this.lblCardLowStockTitle.Text = "⚠️ تنبيهات النواقص ورواكد المخزون (تحت حد الأمان)";
+            this.lblCardLowStockTitle.Text = "تنبيهات النواقص ورواكد المخزون (تحت حد الأمان)";
             this.lblCardLowStockTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // DashboardForm

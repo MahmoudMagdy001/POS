@@ -156,7 +156,7 @@ namespace POS
             this.lblSearch.Name = "lblSearch";
             this.lblSearch.Size = new System.Drawing.Size(132, 58);
             this.lblSearch.TabIndex = 0;
-            this.lblSearch.Text = "🔍 بحث بالاسم:";
+            this.lblSearch.Text = "بحث بالاسم:";
             this.lblSearch.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // flpButtons
@@ -188,7 +188,7 @@ namespace POS
             this.btnCreateUser.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnCreateUser.Size = new System.Drawing.Size(150, 32);
             this.btnCreateUser.TabIndex = 0;
-            this.btnCreateUser.Text = "➕ مستخدم جديد";
+            this.btnCreateUser.Text = "مستخدم جديد";
             this.btnCreateUser.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnCreateUser.UseVisualStyleBackColor = false;
             this.btnCreateUser.Click += new System.EventHandler(this.btnCreateUser_Click);
@@ -207,7 +207,7 @@ namespace POS
             this.btnEditUser.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnEditUser.Size = new System.Drawing.Size(110, 32);
             this.btnEditUser.TabIndex = 1;
-            this.btnEditUser.Text = "✏️ تعديل البيانات";
+            this.btnEditUser.Text = "تعديل البيانات";
             this.btnEditUser.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnEditUser.UseVisualStyleBackColor = false;
             this.btnEditUser.Click += new System.EventHandler(this.btnEditUser_Click);
@@ -226,7 +226,7 @@ namespace POS
             this.btnToggleStatus.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnToggleStatus.Size = new System.Drawing.Size(129, 32);
             this.btnToggleStatus.TabIndex = 2;
-            this.btnToggleStatus.Text = "🔄 تنشيط / تعطيل";
+            this.btnToggleStatus.Text = "تنشيط / تعطيل";
             this.btnToggleStatus.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnToggleStatus.UseVisualStyleBackColor = false;
             this.btnToggleStatus.Click += new System.EventHandler(this.btnToggleStatus_Click);
@@ -245,7 +245,7 @@ namespace POS
             this.btnDeleteUser.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnDeleteUser.Size = new System.Drawing.Size(119, 32);
             this.btnDeleteUser.TabIndex = 3;
-            this.btnDeleteUser.Text = "🗑️ حذف المستخدم";
+            this.btnDeleteUser.Text = "حذف المستخدم";
             this.btnDeleteUser.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnDeleteUser.UseVisualStyleBackColor = false;
             this.btnDeleteUser.Click += new System.EventHandler(this.btnDeleteUser_Click);
@@ -263,7 +263,7 @@ namespace POS
             this.btnRefresh.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnRefresh.Size = new System.Drawing.Size(85, 32);
             this.btnRefresh.TabIndex = 4;
-            this.btnRefresh.Text = "🔄 تحديث";
+            this.btnRefresh.Text = "تحديث";
             this.btnRefresh.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnRefresh.UseVisualStyleBackColor = false;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);

@@ -27,15 +27,137 @@ namespace POS
             _currentUser = user;
         }
 
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            CheckShiftOnStartup();
+        }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             UIStyler.ApplyTheme(this);
-            UIStyler.StyleDangerButton(btnLogout, "🚪 خروج");
+            UIStyler.StyleDangerButton(btnLogout, "تسجيل خروج");
             lblCurrentTime.AutoSize = true;
             SetupUserInfo();
             InitializeChildForms();
-            ShowView("Dashboard");
+
+            bool isAdmin = _currentUser != null && (string.Equals(_currentUser.Role, "Admin", StringComparison.OrdinalIgnoreCase) || _currentUser.Role == "مدير");
+            if (isAdmin)
+            {
+                ShowView("Dashboard");
+            }
+            else
+            {
+                ShowView("POS");
+            }
+
+            UpdateShiftBadge();
             UpdateClock();
+        }
+
+        private void CheckShiftOnStartup()
+        {
+            if (_currentUser == null) return;
+
+            // استثناء مدير النظام من الإلزام ببدء الوردية عند الدخول
+            if (_currentUser.IsAdmin)
+            {
+                UpdateShiftBadge();
+                return;
+            }
+
+            var activeShift = DbHelper.GetActiveShift(_currentUser.UserId);
+            if (activeShift == null)
+            {
+                using (var startShiftForm = new StartShiftModalForm(_currentUser))
+                {
+                    if (startShiftForm.ShowDialog(this) == DialogResult.OK)
+                    {
+                        _posForm?.RefreshData();
+                        _shiftsForm?.RefreshData();
+                        UpdateShiftBadge();
+                    }
+                }
+            }
+            else
+            {
+                UpdateShiftBadge();
+            }
+        }
+
+        public void UpdateShiftBadge()
+        {
+            if (_currentUser == null || btnTopShift == null) return;
+
+            try
+            {
+                var activeShift = DbHelper.GetActiveShift(_currentUser.UserId);
+                if (activeShift != null)
+                {
+                    btnTopShift.Text = "الوردية نشطة";
+                    btnTopShift.BackColor = Color.FromArgb(240, 253, 244);
+                    btnTopShift.ForeColor = Color.FromArgb(22, 101, 52);
+                    btnTopShift.FlatAppearance.BorderColor = Color.FromArgb(187, 247, 208);
+                }
+                else if (_currentUser.IsAdmin)
+                {
+                    btnTopShift.Text = "وضع المدير";
+                    btnTopShift.BackColor = Color.FromArgb(241, 245, 249);
+                    btnTopShift.ForeColor = Color.FromArgb(71, 85, 105);
+                    btnTopShift.FlatAppearance.BorderColor = Color.FromArgb(203, 213, 225);
+                }
+                else
+                {
+                    btnTopShift.Text = "بدء الوردية";
+                    btnTopShift.BackColor = Color.FromArgb(254, 242, 242);
+                    btnTopShift.ForeColor = Color.FromArgb(220, 38, 38);
+                    btnTopShift.FlatAppearance.BorderColor = Color.FromArgb(254, 202, 202);
+                }
+            }
+            catch { }
+        }
+
+        private void btnTopShift_Click(object sender, EventArgs e)
+        {
+            if (_currentUser == null) return;
+
+            var activeShift = DbHelper.GetActiveShift(_currentUser.UserId);
+            if (activeShift == null)
+            {
+                using (var startShiftForm = new StartShiftModalForm(_currentUser))
+                {
+                    if (startShiftForm.ShowDialog(this) == DialogResult.OK)
+                    {
+                        _posForm?.RefreshData();
+                        _shiftsForm?.RefreshData();
+                        UpdateShiftBadge();
+                    }
+                }
+            }
+            else
+            {
+                var confirmResult = MessageBox.Show(
+                    $"هل تريد تسجيل انصراف وإنهاء الوردية الحالية للموظف '{_currentUser.FullName}' الآن؟",
+                    "تأكيد إنهاء الوردية",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (confirmResult == DialogResult.Yes)
+                {
+                    var res = DbHelper.ClockOut(_currentUser.UserId);
+                    if (res.Success)
+                    {
+                        MessageBox.Show(res.Message, "تسجيل انصراف", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        UpdateShiftBadge();
+                        _posForm?.RefreshData();
+                        _shiftsForm?.RefreshData();
+                    }
+                    else
+                    {
+                        MessageBox.Show(res.Message, "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+            }
         }
 
         private void SetupUserInfo()
@@ -58,16 +180,32 @@ namespace POS
                 btnNavUsers.Visible = isAdmin;
                 btnNavSettings.Visible = isAdmin;
 
-                try
-                {
-                    var sysSettings = DbHelper.GetSystemSettings();
-                    if (!string.IsNullOrWhiteSpace(sysSettings.StoreName))
-                        lblAppBrand.Text = "🛒 " + sysSettings.StoreName;
-                    if (!string.IsNullOrWhiteSpace(sysSettings.StoreSubtitle))
-                        lblAppSubtitle.Text = sysSettings.StoreSubtitle;
-                }
-                catch { }
+                UpdateStoreBrand();
             }
+        }
+
+        public void UpdateStoreBrand()
+        {
+            try
+            {
+                var sysSettings = DbHelper.GetSystemSettings();
+                if (sysSettings != null)
+                {
+                    string storeName = !string.IsNullOrWhiteSpace(sysSettings.StoreName) 
+                        ? sysSettings.StoreName 
+                        : "كاشير ونقاط بيع";
+
+                    lblAppBrand.Text = storeName;
+
+                    if (lblAppSubtitle != null && !string.IsNullOrWhiteSpace(sysSettings.StoreSubtitle))
+                    {
+                        lblAppSubtitle.Text = sysSettings.StoreSubtitle;
+                    }
+
+                    this.Text = $"{storeName} - إدارة المبيعات ونقاط البيع";
+                }
+            }
+            catch { }
         }
 
         private void InitializeChildForms()
@@ -171,6 +309,8 @@ namespace POS
                 _activeChildForm = targetForm;
                 pnlMainContent.ResumeLayout();
             }
+
+            UpdateShiftBadge();
         }
 
         private void ResetNavButtons()

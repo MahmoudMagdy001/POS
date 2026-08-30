@@ -24,7 +24,7 @@ namespace POS
             UIStyler.ApplyTheme(this);
             UIStyler.CenterFormOnScreen(this);
             lblSignInTitle.Font = FontManager.GetBold(18f);
-            lblLeftTitle.Font = FontManager.GetBold(18f);
+            lblLeftTitle.Font = FontManager.GetBold(15f);
             UIStyler.StylePrimaryButton(btnLogin);
             UIStyler.StyleSecondaryButton(btnExit);
             lblStatus.Text = string.Empty;
@@ -34,6 +34,29 @@ namespace POS
             {
                 DbHelper.InitializeDatabase();
             });
+
+            LoadStoreInfo();
+        }
+
+        private void LoadStoreInfo()
+        {
+            try
+            {
+                var sysSettings = DbHelper.GetSystemSettings();
+                if (sysSettings != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(sysSettings.StoreName))
+                    {
+                        lblLeftTitle.Text = sysSettings.StoreName;
+                        this.Text = $"تسجيل الدخول - {sysSettings.StoreName}";
+                    }
+                    if (!string.IsNullOrWhiteSpace(sysSettings.StoreSubtitle))
+                    {
+                        lblLeftSubTitle.Text = sysSettings.StoreSubtitle;
+                    }
+                }
+            }
+            catch { }
         }
 
         private void chkShowPassword_CheckedChanged(object sender, EventArgs e)

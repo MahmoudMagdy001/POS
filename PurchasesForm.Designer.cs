@@ -114,7 +114,7 @@ namespace POS
             this.tabNewPurchase.Padding = new System.Windows.Forms.Padding(10);
             this.tabNewPurchase.Size = new System.Drawing.Size(1164, 652);
             this.tabNewPurchase.TabIndex = 0;
-            this.tabNewPurchase.Text = "📥  تسجيل فاتورة مشتريات واردة";
+            this.tabNewPurchase.Text = "تسجيل فاتورة مشتريات واردة";
             // 
             // pnlNewPurchaseContainer
             // 
@@ -277,7 +277,7 @@ namespace POS
             this.btnSavePurchase.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnSavePurchase.Size = new System.Drawing.Size(254, 38);
             this.btnSavePurchase.TabIndex = 0;
-            this.btnSavePurchase.Text = "💾 حفظ الفاتورة وتحديث المخزون";
+            this.btnSavePurchase.Text = "حفظ الفاتورة وتحديث المخزون";
             this.btnSavePurchase.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnSavePurchase.UseVisualStyleBackColor = false;
             this.btnSavePurchase.Click += new System.EventHandler(this.btnSavePurchase_Click);
@@ -295,7 +295,7 @@ namespace POS
             this.btnResetPurchase.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnResetPurchase.Size = new System.Drawing.Size(118, 38);
             this.btnResetPurchase.TabIndex = 1;
-            this.btnResetPurchase.Text = "🗑️ إلغاء الفاتورة";
+            this.btnResetPurchase.Text = "إلغاء الفاتورة";
             this.btnResetPurchase.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnResetPurchase.UseVisualStyleBackColor = false;
             this.btnResetPurchase.Click += new System.EventHandler(this.btnResetPurchase_Click);
@@ -307,17 +307,17 @@ namespace POS
             this.pnlAddItem.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlAddItem.Location = new System.Drawing.Point(14, 82);
             this.pnlAddItem.Name = "pnlAddItem";
-            this.pnlAddItem.Padding = new System.Windows.Forms.Padding(10, 6, 10, 6);
+            this.pnlAddItem.Padding = new System.Windows.Forms.Padding(12, 0, 12, 0);
             this.pnlAddItem.Size = new System.Drawing.Size(1116, 68);
             this.pnlAddItem.TabIndex = 1;
             // 
             // tlpAddItem
             // 
             this.tlpAddItem.ColumnCount = 4;
-            this.tlpAddItem.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48F));
+            this.tlpAddItem.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tlpAddItem.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tlpAddItem.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14F));
-            this.tlpAddItem.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 18F));
+            this.tlpAddItem.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tlpAddItem.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
             this.tlpAddItem.Controls.Add(this.lblSelectProduct, 0, 0);
             this.tlpAddItem.Controls.Add(this.cmbSelectProduct, 0, 1);
             this.tlpAddItem.Controls.Add(this.lblUnitCost, 1, 0);
@@ -326,12 +326,12 @@ namespace POS
             this.tlpAddItem.Controls.Add(this.numPurchaseQty, 2, 1);
             this.tlpAddItem.Controls.Add(this.btnQuickAddProduct, 3, 1);
             this.tlpAddItem.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tlpAddItem.Location = new System.Drawing.Point(10, 6);
+            this.tlpAddItem.Location = new System.Drawing.Point(12, 0);
             this.tlpAddItem.Name = "tlpAddItem";
             this.tlpAddItem.RowCount = 2;
             this.tlpAddItem.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.tlpAddItem.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpAddItem.Size = new System.Drawing.Size(1096, 56);
+            this.tlpAddItem.Size = new System.Drawing.Size(1092, 68);
             this.tlpAddItem.TabIndex = 0;
             // 
             // lblSelectProduct
@@ -339,11 +339,11 @@ namespace POS
             this.lblSelectProduct.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblSelectProduct.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblSelectProduct.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblSelectProduct.Location = new System.Drawing.Point(573, 0);
+            this.lblSelectProduct.Location = new System.Drawing.Point(546, 0);
             this.lblSelectProduct.Name = "lblSelectProduct";
-            this.lblSelectProduct.Size = new System.Drawing.Size(520, 22);
+            this.lblSelectProduct.Size = new System.Drawing.Size(546, 22);
             this.lblSelectProduct.TabIndex = 0;
-            this.lblSelectProduct.Text = "اختر الصنف المراد شراؤه:";
+            this.lblSelectProduct.Text = "الصنف / المنتج:";
             this.lblSelectProduct.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // cmbSelectProduct
@@ -352,9 +352,9 @@ namespace POS
             this.cmbSelectProduct.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbSelectProduct.Font = new System.Drawing.Font("Tahoma", 10F);
             this.cmbSelectProduct.FormattingEnabled = true;
-            this.cmbSelectProduct.Location = new System.Drawing.Point(573, 25);
+            this.cmbSelectProduct.Location = new System.Drawing.Point(546, 27);
             this.cmbSelectProduct.Name = "cmbSelectProduct";
-            this.cmbSelectProduct.Size = new System.Drawing.Size(520, 29);
+            this.cmbSelectProduct.Size = new System.Drawing.Size(546, 29);
             this.cmbSelectProduct.TabIndex = 1;
             this.cmbSelectProduct.SelectedIndexChanged += new System.EventHandler(this.cmbSelectProduct_SelectedIndexChanged);
             // 
@@ -363,26 +363,26 @@ namespace POS
             this.lblUnitCost.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblUnitCost.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblUnitCost.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblUnitCost.Location = new System.Drawing.Point(354, 0);
+            this.lblUnitCost.Location = new System.Drawing.Point(328, 0);
             this.lblUnitCost.Name = "lblUnitCost";
-            this.lblUnitCost.Size = new System.Drawing.Size(213, 22);
+            this.lblUnitCost.Size = new System.Drawing.Size(218, 22);
             this.lblUnitCost.TabIndex = 2;
-            this.lblUnitCost.Text = "سعر الشراء للوحدة:";
+            this.lblUnitCost.Text = "سعر الشراء الوارد:";
             this.lblUnitCost.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // numUnitCost
             // 
             this.numUnitCost.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.numUnitCost.DecimalPlaces = 2;
-            this.numUnitCost.Font = new System.Drawing.Font("Tahoma", 10F);
-            this.numUnitCost.Location = new System.Drawing.Point(354, 25);
+            this.numUnitCost.Font = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
+            this.numUnitCost.Location = new System.Drawing.Point(328, 28);
             this.numUnitCost.Maximum = new decimal(new int[] {
             1000000,
             0,
             0,
             0});
             this.numUnitCost.Name = "numUnitCost";
-            this.numUnitCost.Size = new System.Drawing.Size(213, 28);
+            this.numUnitCost.Size = new System.Drawing.Size(218, 28);
             this.numUnitCost.TabIndex = 3;
             // 
             // lblPurchaseQty
@@ -390,18 +390,18 @@ namespace POS
             this.lblPurchaseQty.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblPurchaseQty.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblPurchaseQty.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblPurchaseQty.Location = new System.Drawing.Point(201, 0);
+            this.lblPurchaseQty.Location = new System.Drawing.Point(164, 0);
             this.lblPurchaseQty.Name = "lblPurchaseQty";
-            this.lblPurchaseQty.Size = new System.Drawing.Size(147, 22);
+            this.lblPurchaseQty.Size = new System.Drawing.Size(164, 22);
             this.lblPurchaseQty.TabIndex = 4;
-            this.lblPurchaseQty.Text = "الكمية المشتراة:";
+            this.lblPurchaseQty.Text = "الكمية الواردة:";
             this.lblPurchaseQty.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // numPurchaseQty
             // 
             this.numPurchaseQty.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.numPurchaseQty.Font = new System.Drawing.Font("Tahoma", 10F);
-            this.numPurchaseQty.Location = new System.Drawing.Point(201, 25);
+            this.numPurchaseQty.Font = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
+            this.numPurchaseQty.Location = new System.Drawing.Point(164, 28);
             this.numPurchaseQty.Maximum = new decimal(new int[] {
             100000,
             0,
@@ -413,7 +413,7 @@ namespace POS
             0,
             0});
             this.numPurchaseQty.Name = "numPurchaseQty";
-            this.numPurchaseQty.Size = new System.Drawing.Size(147, 28);
+            this.numPurchaseQty.Size = new System.Drawing.Size(164, 28);
             this.numPurchaseQty.TabIndex = 5;
             this.numPurchaseQty.Value = new decimal(new int[] {
             1,
@@ -423,7 +423,7 @@ namespace POS
             // 
             // btnQuickAddProduct
             // 
-            this.btnQuickAddProduct.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(14)))), ((int)(((byte)(165)))), ((int)(((byte)(233)))));
+            this.btnQuickAddProduct.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
             this.btnQuickAddProduct.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnQuickAddProduct.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnQuickAddProduct.FlatAppearance.BorderSize = 0;
@@ -433,9 +433,9 @@ namespace POS
             this.btnQuickAddProduct.Location = new System.Drawing.Point(3, 25);
             this.btnQuickAddProduct.Name = "btnQuickAddProduct";
             this.btnQuickAddProduct.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnQuickAddProduct.Size = new System.Drawing.Size(192, 28);
+            this.btnQuickAddProduct.Size = new System.Drawing.Size(158, 40);
             this.btnQuickAddProduct.TabIndex = 6;
-            this.btnQuickAddProduct.Text = "➕ إضافة للفاتورة";
+            this.btnQuickAddProduct.Text = "إضافة للفاتورة";
             this.btnQuickAddProduct.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnQuickAddProduct.UseVisualStyleBackColor = false;
             this.btnQuickAddProduct.Click += new System.EventHandler(this.btnQuickAddProduct_Click);
@@ -516,7 +516,7 @@ namespace POS
             this.btnQuickAddSupplier.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnQuickAddSupplier.Size = new System.Drawing.Size(99, 28);
             this.btnQuickAddSupplier.TabIndex = 1;
-            this.btnQuickAddSupplier.Text = "➕ مورد جديد";
+            this.btnQuickAddSupplier.Text = "مورد جديد";
             this.btnQuickAddSupplier.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnQuickAddSupplier.UseVisualStyleBackColor = false;
             this.btnQuickAddSupplier.Click += new System.EventHandler(this.btnQuickAddSupplier_Click);
@@ -574,7 +574,7 @@ namespace POS
             this.tabHistory.Padding = new System.Windows.Forms.Padding(10);
             this.tabHistory.Size = new System.Drawing.Size(1164, 652);
             this.tabHistory.TabIndex = 1;
-            this.tabHistory.Text = "📜  سجل فواتير المشتريات السابقة";
+            this.tabHistory.Text = "سجل فواتير المشتريات السابقة";
             // 
             // splitHistory
             // 
@@ -651,7 +651,7 @@ namespace POS
             this.lblHistoryTitle.Name = "lblHistoryTitle";
             this.lblHistoryTitle.Size = new System.Drawing.Size(544, 32);
             this.lblHistoryTitle.TabIndex = 0;
-            this.lblHistoryTitle.Text = "📋 قائمة فواتير الشراء المسجلة";
+            this.lblHistoryTitle.Text = "قائمة فواتير الشراء المسجلة";
             this.lblHistoryTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnlHistoryDetails
@@ -709,7 +709,7 @@ namespace POS
             this.lblHistoryDetailsTitle.Name = "lblHistoryDetailsTitle";
             this.lblHistoryDetailsTitle.Size = new System.Drawing.Size(540, 32);
             this.lblHistoryDetailsTitle.TabIndex = 0;
-            this.lblHistoryDetailsTitle.Text = "📦 تفاصيل وأصناف الفاتورة المحددة";
+            this.lblHistoryDetailsTitle.Text = "تفاصيل وأصناف الفاتورة المحددة";
             this.lblHistoryDetailsTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // PurchasesForm

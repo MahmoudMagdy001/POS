@@ -69,7 +69,7 @@ namespace POS
 
                 lblPassword.Text = "كلمة المرور الجديدة (اختياري):";
                 lblConfirmPassword.Text = "تأكيد كلمة المرور الجديدة:";
-                btnSave.Text = "💾 حفظ التعديلات";
+                btnSave.Text = "حفظ التعديلات";
             }
             else
             {
@@ -79,7 +79,7 @@ namespace POS
 
                 cboRole.SelectedIndex = 1; // Cashier افتراضياً
                 chkIsActive.Checked = true;
-                btnSave.Text = "➕ إنشاء المستخدم";
+                btnSave.Text = "إنشاء المستخدم";
             }
         }
 

@@ -15,6 +15,9 @@ namespace POS
         private SystemSettingsModel _sysSettings;
         private Timer _searchDebounceTimer;
         private bool _isCheckingOut = false;
+        private ShiftModel _activeShift = null;
+
+        public bool HasActiveShift => _activeShift != null;
 
         public POSForm(UserModel currentUser)
         {
@@ -31,26 +34,173 @@ namespace POS
             UIStyler.ApplyTheme(this);
             lblFinalTotalVal.Font = FontManager.GetBold(20f);
             lblFinalTotalTitle.Font = FontManager.GetBold(12f);
-            UIStyler.StyleSuccessButton(btnCheckout, "💳 إتمام وطباعة الفاتورة [F12]");
-            UIStyler.StyleDangerButton(btnClearCart, "🗑️ تفريغ السلة");
+            UIStyler.StyleSuccessButton(btnCheckout, "إتمام وطباعة الفاتورة [F12]");
+            UIStyler.StyleDangerButton(btnClearCart, "تفريغ السلة");
             UIStyler.StyleDataGrid(dgvProductsCatalog);
             UIStyler.StyleDataGrid(dgvCart);
             InitCartTable();
             cmbPaymentMethod.SelectedIndex = 0; // نقدي
 
             LoadSettings();
+            UpdateShiftStatus();
             await LoadCategoriesAsync();
             await LoadProductsAsync();
-            txtBarcodeScan.Focus();
+            if (HasActiveShift || (_currentUser != null && _currentUser.IsAdmin))
+            {
+                txtBarcodeScan.Focus();
+            }
         }
 
         public async void RefreshData()
         {
             LoadSettings();
+            UpdateShiftStatus();
             await LoadCategoriesAsync();
             await LoadProductsAsync();
             CalculateTotals();
-            txtBarcodeScan.Focus();
+            if (HasActiveShift || (_currentUser != null && _currentUser.IsAdmin))
+            {
+                txtBarcodeScan.Focus();
+            }
+        }
+
+        public void UpdateShiftStatus()
+        {
+            if (_currentUser == null) return;
+
+            try
+            {
+                _activeShift = DbHelper.GetActiveShift(_currentUser.UserId);
+
+                if (_currentUser.IsAdmin)
+                {
+                    // مدير النظام يمتلك صلاحية كاملة دائماً
+                    txtBarcodeScan.Enabled = true;
+                    btnCheckout.Enabled = true;
+                    btnClearCart.Enabled = true;
+                    dgvProductsCatalog.Enabled = true;
+
+                    if (_activeShift != null)
+                    {
+                        TimeSpan elapsed = DateTime.Now - _activeShift.ClockInTime;
+                        pnlShiftBanner.BackColor = Color.FromArgb(240, 253, 244);
+                        pnlShiftBanner.ForeColor = Color.FromArgb(22, 101, 52);
+                        lblShiftBannerIcon.Text = "";
+                        lblShiftBannerText.Text = $"الوردية مفتوحة للمدير: {_currentUser.FullName}  |  وقت الحضور: {_activeShift.ClockInTime:hh:mm tt}  (المدة: {(int)elapsed.TotalHours}:{elapsed.Minutes:D2} ساعة)";
+                        lblShiftBannerText.ForeColor = Color.FromArgb(22, 101, 52);
+                        UIStyler.StyleDangerButton(btnShiftBannerAction, "إنهاء الوردية");
+                    }
+                    else
+                    {
+                        pnlShiftBanner.BackColor = Color.FromArgb(241, 245, 249);
+                        pnlShiftBanner.ForeColor = Color.FromArgb(71, 85, 105);
+                        lblShiftBannerIcon.Text = "";
+                        lblShiftBannerText.Text = $"حساب مدير النظام ({_currentUser.FullName}) - الصلاحيات كاملة وشاشة البيع مفعلة دائماً بدون تقييد.";
+                        lblShiftBannerText.ForeColor = Color.FromArgb(71, 85, 105);
+                        UIStyler.StyleSecondaryButton(btnShiftBannerAction, "بدء وردية (اختياري)");
+                    }
+                    return;
+                }
+
+                // بقية المستخدمين (كاشير، موظف مبيعات...)
+                if (_activeShift != null)
+                {
+                    TimeSpan elapsed = DateTime.Now - _activeShift.ClockInTime;
+                    pnlShiftBanner.BackColor = Color.FromArgb(240, 253, 244);
+                    pnlShiftBanner.ForeColor = Color.FromArgb(22, 101, 52);
+                    lblShiftBannerIcon.Text = "";
+                    lblShiftBannerText.Text = $"الوردية مفتوحة للموظف: {_currentUser.FullName}  |  وقت الحضور: {_activeShift.ClockInTime:hh:mm tt}  (المدة: {(int)elapsed.TotalHours}:{elapsed.Minutes:D2} ساعة)";
+                    lblShiftBannerText.ForeColor = Color.FromArgb(22, 101, 52);
+                    UIStyler.StyleDangerButton(btnShiftBannerAction, "إنهاء الوردية");
+
+                    txtBarcodeScan.Enabled = true;
+                    btnCheckout.Enabled = true;
+                    btnClearCart.Enabled = true;
+                    dgvProductsCatalog.Enabled = true;
+                }
+                else
+                {
+                    pnlShiftBanner.BackColor = Color.FromArgb(254, 242, 242);
+                    pnlShiftBanner.ForeColor = Color.FromArgb(153, 27, 27);
+                    lblShiftBannerIcon.Text = "";
+                    lblShiftBannerText.Text = "تنبيه: يجب تسجيل بدء وردية العمل أولاً للتمكن من استخدام نقطة البيع (POS) وإجراء عمليات البيع والباركود.";
+                    lblShiftBannerText.ForeColor = Color.FromArgb(153, 27, 27);
+                    UIStyler.StyleSuccessButton(btnShiftBannerAction, "بدء وردية العمل الآن");
+
+                    txtBarcodeScan.Enabled = false;
+                    btnCheckout.Enabled = false;
+                    btnClearCart.Enabled = false;
+                }
+            }
+            catch
+            {
+                _activeShift = null;
+            }
+        }
+
+        public bool EnsureActiveShift(bool promptIfMissing = true)
+        {
+            // استثناء مدير النظام من أي قيد
+            if (_currentUser != null && _currentUser.IsAdmin)
+            {
+                return true;
+            }
+
+            UpdateShiftStatus();
+            if (HasActiveShift) return true;
+
+            if (promptIfMissing)
+            {
+                using (var startForm = new StartShiftModalForm(_currentUser))
+                {
+                    if (startForm.ShowDialog(this) == DialogResult.OK)
+                    {
+                        UpdateShiftStatus();
+                        txtBarcodeScan.Focus();
+                        return HasActiveShift;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private void btnShiftBannerAction_Click(object sender, EventArgs e)
+        {
+            if (!HasActiveShift)
+            {
+                using (var startForm = new StartShiftModalForm(_currentUser))
+                {
+                    if (startForm.ShowDialog(this) == DialogResult.OK)
+                    {
+                        UpdateShiftStatus();
+                        txtBarcodeScan.Focus();
+                    }
+                }
+            }
+            else
+            {
+                var confirmResult = MessageBox.Show(
+                    $"هل أنت متأكد من رغبتك في تسجيل انصراف وإنهاء الوردية الحالية للموظف '{_currentUser?.FullName}'؟\nسيتم إغلاق الوردية الحالية وحساب إجمالي الساعات.",
+                    "تأكيد إنهاء الوردية",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (confirmResult == DialogResult.Yes)
+                {
+                    var result = DbHelper.ClockOut(_currentUser.UserId);
+                    if (result.Success)
+                    {
+                        MessageBox.Show(result.Message, "تم تسجيل الانصراف", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ClearCart();
+                        UpdateShiftStatus();
+                    }
+                    else
+                    {
+                        MessageBox.Show(result.Message, "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+            }
         }
 
         private void LoadSettings()
@@ -109,73 +259,23 @@ namespace POS
             if (dgvProductsCatalog.Columns.Count == 0) return;
 
             dgvProductsCatalog.ScrollBars = ScrollBars.Both;
-            dgvProductsCatalog.ColumnHeadersHeight = 48;
-            dgvProductsCatalog.RowTemplate.Height = 40;
+            dgvProductsCatalog.ColumnHeadersHeight = 44;
+            dgvProductsCatalog.RowTemplate.Height = 38;
             dgvProductsCatalog.EnableHeadersVisualStyles = false;
 
-            if (dgvProductsCatalog.Columns["ProductId"] != null)
-                dgvProductsCatalog.Columns["ProductId"].Visible = false;
-            if (dgvProductsCatalog.Columns["CategoryId"] != null)
-                dgvProductsCatalog.Columns["CategoryId"].Visible = false;
-            if (dgvProductsCatalog.Columns["BuyPrice"] != null)
-                dgvProductsCatalog.Columns["BuyPrice"].Visible = false;
-            if (dgvProductsCatalog.Columns["MinStockAlert"] != null)
-                dgvProductsCatalog.Columns["MinStockAlert"].Visible = false;
-            if (dgvProductsCatalog.Columns["CreatedAt"] != null)
-                dgvProductsCatalog.Columns["CreatedAt"].Visible = false;
-            if (dgvProductsCatalog.Columns["IsLowStock"] != null)
-                dgvProductsCatalog.Columns["IsLowStock"].Visible = false;
+            dgvProductsCatalog.HideColumn("ProductId");
+            dgvProductsCatalog.HideColumn("CategoryId");
+            dgvProductsCatalog.HideColumn("BuyPrice");
+            dgvProductsCatalog.HideColumn("MinStockAlert");
+            dgvProductsCatalog.HideColumn("CreatedAt");
+            dgvProductsCatalog.HideColumn("IsLowStock");
 
-            if (dgvProductsCatalog.Columns["Barcode"] != null)
-            {
-                dgvProductsCatalog.Columns["Barcode"].HeaderText = "الباركود";
-                dgvProductsCatalog.Columns["Barcode"].FillWeight = 85;
-                dgvProductsCatalog.Columns["Barcode"].MinimumWidth = 95;
-            }
-            if (dgvProductsCatalog.Columns["ProductName"] != null)
-            {
-                dgvProductsCatalog.Columns["ProductName"].HeaderText = "اسم المنتج";
-                dgvProductsCatalog.Columns["ProductName"].FillWeight = 160;
-                dgvProductsCatalog.Columns["ProductName"].MinimumWidth = 140;
-            }
-            if (dgvProductsCatalog.Columns["CategoryName"] != null)
-            {
-                dgvProductsCatalog.Columns["CategoryName"].HeaderText = "القسم";
-                dgvProductsCatalog.Columns["CategoryName"].FillWeight = 90;
-                dgvProductsCatalog.Columns["CategoryName"].MinimumWidth = 90;
-            }
-            if (dgvProductsCatalog.Columns["SellPrice"] != null)
-            {
-                dgvProductsCatalog.Columns["SellPrice"].HeaderText = "السعر";
-                dgvProductsCatalog.Columns["SellPrice"].FillWeight = 75;
-                dgvProductsCatalog.Columns["SellPrice"].MinimumWidth = 80;
-                dgvProductsCatalog.Columns["SellPrice"].DefaultCellStyle.Format = "N2";
-                dgvProductsCatalog.Columns["SellPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            }
-            if (dgvProductsCatalog.Columns["StockQuantity"] != null)
-            {
-                dgvProductsCatalog.Columns["StockQuantity"].HeaderText = "المتاح";
-                dgvProductsCatalog.Columns["StockQuantity"].FillWeight = 60;
-                dgvProductsCatalog.Columns["StockQuantity"].MinimumWidth = 65;
-                dgvProductsCatalog.Columns["StockQuantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-
-            if (dgvProductsCatalog.Columns["colAdd"] == null)
-            {
-                DataGridViewButtonColumn btnCol = new DataGridViewButtonColumn();
-                btnCol.Name = "colAdd";
-                btnCol.HeaderText = "إضافة";
-                btnCol.Text = "➕";
-                btnCol.UseColumnTextForButtonValue = true;
-                btnCol.FillWeight = 50;
-                btnCol.MinimumWidth = 55;
-                btnCol.FlatStyle = FlatStyle.Flat;
-                dgvProductsCatalog.Columns.Add(btnCol);
-            }
-            else
-            {
-                dgvProductsCatalog.Columns["colAdd"].MinimumWidth = 55;
-            }
+            dgvProductsCatalog.ConfigureCenterColumn("Barcode", "الباركود", fillWeight: 85, minWidth: 95);
+            dgvProductsCatalog.ConfigureTextColumn("ProductName", "اسم المنتج", fillWeight: 160, minWidth: 140);
+            dgvProductsCatalog.ConfigureTextColumn("CategoryName", "القسم", fillWeight: 90, minWidth: 90);
+            dgvProductsCatalog.ConfigureCurrencyColumn("SellPrice", "السعر", fillWeight: 75, minWidth: 80);
+            dgvProductsCatalog.ConfigureNumericColumn("StockQuantity", "المتاح", fillWeight: 60, minWidth: 65);
+            dgvProductsCatalog.ConfigureButtonColumn("colAdd", "إضافة", "+", fillWeight: 50, minWidth: 55);
         }
 
         private void InitCartTable()
@@ -198,108 +298,33 @@ namespace POS
             if (dgvCart.Columns.Count == 0) return;
 
             dgvCart.ScrollBars = ScrollBars.Both;
-            dgvCart.ColumnHeadersHeight = 48;
-            dgvCart.RowTemplate.Height = 40;
+            dgvCart.ColumnHeadersHeight = 44;
+            dgvCart.RowTemplate.Height = 38;
             dgvCart.EnableHeadersVisualStyles = false;
 
-            if (dgvCart.Columns["ProductId"] != null)
-                dgvCart.Columns["ProductId"].Visible = false;
-            if (dgvCart.Columns["AvailableStock"] != null)
-                dgvCart.Columns["AvailableStock"].Visible = false;
+            dgvCart.HideColumn("ProductId");
+            dgvCart.HideColumn("AvailableStock");
 
-            if (dgvCart.Columns["Barcode"] != null)
-            {
-                dgvCart.Columns["Barcode"].HeaderText = "الباركود";
-                dgvCart.Columns["Barcode"].ReadOnly = true;
-                dgvCart.Columns["Barcode"].FillWeight = 85;
-                dgvCart.Columns["Barcode"].MinimumWidth = 90;
-            }
-            if (dgvCart.Columns["ProductName"] != null)
-            {
-                dgvCart.Columns["ProductName"].HeaderText = "اسم الصنف";
-                dgvCart.Columns["ProductName"].ReadOnly = true;
-                dgvCart.Columns["ProductName"].FillWeight = 160;
-                dgvCart.Columns["ProductName"].MinimumWidth = 130;
-            }
-            if (dgvCart.Columns["UnitPrice"] != null)
-            {
-                dgvCart.Columns["UnitPrice"].HeaderText = "السعر";
-                dgvCart.Columns["UnitPrice"].ReadOnly = true;
-                dgvCart.Columns["UnitPrice"].FillWeight = 75;
-                dgvCart.Columns["UnitPrice"].MinimumWidth = 75;
-                dgvCart.Columns["UnitPrice"].DefaultCellStyle.Format = "N2";
-                dgvCart.Columns["UnitPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            }
+            var colB = dgvCart.ConfigureCenterColumn("Barcode", "الباركود", fillWeight: 85, minWidth: 90);
+            if (colB != null) colB.ReadOnly = true;
 
-            if (dgvCart.Columns["colMinus"] == null)
-            {
-                DataGridViewButtonColumn btnMinus = new DataGridViewButtonColumn();
-                btnMinus.Name = "colMinus";
-                btnMinus.HeaderText = "-";
-                btnMinus.Text = "➖";
-                btnMinus.UseColumnTextForButtonValue = true;
-                btnMinus.FillWeight = 40;
-                btnMinus.MinimumWidth = 40;
-                btnMinus.FlatStyle = FlatStyle.Flat;
-                dgvCart.Columns.Add(btnMinus);
-            }
-            else
-            {
-                dgvCart.Columns["colMinus"].MinimumWidth = 40;
-            }
+            var colP = dgvCart.ConfigureTextColumn("ProductName", "اسم الصنف", fillWeight: 160, minWidth: 130);
+            if (colP != null) colP.ReadOnly = true;
 
-            if (dgvCart.Columns["Quantity"] != null)
-            {
-                dgvCart.Columns["Quantity"].HeaderText = "الكمية";
-                dgvCart.Columns["Quantity"].ReadOnly = false;
-                dgvCart.Columns["Quantity"].FillWeight = 60;
-                dgvCart.Columns["Quantity"].MinimumWidth = 55;
-                dgvCart.Columns["Quantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
+            var colU = dgvCart.ConfigureCurrencyColumn("UnitPrice", "السعر", fillWeight: 75, minWidth: 75);
+            if (colU != null) colU.ReadOnly = true;
 
-            if (dgvCart.Columns["colPlus"] == null)
-            {
-                DataGridViewButtonColumn btnPlus = new DataGridViewButtonColumn();
-                btnPlus.Name = "colPlus";
-                btnPlus.HeaderText = "+";
-                btnPlus.Text = "➕";
-                btnPlus.UseColumnTextForButtonValue = true;
-                btnPlus.FillWeight = 40;
-                btnPlus.MinimumWidth = 40;
-                btnPlus.FlatStyle = FlatStyle.Flat;
-                dgvCart.Columns.Add(btnPlus);
-            }
-            else
-            {
-                dgvCart.Columns["colPlus"].MinimumWidth = 40;
-            }
+            dgvCart.ConfigureButtonColumn("colMinus", "-", "-", fillWeight: 40, minWidth: 40);
 
-            if (dgvCart.Columns["LineTotal"] != null)
-            {
-                dgvCart.Columns["LineTotal"].HeaderText = "الإجمالي";
-                dgvCart.Columns["LineTotal"].ReadOnly = true;
-                dgvCart.Columns["LineTotal"].FillWeight = 80;
-                dgvCart.Columns["LineTotal"].MinimumWidth = 80;
-                dgvCart.Columns["LineTotal"].DefaultCellStyle.Format = "N2";
-                dgvCart.Columns["LineTotal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            }
+            var colQ = dgvCart.ConfigureNumericColumn("Quantity", "الكمية", fillWeight: 60, minWidth: 55);
+            if (colQ != null) colQ.ReadOnly = false;
 
-            if (dgvCart.Columns["colDelete"] == null)
-            {
-                DataGridViewButtonColumn btnDelete = new DataGridViewButtonColumn();
-                btnDelete.Name = "colDelete";
-                btnDelete.HeaderText = "حذف";
-                btnDelete.Text = "❌";
-                btnDelete.UseColumnTextForButtonValue = true;
-                btnDelete.FillWeight = 45;
-                btnDelete.MinimumWidth = 45;
-                btnDelete.FlatStyle = FlatStyle.Flat;
-                dgvCart.Columns.Add(btnDelete);
-            }
-            else
-            {
-                dgvCart.Columns["colDelete"].MinimumWidth = 45;
-            }
+            dgvCart.ConfigureButtonColumn("colPlus", "+", "+", fillWeight: 40, minWidth: 40);
+
+            var colT = dgvCart.ConfigureCurrencyColumn("LineTotal", "الإجمالي", fillWeight: 80, minWidth: 80);
+            if (colT != null) colT.ReadOnly = true;
+
+            dgvCart.ConfigureButtonColumn("colDelete", "حذف", "حذف", fillWeight: 50, minWidth: 50, textColor: Color.FromArgb(220, 38, 38));
         }
 
         private void AddProductToCart(ProductModel product, int quantityToAdd = 1)
@@ -367,41 +392,54 @@ namespace POS
             CalculateTotals();
         }
 
-        private void CalculateTotals()
+        private bool _isUpdatingTotals = false;
+
+        private void CalculateTotals(bool autoSyncCashPaid = true)
         {
-            if (_sysSettings == null)
+            if (_isUpdatingTotals) return;
+
+            try
             {
-                _sysSettings = DbHelper.GetSystemSettings();
+                _isUpdatingTotals = true;
+
+                if (_sysSettings == null)
+                {
+                    _sysSettings = DbHelper.GetSystemSettings();
+                }
+
+                string curr = !string.IsNullOrWhiteSpace(_sysSettings?.CurrencySymbol) ? _sysSettings.CurrencySymbol : "ج.م";
+                decimal vatRate = _sysSettings?.VatRate ?? 0.00m;
+
+                decimal subtotal = 0;
+                foreach (var item in _cartItems)
+                {
+                    subtotal += item.LineTotal;
+                }
+
+                decimal discount = numDiscount.Value;
+                decimal taxableBase = Math.Max(0, subtotal - discount);
+                decimal vatAmount = (vatRate > 0) ? Math.Round(taxableBase * (vatRate / 100m), 2) : 0.00m;
+                decimal finalAmount = taxableBase + vatAmount;
+
+                lblSubtotalVal.Text = $"{subtotal:N2} {curr}";
+                if (lblVat != null)
+                    lblVat.Text = $"الضريبة ({vatRate:0.##}%):";
+                if (lblVatVal != null)
+                    lblVatVal.Text = $"{vatAmount:N2} {curr}";
+                lblFinalTotalVal.Text = $"{finalAmount:N2} {curr}";
+
+                if (autoSyncCashPaid)
+                {
+                    numCashPaid.Value = finalAmount;
+                }
+
+                decimal change = Math.Max(0, numCashPaid.Value - finalAmount);
+                lblChangeDueVal.Text = $"{change:N2} {curr}";
             }
-
-            string curr = !string.IsNullOrWhiteSpace(_sysSettings?.CurrencySymbol) ? _sysSettings.CurrencySymbol : "ج.م";
-            decimal vatRate = _sysSettings?.VatRate ?? 0.00m;
-
-            decimal subtotal = 0;
-            foreach (var item in _cartItems)
+            finally
             {
-                subtotal += item.LineTotal;
+                _isUpdatingTotals = false;
             }
-
-            decimal discount = numDiscount.Value;
-            decimal taxableBase = Math.Max(0, subtotal - discount);
-            decimal vatAmount = (vatRate > 0) ? Math.Round(taxableBase * (vatRate / 100m), 2) : 0.00m;
-            decimal finalAmount = taxableBase + vatAmount;
-
-            lblSubtotalVal.Text = $"{subtotal:N2} {curr}";
-            if (lblVat != null)
-                lblVat.Text = $"الضريبة ({vatRate:0.##}%):";
-            if (lblVatVal != null)
-                lblVatVal.Text = $"{vatAmount:N2} {curr}";
-            lblFinalTotalVal.Text = $"{finalAmount:N2} {curr}";
-
-            if (numCashPaid.Value == 0 || numCashPaid.Value < finalAmount)
-            {
-                numCashPaid.Value = finalAmount;
-            }
-
-            decimal change = Math.Max(0, numCashPaid.Value - finalAmount);
-            lblChangeDueVal.Text = $"{change:N2} {curr}";
         }
 
         private async void txtBarcodeScan_KeyDown(object sender, KeyEventArgs e)
@@ -409,6 +447,8 @@ namespace POS
             if (e.KeyCode == Keys.Enter)
             {
                 e.SuppressKeyPress = true;
+                if (!EnsureActiveShift(true)) return;
+
                 string barcode = txtBarcodeScan.Text.Trim();
                 if (!string.IsNullOrWhiteSpace(barcode))
                 {
@@ -430,6 +470,7 @@ namespace POS
         {
             if (e.RowIndex >= 0 && dgvProductsCatalog.Columns[e.ColumnIndex].Name == "colAdd")
             {
+                if (!EnsureActiveShift(true)) return;
                 AddSelectedCatalogProduct(e.RowIndex);
             }
         }
@@ -438,12 +479,14 @@ namespace POS
         {
             if (e.RowIndex >= 0)
             {
+                if (!EnsureActiveShift(true)) return;
                 AddSelectedCatalogProduct(e.RowIndex);
             }
         }
 
         private void AddSelectedCatalogProduct(int rowIndex)
         {
+            if (!EnsureActiveShift(true)) return;
             if (rowIndex < 0 || rowIndex >= dgvProductsCatalog.Rows.Count) return;
 
             var row = dgvProductsCatalog.Rows[rowIndex];
@@ -530,12 +573,12 @@ namespace POS
 
         private void numDiscount_ValueChanged(object sender, EventArgs e)
         {
-            CalculateTotals();
+            CalculateTotals(autoSyncCashPaid: true);
         }
 
         private void numCashPaid_ValueChanged(object sender, EventArgs e)
         {
-            CalculateTotals();
+            CalculateTotals(autoSyncCashPaid: false);
         }
 
         private void txtSearchProduct_TextChanged(object sender, EventArgs e)
@@ -577,12 +620,14 @@ namespace POS
 
         private async void btnCheckout_Click(object sender, EventArgs e)
         {
+            if (!EnsureActiveShift(true)) return;
             await ProcessCheckoutAsync();
         }
 
         private async Task ProcessCheckoutAsync()
         {
             if (_isCheckingOut) return;
+            if (!EnsureActiveShift(true)) return;
 
             if (_cartItems.Count == 0)
             {
@@ -687,6 +732,7 @@ namespace POS
             if (e.KeyCode == Keys.F12 || e.KeyCode == Keys.F5)
             {
                 e.SuppressKeyPress = true;
+                if (!EnsureActiveShift(true)) return;
                 await ProcessCheckoutAsync();
             }
             else if (e.KeyCode == Keys.F4)
@@ -697,6 +743,7 @@ namespace POS
             else if (e.KeyCode == Keys.F2)
             {
                 e.SuppressKeyPress = true;
+                if (!EnsureActiveShift(true)) return;
                 txtBarcodeScan.Focus();
                 txtBarcodeScan.SelectAll();
             }

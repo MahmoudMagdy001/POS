@@ -278,8 +278,8 @@ namespace POS
 
             dgv.BackgroundColor = UIColors.Surface;
             dgv.BorderStyle = BorderStyle.None;
-            dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            dgv.GridColor = UIColors.SurfaceAlt;
+            dgv.CellBorderStyle = DataGridViewCellBorderStyle.Single;
+            dgv.GridColor = Color.FromArgb(226, 232, 240);
             dgv.EnableHeadersVisualStyles = false;
             dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgv.MultiSelect = false;
@@ -287,27 +287,32 @@ namespace POS
             dgv.AllowUserToAddRows = false;
             dgv.AllowUserToDeleteRows = false;
             dgv.AllowUserToResizeRows = false;
+            dgv.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
             dgv.RowHeadersVisible = false;
             dgv.RightToLeft = RightToLeft.Yes;
             dgv.ScrollBars = ScrollBars.Both;
 
-            // Ensure automatic minimum column widths so horizontal scrolling activates smoothly
+            // Ensure automatic minimum column widths and uniform row heights
             dgv.ColumnAdded -= OnDataGridColumnAdded;
             dgv.ColumnAdded += OnDataGridColumnAdded;
+            dgv.RowsAdded -= OnDataGridRowsAdded;
+            dgv.RowsAdded += OnDataGridRowsAdded;
 
             // Column Header Style
             dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dgv.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             dgv.ColumnHeadersHeight = UISpacing.GridHeaderHeight;
-            dgv.ColumnHeadersDefaultCellStyle.BackColor = UIColors.SurfaceAlt;
-            dgv.ColumnHeadersDefaultCellStyle.ForeColor = UIColors.TextPrimary;
+            dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(241, 245, 249);
+            dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(30, 41, 59);
             dgv.ColumnHeadersDefaultCellStyle.Font = UITypography.GridHeader;
             dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(8, 4, 8, 4);
-            dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = UIColors.SurfaceAlt;
-            dgv.ColumnHeadersDefaultCellStyle.SelectionForeColor = UIColors.TextPrimary;
+            dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(6, 4, 6, 4);
+            dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(241, 245, 249);
+            dgv.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.FromArgb(30, 41, 59);
 
             // Row Template & Cell Styles
             dgv.RowTemplate.Height = UISpacing.GridRowHeight;
+            dgv.RowTemplate.MinimumHeight = UISpacing.GridRowHeight;
             dgv.DefaultCellStyle.BackColor = UIColors.Surface;
             dgv.DefaultCellStyle.ForeColor = UIColors.TextPrimary;
             dgv.DefaultCellStyle.Font = UITypography.GridCell;
@@ -331,6 +336,18 @@ namespace POS
             if (e.Column != null && e.Column.MinimumWidth < 50)
             {
                 e.Column.MinimumWidth = 50;
+            }
+        }
+
+        private static void OnDataGridRowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
+        {
+            if (sender is DataGridView dgv)
+            {
+                for (int i = e.RowIndex; i < e.RowIndex + e.RowCount && i < dgv.Rows.Count; i++)
+                {
+                    dgv.Rows[i].Height = UISpacing.GridRowHeight;
+                    dgv.Rows[i].MinimumHeight = UISpacing.GridRowHeight;
+                }
             }
         }
 
@@ -445,5 +462,113 @@ namespace POS
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Extension methods for DataGridView and AppGrid to standardize column configuration,
+    /// alignment, currency/number formatting, and RTL presentation.
+    /// </summary>
+    public static class GridExtensions
+    {
+        public static void HideColumn(this DataGridView dgv, string colName)
+        {
+            if (dgv?.Columns[colName] != null)
+            {
+                dgv.Columns[colName].Visible = false;
+            }
+        }
+
+        public static DataGridViewColumn ConfigureTextColumn(this DataGridView dgv, string colName, string headerText, int fillWeight = 100, int minWidth = 100)
+        {
+            if (dgv?.Columns[colName] == null) return null;
+            var col = dgv.Columns[colName];
+            col.Visible = true;
+            col.HeaderText = headerText;
+            col.FillWeight = fillWeight;
+            col.MinimumWidth = minWidth;
+            col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            return col;
+        }
+
+        public static DataGridViewColumn ConfigureCenterColumn(this DataGridView dgv, string colName, string headerText, int fillWeight = 80, int minWidth = 80, string format = null)
+        {
+            if (dgv?.Columns[colName] == null) return null;
+            var col = dgv.Columns[colName];
+            col.Visible = true;
+            col.HeaderText = headerText;
+            col.FillWeight = fillWeight;
+            col.MinimumWidth = minWidth;
+            if (!string.IsNullOrEmpty(format))
+            {
+                col.DefaultCellStyle.Format = format;
+            }
+            col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            return col;
+        }
+
+        public static DataGridViewColumn ConfigureNumericColumn(this DataGridView dgv, string colName, string headerText, int fillWeight = 60, int minWidth = 75, string format = "N0")
+        {
+            return dgv.ConfigureCenterColumn(colName, headerText, fillWeight, minWidth, format);
+        }
+
+        public static DataGridViewColumn ConfigureCurrencyColumn(this DataGridView dgv, string colName, string headerText, int fillWeight = 75, int minWidth = 85, string format = "N2")
+        {
+            return dgv.ConfigureCenterColumn(colName, headerText, fillWeight, minWidth, format);
+        }
+
+        public static DataGridViewColumn ConfigureDateColumn(this DataGridView dgv, string colName, string headerText, int fillWeight = 100, int minWidth = 120, string format = "yyyy-MM-dd HH:mm")
+        {
+            return dgv.ConfigureCenterColumn(colName, headerText, fillWeight, minWidth, format);
+        }
+
+        public static DataGridViewColumn ConfigureIdColumn(this DataGridView dgv, string colName, string headerText, int fillWeight = 65, int minWidth = 80, string format = "D5")
+        {
+            return dgv.ConfigureCenterColumn(colName, headerText, fillWeight, minWidth, format);
+        }
+
+        public static DataGridViewButtonColumn ConfigureButtonColumn(this DataGridView dgv, string colName, string headerText, string buttonText, int fillWeight = 50, int minWidth = 70, Color? textColor = null)
+        {
+            if (dgv == null) return null;
+            DataGridViewButtonColumn btnCol;
+            if (dgv.Columns[colName] == null)
+            {
+                btnCol = new DataGridViewButtonColumn
+                {
+                    Name = colName,
+                    HeaderText = headerText,
+                    Text = buttonText,
+                    UseColumnTextForButtonValue = true,
+                    FillWeight = fillWeight,
+                    MinimumWidth = minWidth,
+                    FlatStyle = FlatStyle.Flat
+                };
+                dgv.Columns.Add(btnCol);
+            }
+            else
+            {
+                btnCol = dgv.Columns[colName] as DataGridViewButtonColumn;
+                if (btnCol != null)
+                {
+                    btnCol.HeaderText = headerText;
+                    btnCol.Text = buttonText;
+                    btnCol.FillWeight = fillWeight;
+                    btnCol.MinimumWidth = minWidth;
+                }
+            }
+
+            if (btnCol != null)
+            {
+                btnCol.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                btnCol.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                if (textColor.HasValue)
+                {
+                    btnCol.DefaultCellStyle.ForeColor = textColor.Value;
+                    btnCol.DefaultCellStyle.SelectionForeColor = textColor.Value;
+                }
+            }
+            return btnCol;
+        }
     }
 }

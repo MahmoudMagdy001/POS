@@ -228,20 +228,19 @@ namespace POS
                 {
                     dgv.ScrollBars = ScrollBars.Both;
                     dgv.EnableHeadersVisualStyles = false;
+                    dgv.AllowUserToResizeRows = false;
+                    dgv.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
                     dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-                    if (dgv.ColumnHeadersHeight < 46)
-                    {
-                        dgv.ColumnHeadersHeight = 48;
-                    }
-                    if (dgv.RowTemplate.Height < 38)
-                    {
-                        dgv.RowTemplate.Height = 40;
-                    }
+                    dgv.ColumnHeadersHeight = 44;
+                    dgv.RowTemplate.Height = 40;
+                    dgv.RowTemplate.MinimumHeight = 40;
 
                     dgv.ColumnHeadersDefaultCellStyle.Font = GetBold(9.5f);
-                    dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(6, 6, 6, 6);
+                    dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(6, 4, 6, 4);
                     dgv.DefaultCellStyle.Font = GetRegular(9.5f);
-                    dgv.DefaultCellStyle.Padding = new Padding(6, 4, 6, 4);
+                    dgv.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    dgv.DefaultCellStyle.Padding = new Padding(6, 2, 6, 2);
                 }
             }
             catch

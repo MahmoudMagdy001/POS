@@ -26,12 +26,12 @@ namespace POS
         {
             UIStyler.ApplyTheme(this);
             lblEditorTitle.Font = FontManager.GetBold(11.5f);
-            UIStyler.StylePrimaryButton(btnSaveProduct, "💾 حفظ بيانات المنتج");
-            UIStyler.StyleSecondaryButton(btnNewProduct, "➕ صنف جديد (تفريغ الحقول)");
+            UIStyler.StylePrimaryButton(btnSaveProduct, "حفظ بيانات المنتج");
+            UIStyler.StyleSecondaryButton(btnNewProduct, "صنف جديد (تفريغ الحقول)");
             UIStyler.StyleSecondaryButton(btnGenBarcode, "باركود");
             UIStyler.StyleSecondaryButton(btnManageCategories, "الأقسام");
-            UIStyler.StyleDangerButton(btnDeleteProduct, "🗑️ حذف الصنف المحدد");
-            UIStyler.StyleSecondaryButton(btnRefresh, "🔄 تحديث");
+            UIStyler.StyleDangerButton(btnDeleteProduct, "حذف الصنف المحدد");
+            UIStyler.StyleSecondaryButton(btnRefresh, "تحديث");
             UIStyler.StyleDataGrid(dgvProducts);
 
             await LoadCategoriesAsync();
@@ -101,84 +101,58 @@ namespace POS
             if (dgvProducts.Columns.Count == 0) return;
 
             dgvProducts.ScrollBars = ScrollBars.Both;
-            dgvProducts.ColumnHeadersHeight = 48;
-            dgvProducts.RowTemplate.Height = 40;
+            dgvProducts.ColumnHeadersHeight = 44;
+            dgvProducts.RowTemplate.Height = 38;
             dgvProducts.EnableHeadersVisualStyles = false;
 
-            if (dgvProducts.Columns["ProductId"] != null)
-                dgvProducts.Columns["ProductId"].Visible = false;
-            if (dgvProducts.Columns["CategoryId"] != null)
-                dgvProducts.Columns["CategoryId"].Visible = false;
-            if (dgvProducts.Columns["CreatedAt"] != null)
-                dgvProducts.Columns["CreatedAt"].Visible = false;
-            if (dgvProducts.Columns["IsLowStock"] != null)
-                dgvProducts.Columns["IsLowStock"].Visible = false;
+            dgvProducts.HideColumn("ProductId");
+            dgvProducts.HideColumn("CategoryId");
+            dgvProducts.HideColumn("CreatedAt");
+            dgvProducts.HideColumn("IsLowStock");
 
-            if (dgvProducts.Columns["ProductName"] != null)
-            {
-                dgvProducts.Columns["ProductName"].HeaderText = "اسم المنتج";
-                dgvProducts.Columns["ProductName"].FillWeight = 175; // 35%
-                dgvProducts.Columns["ProductName"].MinimumWidth = 160;
-            }
-            if (dgvProducts.Columns["Barcode"] != null)
-            {
-                dgvProducts.Columns["Barcode"].HeaderText = "الباركود";
-                dgvProducts.Columns["Barcode"].FillWeight = 75; // 15%
-                dgvProducts.Columns["Barcode"].MinimumWidth = 100;
-            }
-            if (dgvProducts.Columns["CategoryName"] != null)
-            {
-                dgvProducts.Columns["CategoryName"].HeaderText = "القسم";
-                dgvProducts.Columns["CategoryName"].FillWeight = 70; // 14%
-                dgvProducts.Columns["CategoryName"].MinimumWidth = 90;
-            }
-            if (dgvProducts.Columns["BuyPrice"] != null)
-            {
-                dgvProducts.Columns["BuyPrice"].HeaderText = "سعر الشراء";
-                dgvProducts.Columns["BuyPrice"].FillWeight = 60; // 12%
-                dgvProducts.Columns["BuyPrice"].MinimumWidth = 85;
-                dgvProducts.Columns["BuyPrice"].DefaultCellStyle.Format = "N2";
-                dgvProducts.Columns["BuyPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            }
-            if (dgvProducts.Columns["SellPrice"] != null)
-            {
-                dgvProducts.Columns["SellPrice"].HeaderText = "سعر البيع";
-                dgvProducts.Columns["SellPrice"].FillWeight = 60; // 12%
-                dgvProducts.Columns["SellPrice"].MinimumWidth = 85;
-                dgvProducts.Columns["SellPrice"].DefaultCellStyle.Format = "N2";
-                dgvProducts.Columns["SellPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            }
-            if (dgvProducts.Columns["StockQuantity"] != null)
-            {
-                dgvProducts.Columns["StockQuantity"].HeaderText = "الكمية بالمخزن";
-                dgvProducts.Columns["StockQuantity"].FillWeight = 60; // 12%
-                dgvProducts.Columns["StockQuantity"].MinimumWidth = 95;
-                dgvProducts.Columns["StockQuantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-            if (dgvProducts.Columns["MinStockAlert"] != null)
-            {
-                dgvProducts.Columns["MinStockAlert"].HeaderText = "حد التنبيه";
-                dgvProducts.Columns["MinStockAlert"].FillWeight = 50; // 10%
-                dgvProducts.Columns["MinStockAlert"].MinimumWidth = 80;
-                dgvProducts.Columns["MinStockAlert"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
+            dgvProducts.ConfigureTextColumn("ProductName", "اسم المنتج", fillWeight: 180, minWidth: 160);
+            dgvProducts.ConfigureTextColumn("CategoryName", "القسم", fillWeight: 90, minWidth: 110);
+            dgvProducts.ConfigureCurrencyColumn("BuyPrice", "سعر الشراء", fillWeight: 65, minWidth: 85);
+            dgvProducts.ConfigureCurrencyColumn("SellPrice", "سعر البيع", fillWeight: 65, minWidth: 85);
+            dgvProducts.ConfigureNumericColumn("StockQuantity", "الكمية بالمخزن", fillWeight: 60, minWidth: 85);
+            dgvProducts.ConfigureNumericColumn("MinStockAlert", "حد التنبيه", fillWeight: 55, minWidth: 80);
+            dgvProducts.ConfigureCenterColumn("Barcode", "الباركود", fillWeight: 85, minWidth: 100);
+
+            dgvProducts.CellFormatting -= dgvProducts_CellFormatting;
+            dgvProducts.CellFormatting += dgvProducts_CellFormatting;
         }
 
         private void dgvProducts_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (e.RowIndex >= 0 && e.RowIndex < dgvProducts.Rows.Count)
+            if (e.RowIndex < 0 || e.ColumnIndex < 0 || e.RowIndex >= dgvProducts.Rows.Count) return;
+
+            string colName = dgvProducts.Columns[e.ColumnIndex].Name;
+            var row = dgvProducts.Rows[e.RowIndex];
+
+            bool isLowStock = false;
+            if (row.Cells["IsLowStock"] != null && row.Cells["IsLowStock"].Value != DBNull.Value)
             {
-                var row = dgvProducts.Rows[e.RowIndex];
-                if (row.Cells["IsLowStock"] != null && row.Cells["IsLowStock"].Value != DBNull.Value)
+                isLowStock = Convert.ToInt32(row.Cells["IsLowStock"].Value) == 1;
+            }
+            else if (row.Cells["StockQuantity"]?.Value != null && row.Cells["MinStockAlert"]?.Value != null &&
+                     row.Cells["StockQuantity"].Value != DBNull.Value && row.Cells["MinStockAlert"].Value != DBNull.Value)
+            {
+                decimal stock = Convert.ToDecimal(row.Cells["StockQuantity"].Value);
+                decimal alert = Convert.ToDecimal(row.Cells["MinStockAlert"].Value);
+                isLowStock = stock <= alert;
+            }
+
+            if (isLowStock)
+            {
+                e.CellStyle.BackColor = Color.FromArgb(254, 242, 242);
+                e.CellStyle.ForeColor = Color.FromArgb(185, 28, 28);
+                e.CellStyle.SelectionBackColor = Color.FromArgb(254, 226, 226);
+                e.CellStyle.SelectionForeColor = Color.FromArgb(153, 27, 27);
+
+                if (colName == "StockQuantity")
                 {
-                    int isLow = Convert.ToInt32(row.Cells["IsLowStock"].Value);
-                    if (isLow == 1)
-                    {
-                        row.DefaultCellStyle.BackColor = POS.DesignSystem.Tokens.UIColors.DangerLight;
-                        row.DefaultCellStyle.ForeColor = POS.DesignSystem.Tokens.UIColors.DangerHover;
-                        row.DefaultCellStyle.SelectionBackColor = POS.DesignSystem.Tokens.UIColors.DangerLight;
-                        row.DefaultCellStyle.SelectionForeColor = POS.DesignSystem.Tokens.UIColors.DangerDark;
-                    }
+                    e.CellStyle.Font = FontManager.GetBold(9.5f);
+                    e.CellStyle.ForeColor = Color.FromArgb(220, 38, 38);
                 }
             }
         }
@@ -207,7 +181,7 @@ namespace POS
                 numMinStockAlert.Value = Convert.ToDecimal(row.Cells["MinStockAlert"].Value);
 
                 btnDeleteProduct.Enabled = true;
-                lblEditorTitle.Text = $"📝 تعديل الصنف #{_selectedProductId}";
+                lblEditorTitle.Text = $"تعديل الصنف #{_selectedProductId}";
             }
         }
 
@@ -227,7 +201,7 @@ namespace POS
             numStockQuantity.Value = 0;
             numMinStockAlert.Value = 5;
             btnDeleteProduct.Enabled = false;
-            lblEditorTitle.Text = "📝 إضافة صنف جديد";
+            lblEditorTitle.Text = "إضافة صنف جديد";
             dgvProducts.ClearSelection();
             txtBarcode.Focus();
         }
@@ -337,11 +311,11 @@ namespace POS
 
                 Label lblCat = new Label { Text = "اسم القسم الجديد:", Location = new Point(20, 20), AutoSize = true, Font = FontManager.GetBold(9f) };
                 TextBox txtCat = new TextBox { Location = new Point(20, 45), Size = new Size(270, 25), Font = FontManager.GetRegular(10f) };
-                Button btnAdd = new Button { Text = "➕ إضافة", Location = new Point(300, 43), Size = new Size(110, 29), BackColor = Color.FromArgb(37, 99, 235), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Font = FontManager.GetBold(9f), Cursor = Cursors.Hand };
+                Button btnAdd = new Button { Text = "إضافة", Location = new Point(300, 43), Size = new Size(110, 29), BackColor = Color.FromArgb(37, 99, 235), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Font = FontManager.GetBold(9f), Cursor = Cursors.Hand };
                 btnAdd.FlatAppearance.BorderSize = 0;
 
                 ListBox lstCats = new ListBox { Location = new Point(20, 85), Size = new Size(390, 290), Font = FontManager.GetRegular(10f) };
-                Button btnDel = new Button { Text = "🗑️ حذف القسم المحدد", Location = new Point(20, 390), Size = new Size(390, 35), BackColor = Color.FromArgb(254, 242, 242), ForeColor = Color.FromArgb(220, 38, 38), FlatStyle = FlatStyle.Flat, Font = FontManager.GetBold(9f), Cursor = Cursors.Hand };
+                Button btnDel = new Button { Text = "حذف القسم المحدد", Location = new Point(20, 390), Size = new Size(390, 35), BackColor = Color.FromArgb(254, 242, 242), ForeColor = Color.FromArgb(220, 38, 38), FlatStyle = FlatStyle.Flat, Font = FontManager.GetBold(9f), Cursor = Cursors.Hand };
                 btnDel.FlatAppearance.BorderColor = Color.FromArgb(254, 202, 202);
 
                 Action refreshCats = () =>
