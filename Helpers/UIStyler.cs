@@ -30,11 +30,44 @@ namespace POS
 
             FontManager.ApplyCairoFont(form);
 
+            var icon = GetAppIcon();
+            if (icon != null)
+            {
+                form.Icon = icon;
+            }
+
             if (form.TopLevel && !form.IsMdiContainer)
             {
                 form.Shown -= Form_Shown_Center;
                 form.Shown += Form_Shown_Center;
             }
+        }
+
+        private static Icon s_appIcon = null;
+
+        public static Icon GetAppIcon()
+        {
+            if (s_appIcon == null)
+            {
+                try
+                {
+                    string icoFile = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app_icon.ico");
+                    if (System.IO.File.Exists(icoFile))
+                    {
+                        s_appIcon = new Icon(icoFile);
+                    }
+                    else
+                    {
+                        string exePath = Application.ExecutablePath;
+                        if (System.IO.File.Exists(exePath))
+                        {
+                            s_appIcon = Icon.ExtractAssociatedIcon(exePath);
+                        }
+                    }
+                }
+                catch { }
+            }
+            return s_appIcon;
         }
 
         private static void Form_Shown_Center(object sender, EventArgs e)

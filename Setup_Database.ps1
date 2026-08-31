@@ -5,7 +5,7 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 if (-not $ScriptDir) { $ScriptDir = Get-Location }
 
 # Paths
-$SqlFile = Join-Path $ScriptDir "Database\Seed_New_Data.sql"
+$SqlFile = Join-Path $ScriptDir "Database\Init_Clean_Database.sql"
 if (-not (Test-Path $SqlFile)) {
     $SqlFile = Join-Path $ScriptDir "Database\Schema.sql"
 }

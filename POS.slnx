@@ -1,3 +1,5 @@
 <Solution>
-  <Project Path="POS.csproj" Id="d5e70dae-d010-4b9b-a3b2-3e7a343a76bf" />
+  <Project Path="POS.csproj" Id="d5e70dae-d010-4b9b-a3b2-3e7a343a76bf">
+    <BuildType Project="Release" />
+  </Project>
 </Solution>
