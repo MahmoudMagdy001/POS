@@ -341,6 +341,27 @@ BEGIN
 END
 GO
 
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_SaleDetails_SaleId_Covering' AND object_id = OBJECT_ID(N'[dbo].[SaleDetails]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_SaleDetails_SaleId_Covering] ON [dbo].[SaleDetails] ([SaleId], [ProductId]) 
+    INCLUDE ([Quantity], [ReturnedQuantity], [UnitPrice], [LineTotal]);
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_SaleDetails_ProductId_Covering' AND object_id = OBJECT_ID(N'[dbo].[SaleDetails]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_SaleDetails_ProductId_Covering] ON [dbo].[SaleDetails] ([ProductId]) 
+    INCLUDE ([SaleId], [Quantity], [LineTotal]);
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = N'IX_PurchaseDetails_PurchaseId_Covering' AND object_id = OBJECT_ID(N'[dbo].[PurchaseDetails]'))
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_PurchaseDetails_PurchaseId_Covering] ON [dbo].[PurchaseDetails] ([PurchaseId], [ProductId]) 
+    INCLUDE ([Quantity], [UnitPrice], [LineTotal]);
+END
+GO
+
 -- ============================================================================
 -- 14. جدول تتبع إصدار قاعدة البيانات (__SchemaVersion)
 -- ============================================================================

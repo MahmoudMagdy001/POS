@@ -24,7 +24,6 @@ namespace POS
             this.lblBarcode = new System.Windows.Forms.Label();
             this.pnlBarcodeRow = new System.Windows.Forms.Panel();
             this.txtBarcode = new System.Windows.Forms.TextBox();
-            this.btnGenBarcode = new System.Windows.Forms.Button();
             this.lblProductName = new System.Windows.Forms.Label();
             this.txtProductName = new System.Windows.Forms.TextBox();
             this.lblCategory = new System.Windows.Forms.Label();
@@ -52,7 +51,8 @@ namespace POS
             this.lblCategoryFilter = new System.Windows.Forms.Label();
             this.cmbCategoryFilter = new System.Windows.Forms.ComboBox();
             this.chkLowStockOnly = new System.Windows.Forms.CheckBox();
-            this.btnPrintBarcodeToolbar = new System.Windows.Forms.Button();
+            this.btnImportExcel = new System.Windows.Forms.Button();
+            this.btnExportExcel = new System.Windows.Forms.Button();
             this.btnRefresh = new System.Windows.Forms.Button();
             this.tlpMain.SuspendLayout();
             this.pnlEditor.SuspendLayout();
@@ -173,7 +173,6 @@ namespace POS
             // pnlBarcodeRow
             // 
             this.pnlBarcodeRow.Controls.Add(this.txtBarcode);
-            this.pnlBarcodeRow.Controls.Add(this.btnGenBarcode);
             this.pnlBarcodeRow.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlBarcodeRow.Location = new System.Drawing.Point(0, 50);
             this.pnlBarcodeRow.Margin = new System.Windows.Forms.Padding(0, 0, 0, 6);
@@ -183,31 +182,15 @@ namespace POS
             // 
             // txtBarcode
             // 
-            this.txtBarcode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtBarcode.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(250)))), ((int)(((byte)(252)))));
             this.txtBarcode.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtBarcode.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtBarcode.Font = new System.Drawing.Font("Tahoma", 10F);
-            this.txtBarcode.Location = new System.Drawing.Point(120, 2);
+            this.txtBarcode.Location = new System.Drawing.Point(0, 0);
             this.txtBarcode.Name = "txtBarcode";
-            this.txtBarcode.Size = new System.Drawing.Size(266, 28);
+            this.txtBarcode.ReadOnly = true;
+            this.txtBarcode.Size = new System.Drawing.Size(389, 28);
             this.txtBarcode.TabIndex = 0;
-            // 
-            // btnGenBarcode
-            // 
-            this.btnGenBarcode.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
-            this.btnGenBarcode.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnGenBarcode.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
-            this.btnGenBarcode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnGenBarcode.Font = new System.Drawing.Font("Tahoma", 8.5F);
-            this.btnGenBarcode.Location = new System.Drawing.Point(3, 1);
-            this.btnGenBarcode.Name = "btnGenBarcode";
-            this.btnGenBarcode.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnGenBarcode.Size = new System.Drawing.Size(77, 26);
-            this.btnGenBarcode.TabIndex = 1;
-            this.btnGenBarcode.Text = "باركود";
-            this.btnGenBarcode.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnGenBarcode.UseVisualStyleBackColor = false;
-            this.btnGenBarcode.Click += new System.EventHandler(this.btnGenBarcode_Click);
             // 
             // lblProductName
             // 
@@ -527,19 +510,21 @@ namespace POS
             // 
             // tlpFilters
             // 
-            this.tlpFilters.ColumnCount = 5;
-            this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 35F));
-            this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 18F));
-            this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 12F));
+            this.tlpFilters.ColumnCount = 6;
+            this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 32F));
+            this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 22F));
+            this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14F));
+            this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 11F));
+            this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 11F));
             this.tlpFilters.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
             this.tlpFilters.Controls.Add(this.lblSearch, 0, 0);
             this.tlpFilters.Controls.Add(this.txtSearch, 0, 1);
             this.tlpFilters.Controls.Add(this.lblCategoryFilter, 1, 0);
             this.tlpFilters.Controls.Add(this.cmbCategoryFilter, 1, 1);
             this.tlpFilters.Controls.Add(this.chkLowStockOnly, 2, 1);
-            this.tlpFilters.Controls.Add(this.btnPrintBarcodeToolbar, 3, 1);
-            this.tlpFilters.Controls.Add(this.btnRefresh, 4, 1);
+            this.tlpFilters.Controls.Add(this.btnImportExcel, 3, 1);
+            this.tlpFilters.Controls.Add(this.btnExportExcel, 4, 1);
+            this.tlpFilters.Controls.Add(this.btnRefresh, 5, 1);
             this.tlpFilters.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpFilters.Location = new System.Drawing.Point(12, 0);
             this.tlpFilters.Name = "tlpFilters";
@@ -554,9 +539,9 @@ namespace POS
             this.lblSearch.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblSearch.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblSearch.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblSearch.Location = new System.Drawing.Point(458, 0);
+            this.lblSearch.Location = new System.Drawing.Point(480, 0);
             this.lblSearch.Name = "lblSearch";
-            this.lblSearch.Size = new System.Drawing.Size(240, 22);
+            this.lblSearch.Size = new System.Drawing.Size(218, 22);
             this.lblSearch.TabIndex = 0;
             this.lblSearch.Text = "بحث بالاسم أو الباركود:";
             this.lblSearch.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -566,9 +551,9 @@ namespace POS
             this.txtSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtSearch.Font = new System.Drawing.Font("Tahoma", 10F);
-            this.txtSearch.Location = new System.Drawing.Point(458, 26);
+            this.txtSearch.Location = new System.Drawing.Point(480, 26);
             this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(240, 28);
+            this.txtSearch.Size = new System.Drawing.Size(218, 28);
             this.txtSearch.TabIndex = 1;
             this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
             // 
@@ -577,9 +562,9 @@ namespace POS
             this.lblCategoryFilter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblCategoryFilter.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.lblCategoryFilter.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(85)))), ((int)(((byte)(105)))));
-            this.lblCategoryFilter.Location = new System.Drawing.Point(283, 0);
+            this.lblCategoryFilter.Location = new System.Drawing.Point(326, 0);
             this.lblCategoryFilter.Name = "lblCategoryFilter";
-            this.lblCategoryFilter.Size = new System.Drawing.Size(169, 22);
+            this.lblCategoryFilter.Size = new System.Drawing.Size(148, 22);
             this.lblCategoryFilter.TabIndex = 2;
             this.lblCategoryFilter.Text = "القسم:";
             this.lblCategoryFilter.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -590,9 +575,9 @@ namespace POS
             this.cmbCategoryFilter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbCategoryFilter.Font = new System.Drawing.Font("Tahoma", 10F);
             this.cmbCategoryFilter.FormattingEnabled = true;
-            this.cmbCategoryFilter.Location = new System.Drawing.Point(283, 25);
+            this.cmbCategoryFilter.Location = new System.Drawing.Point(326, 25);
             this.cmbCategoryFilter.Name = "cmbCategoryFilter";
-            this.cmbCategoryFilter.Size = new System.Drawing.Size(169, 29);
+            this.cmbCategoryFilter.Size = new System.Drawing.Size(148, 29);
             this.cmbCategoryFilter.TabIndex = 3;
             this.cmbCategoryFilter.SelectedIndexChanged += new System.EventHandler(this.cmbCategoryFilter_SelectedIndexChanged);
             // 
@@ -603,31 +588,49 @@ namespace POS
             this.chkLowStockOnly.Cursor = System.Windows.Forms.Cursors.Hand;
             this.chkLowStockOnly.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.chkLowStockOnly.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(38)))), ((int)(((byte)(38)))));
-            this.chkLowStockOnly.Location = new System.Drawing.Point(157, 29);
+            this.chkLowStockOnly.Location = new System.Drawing.Point(228, 29);
             this.chkLowStockOnly.Name = "chkLowStockOnly";
-            this.chkLowStockOnly.Size = new System.Drawing.Size(120, 22);
+            this.chkLowStockOnly.Size = new System.Drawing.Size(92, 22);
             this.chkLowStockOnly.TabIndex = 4;
-            this.chkLowStockOnly.Text = "النواقص فقط";
+            this.chkLowStockOnly.Text = "النواقص";
             this.chkLowStockOnly.UseVisualStyleBackColor = true;
             this.chkLowStockOnly.CheckedChanged += new System.EventHandler(this.chkLowStockOnly_CheckedChanged);
             // 
-            // btnPrintBarcodeToolbar
+            // btnImportExcel
             // 
-            this.btnPrintBarcodeToolbar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPrintBarcodeToolbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
-            this.btnPrintBarcodeToolbar.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnPrintBarcodeToolbar.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
-            this.btnPrintBarcodeToolbar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnPrintBarcodeToolbar.Font = new System.Drawing.Font("Tahoma", 9F);
-            this.btnPrintBarcodeToolbar.Location = new System.Drawing.Point(74, 25);
-            this.btnPrintBarcodeToolbar.Name = "btnPrintBarcodeToolbar";
-            this.btnPrintBarcodeToolbar.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.btnPrintBarcodeToolbar.Size = new System.Drawing.Size(77, 30);
-            this.btnPrintBarcodeToolbar.TabIndex = 5;
-            this.btnPrintBarcodeToolbar.Text = "طباعة باركود";
-            this.btnPrintBarcodeToolbar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnPrintBarcodeToolbar.UseVisualStyleBackColor = false;
-            this.btnPrintBarcodeToolbar.Click += new System.EventHandler(this.btnPrintBarcodeToolbar_Click);
+            this.btnImportExcel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnImportExcel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
+            this.btnImportExcel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnImportExcel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this.btnImportExcel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnImportExcel.Font = new System.Drawing.Font("Tahoma", 8.5F);
+            this.btnImportExcel.Location = new System.Drawing.Point(151, 25);
+            this.btnImportExcel.Name = "btnImportExcel";
+            this.btnImportExcel.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btnImportExcel.Size = new System.Drawing.Size(71, 30);
+            this.btnImportExcel.TabIndex = 5;
+            this.btnImportExcel.Text = "استيراد 📥";
+            this.btnImportExcel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnImportExcel.UseVisualStyleBackColor = false;
+            this.btnImportExcel.Click += new System.EventHandler(this.btnImportExcel_Click);
+            // 
+            // btnExportExcel
+            // 
+            this.btnExportExcel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnExportExcel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(245)))), ((int)(((byte)(249)))));
+            this.btnExportExcel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnExportExcel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(213)))), ((int)(((byte)(225)))));
+            this.btnExportExcel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExportExcel.Font = new System.Drawing.Font("Tahoma", 8.5F);
+            this.btnExportExcel.Location = new System.Drawing.Point(74, 25);
+            this.btnExportExcel.Name = "btnExportExcel";
+            this.btnExportExcel.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.btnExportExcel.Size = new System.Drawing.Size(71, 30);
+            this.btnExportExcel.TabIndex = 6;
+            this.btnExportExcel.Text = "تصدير 📊";
+            this.btnExportExcel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnExportExcel.UseVisualStyleBackColor = false;
+            this.btnExportExcel.Click += new System.EventHandler(this.btnExportExcel_Click);
             // 
             // btnRefresh
             // 
@@ -641,7 +644,7 @@ namespace POS
             this.btnRefresh.Name = "btnRefresh";
             this.btnRefresh.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.btnRefresh.Size = new System.Drawing.Size(65, 30);
-            this.btnRefresh.TabIndex = 6;
+            this.btnRefresh.TabIndex = 7;
             this.btnRefresh.Text = "تحديث";
             this.btnRefresh.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnRefresh.UseVisualStyleBackColor = false;
@@ -691,7 +694,6 @@ namespace POS
         private System.Windows.Forms.Label lblBarcode;
         private System.Windows.Forms.Panel pnlBarcodeRow;
         private System.Windows.Forms.TextBox txtBarcode;
-        private System.Windows.Forms.Button btnGenBarcode;
         private System.Windows.Forms.Label lblProductName;
         private System.Windows.Forms.TextBox txtProductName;
         private System.Windows.Forms.Label lblCategory;
@@ -719,7 +721,8 @@ namespace POS
         private System.Windows.Forms.Label lblCategoryFilter;
         private System.Windows.Forms.ComboBox cmbCategoryFilter;
         private System.Windows.Forms.CheckBox chkLowStockOnly;
-        private System.Windows.Forms.Button btnPrintBarcodeToolbar;
+        private System.Windows.Forms.Button btnImportExcel;
+        private System.Windows.Forms.Button btnExportExcel;
         private System.Windows.Forms.Button btnRefresh;
     }
 }

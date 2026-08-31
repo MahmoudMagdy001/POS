@@ -236,8 +236,10 @@ namespace POS
             });
 
             // Wire event handlers
-            dgvReturnItems.CellContentClick -= DgvReturnItems_CellContentClick;
-            dgvReturnItems.CellContentClick += DgvReturnItems_CellContentClick;
+            dgvReturnItems.CellClick -= DgvReturnItems_CellClick;
+            dgvReturnItems.CellClick += DgvReturnItems_CellClick;
+            dgvReturnItems.CellDoubleClick -= DgvReturnItems_CellDoubleClick;
+            dgvReturnItems.CellDoubleClick += DgvReturnItems_CellDoubleClick;
             dgvReturnItems.EditingControlShowing -= DgvReturnItems_EditingControlShowing;
             dgvReturnItems.EditingControlShowing += DgvReturnItems_EditingControlShowing;
         }
@@ -295,9 +297,14 @@ namespace POS
             }
         }
 
-        private void DgvReturnItems_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void DgvReturnItems_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0 || e.RowIndex >= dgvReturnItems.Rows.Count) return;
+            DgvReturnItems_CellClick(sender, e);
+        }
+
+        private void DgvReturnItems_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= dgvReturnItems.Rows.Count || e.ColumnIndex < 0) return;
 
             var row = dgvReturnItems.Rows[e.RowIndex];
             var item = row.Tag as ReturnItemModel;

@@ -31,6 +31,7 @@ namespace POS
             UIStyler.StyleSecondaryButton(btnClearFilter, "مسح الفلتر");
             UIStyler.StyleDataGrid(dgvShifts);
             UIStyler.StyleDataGrid(dgvSummary);
+            dgvShifts.CellFormatting += dgvShifts_CellFormatting;
 
             bool isAdmin = _currentUser != null && (string.Equals(_currentUser.Role, "Admin", StringComparison.OrdinalIgnoreCase) || _currentUser.Role == "مدير");
             btnEditShift.Visible = isAdmin;
@@ -155,16 +156,22 @@ namespace POS
             dgvShifts.ConfigureCenterColumn("Duration", "المدة", fillWeight: 70, minWidth: 90);
             dgvShifts.ConfigureNumericColumn("TotalHours", "الساعات", fillWeight: 60, minWidth: 70, format: "N2");
             dgvShifts.ConfigureTextColumn("Notes", "ملاحظات", fillWeight: 100, minWidth: 100);
+        }
 
-            // Highlight open shifts in green
-            foreach (DataGridViewRow row in dgvShifts.Rows)
+        private void dgvShifts_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= dgvShifts.Rows.Count) return;
+
+            try
             {
-                if (row.Cells["ClockOutTime"] != null && row.Cells["ClockOutTime"].Value == DBNull.Value)
+                var row = dgvShifts.Rows[e.RowIndex];
+                if (row.Cells["ClockOutTime"] != null && (row.Cells["ClockOutTime"].Value == null || row.Cells["ClockOutTime"].Value == DBNull.Value))
                 {
-                    row.DefaultCellStyle.BackColor = Color.FromArgb(240, 253, 244);
-                    row.DefaultCellStyle.ForeColor = Color.FromArgb(22, 101, 52);
+                    e.CellStyle.BackColor = Color.FromArgb(240, 253, 244);
+                    e.CellStyle.ForeColor = Color.FromArgb(22, 101, 52);
                 }
             }
+            catch { }
         }
 
         private void FormatSummaryGrid()

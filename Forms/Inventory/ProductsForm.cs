@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -28,14 +29,16 @@ namespace POS
             lblEditorTitle.Font = FontManager.GetBold(11.5f);
             UIStyler.StylePrimaryButton(btnSaveProduct, "حفظ بيانات المنتج");
             UIStyler.StyleSecondaryButton(btnNewProduct, "صنف جديد (تفريغ الحقول)");
-            UIStyler.StyleSecondaryButton(btnGenBarcode, "باركود");
             UIStyler.StyleSecondaryButton(btnPrintBarcode, "طباعة ملصق الباركود");
-            UIStyler.StyleSecondaryButton(btnPrintBarcodeToolbar, "طباعة باركود");
             UIStyler.StyleSecondaryButton(btnManageCategories, "الأقسام");
             UIStyler.StyleDangerButton(btnDeleteProduct, "حذف الصنف المحدد");
+            UIStyler.StyleSecondaryButton(btnImportExcel, "استيراد 📥");
+            UIStyler.StyleSecondaryButton(btnExportExcel, "تصدير 📊");
             UIStyler.StyleSecondaryButton(btnRefresh, "تحديث");
             UIStyler.StyleDataGrid(dgvProducts);
 
+            ClearEditor();
+            DbHelper.CleanupInvalidImportedProducts();
             await LoadCategoriesAsync();
             await LoadProductsAsync();
         }
@@ -195,7 +198,7 @@ namespace POS
         private void ClearEditor()
         {
             _selectedProductId = 0;
-            txtBarcode.Clear();
+            txtBarcode.Text = DbHelper.GenerateUniqueBarcode();
             txtProductName.Clear();
             if (cmbCategory.Items.Count > 0) cmbCategory.SelectedIndex = 0;
             numBuyPrice.Value = 0;
@@ -205,26 +208,19 @@ namespace POS
             btnDeleteProduct.Enabled = false;
             lblEditorTitle.Text = "إضافة صنف جديد";
             dgvProducts.ClearSelection();
-            txtBarcode.Focus();
-        }
-
-        private void btnGenBarcode_Click(object sender, EventArgs e)
-        {
-            txtBarcode.Text = DbHelper.GenerateUniqueBarcode();
             txtProductName.Focus();
         }
 
         private async void btnSaveProduct_Click(object sender, EventArgs e)
         {
             string barcode = txtBarcode.Text.Trim();
-            string name = txtProductName.Text.Trim();
-
             if (string.IsNullOrWhiteSpace(barcode))
             {
-                MessageBox.Show("يرجى إدخال الباركود أو الضغط على زر توليد باركود تلقائي.", "حقل مطلوب", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtBarcode.Focus();
-                return;
+                barcode = DbHelper.GenerateUniqueBarcode();
+                txtBarcode.Text = barcode;
             }
+
+            string name = txtProductName.Text.Trim();
 
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -415,11 +411,6 @@ namespace POS
             OpenBarcodePrintDialog();
         }
 
-        private void btnPrintBarcodeToolbar_Click(object sender, EventArgs e)
-        {
-            OpenBarcodePrintDialog();
-        }
-
         private void OpenBarcodePrintDialog()
         {
             int prodId = _selectedProductId;
@@ -431,6 +422,128 @@ namespace POS
             using (var modal = new BarcodePrintModalForm(prodId))
             {
                 modal.ShowDialog(this.FindForm() ?? this);
+            }
+        }
+
+        private void btnExportExcel_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_productsTable == null || _productsTable.Rows.Count == 0)
+                {
+                    MessageBox.Show("لا توجد بيانات منتجات للتصدير.", "تنبيه", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                using (var sfd = new SaveFileDialog())
+                {
+                    sfd.Title = "تصدير بيانات المنتجات والمخزون";
+                    sfd.Filter = "ملف إكسيل Excel Workbook (*.xlsx)|*.xlsx|ملف CSV مفصول بفواصل (*.csv)|*.csv";
+                    sfd.FileName = $"المنتجات_والمخزون_{DateTime.Now:yyyyMMdd_HHmm}.xlsx";
+
+                    if (sfd.ShowDialog(this) == DialogResult.OK)
+                    {
+                        ExcelHelper.ExportProducts(sfd.FileName, _productsTable, "المنتجات والمخزون");
+
+                        var res = MessageBox.Show("تم تصدير البيانات بنجاح!\n\nهل ترغب في فتح الملف الآن؟", "اكتمل التصدير", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                        if (res == DialogResult.Yes)
+                        {
+                            Process.Start(new ProcessStartInfo(sfd.FileName) { UseShellExecute = true });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("حدث خطأ أثناء تصدير الملف: " + ex.Message, "خطأ في التصدير", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async void btnImportExcel_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var dialogResult = MessageBox.Show(
+                    "هل ترغب في استيراد ملف بيانات المنتجات الآن؟\n\n" +
+                    "• اختر [نعم] لاختيار ملف Excel أو CSV واستيراده مباشرة.\n" +
+                    "• اختر [لا] لتحميل نموذج إكسيل فارغ جاهز للملء (Sample Template).\n" +
+                    "• اختر [إلغاء] للإغلاق.",
+                    "استيراد المنتجات من إكسيل",
+                    MessageBoxButtons.YesNoCancel,
+                    MessageBoxIcon.Question);
+
+                if (dialogResult == DialogResult.Cancel)
+                {
+                    return;
+                }
+
+                if (dialogResult == DialogResult.No)
+                {
+                    using (var sfd = new SaveFileDialog())
+                    {
+                        sfd.Title = "حفظ نموذج استيراد إكسيل فارغ";
+                        sfd.Filter = "ملف إكسيل Excel Workbook (*.xlsx)|*.xlsx|ملف CSV (*.csv)|*.csv";
+                        sfd.FileName = "نموذج_استيراد_المنتجات.xlsx";
+
+                        if (sfd.ShowDialog(this) == DialogResult.OK)
+                        {
+                            ExcelHelper.GenerateSampleTemplate(sfd.FileName);
+                            var openRes = MessageBox.Show("تم حفظ النموذج بنجاح!\n\nهل تريد فتح الملف الآن لملء البيانات؟", "تم حفظ النموذج", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                            if (openRes == DialogResult.Yes)
+                            {
+                                Process.Start(new ProcessStartInfo(sfd.FileName) { UseShellExecute = true });
+                            }
+                        }
+                    }
+                    return;
+                }
+
+                using (var ofd = new OpenFileDialog())
+                {
+                    ofd.Title = "اختر ملف إكسيل أو CSV لاستيراد المنتجات";
+                    ofd.Filter = "ملفات إكسيل وCSV (*.xls;*.xlsx;*.csv;*.txt)|*.xls;*.xlsx;*.csv;*.txt|جميع الملفات (*.*)|*.*";
+
+                    if (ofd.ShowDialog(this) == DialogResult.OK)
+                    {
+                        var updateOpt = MessageBox.Show(
+                            "إذا وجد النظام أصنافاً بنفس الباركود مسجلة مسبقاً:\n\n" +
+                            "• اضغط [نعم] لتحديث بيانات الأصناف الموجودة (الاسم، الأسعار، الكمية).\n" +
+                            "• اضغط [لا] لتخطي الأصناف المكررة والإبقاء على بياناتها الحالية دون تغيير.",
+                            "خيارات معالجة التكرار",
+                            MessageBoxButtons.YesNoCancel,
+                            MessageBoxIcon.Question);
+
+                        if (updateOpt == DialogResult.Cancel) return;
+
+                        bool updateExisting = (updateOpt == DialogResult.Yes);
+
+                        this.Cursor = Cursors.WaitCursor;
+                        btnImportExcel.Enabled = false;
+
+                        var result = await Task.Run(() => ExcelHelper.ImportProducts(ofd.FileName, updateExisting));
+
+                        this.Cursor = Cursors.Default;
+                        btnImportExcel.Enabled = true;
+
+                        if (result.Success)
+                        {
+                            MessageBox.Show(result.Message, "نتيجة الاستيراد", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show(result.Message, "فشل الاستيراد", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+
+                        await LoadCategoriesAsync();
+                        await LoadProductsAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Cursor = Cursors.Default;
+                btnImportExcel.Enabled = true;
+                MessageBox.Show("حدث خطأ أثناء عملية الاستيراد: " + ex.Message, "خطأ", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

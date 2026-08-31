@@ -327,6 +327,8 @@ namespace POS
             dgvCart.ConfigureButtonColumn("colDelete", "حذف", "حذف", fillWeight: 45, minWidth: 45, textColor: Color.FromArgb(220, 38, 38));
         }
 
+        private bool _isInternalCartUpdating = false;
+
         private void AddProductToCart(ProductModel product, int quantityToAdd = 1)
         {
             if (product == null) return;
@@ -337,15 +339,17 @@ namespace POS
                 return;
             }
 
-            var existingItem = _cartItems.Find(x => x.ProductId == product.ProductId);
-            if (existingItem != null)
+            int existingIndex = _cartItems.FindIndex(x => x.ProductId == product.ProductId);
+            if (existingIndex >= 0)
             {
+                var existingItem = _cartItems[existingIndex];
                 if (existingItem.Quantity + quantityToAdd > product.StockQuantity)
                 {
                     MessageBox.Show($"لا يمكن إضافة المزيد. الكمية المتاحة في المخزن هي ({product.StockQuantity}) فقط.", "تنبيه المخزون", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
                 existingItem.Quantity += quantityToAdd;
+                UpdateCartRow(existingIndex);
             }
             else
             {
@@ -355,7 +359,7 @@ namespace POS
                     return;
                 }
 
-                _cartItems.Add(new CartItemModel
+                var newItem = new CartItemModel
                 {
                     ProductId = product.ProductId,
                     Barcode = product.Barcode,
@@ -363,33 +367,139 @@ namespace POS
                     UnitPrice = product.SellPrice,
                     Quantity = quantityToAdd,
                     AvailableStock = product.StockQuantity
-                });
+                };
+
+                _cartItems.Add(newItem);
+
+                _isInternalCartUpdating = true;
+                try
+                {
+                    _cartTable.Rows.Add(
+                        newItem.ProductId,
+                        newItem.Barcode,
+                        newItem.ProductName,
+                        newItem.UnitPrice,
+                        newItem.Quantity,
+                        newItem.LineTotal,
+                        newItem.AvailableStock
+                    );
+                    CalculateTotals();
+
+                    int newIndex = _cartTable.Rows.Count - 1;
+                    if (newIndex >= 0 && newIndex < dgvCart.Rows.Count)
+                    {
+                        dgvCart.ClearSelection();
+                        dgvCart.Rows[newIndex].Selected = true;
+                        if (dgvCart.Columns.Contains("Quantity"))
+                        {
+                            dgvCart.CurrentCell = dgvCart.Rows[newIndex].Cells["Quantity"];
+                        }
+                    }
+                }
+                finally
+                {
+                    _isInternalCartUpdating = false;
+                }
             }
 
-            SyncCartTable();
             txtBarcodeScan.Clear();
             txtBarcodeScan.Focus();
         }
 
-        private void SyncCartTable()
+        private void UpdateCartRow(int rowIndex)
         {
-            _cartTable.BeginLoadData();
-            _cartTable.Rows.Clear();
-            foreach (var item in _cartItems)
-            {
-                _cartTable.Rows.Add(
-                    item.ProductId,
-                    item.Barcode,
-                    item.ProductName,
-                    item.UnitPrice,
-                    item.Quantity,
-                    item.LineTotal,
-                    item.AvailableStock
-                );
-            }
-            _cartTable.EndLoadData();
+            if (rowIndex < 0 || rowIndex >= _cartItems.Count || rowIndex >= _cartTable.Rows.Count) return;
 
-            CalculateTotals();
+            _isInternalCartUpdating = true;
+            try
+            {
+                var item = _cartItems[rowIndex];
+                var row = _cartTable.Rows[rowIndex];
+
+                row["Quantity"] = item.Quantity;
+                row["LineTotal"] = item.LineTotal;
+
+                CalculateTotals();
+
+                if (rowIndex >= 0 && rowIndex < dgvCart.Rows.Count)
+                {
+                    dgvCart.ClearSelection();
+                    dgvCart.Rows[rowIndex].Selected = true;
+                }
+            }
+            finally
+            {
+                _isInternalCartUpdating = false;
+            }
+        }
+
+        private void RemoveCartItem(int rowIndex)
+        {
+            if (rowIndex < 0 || rowIndex >= _cartItems.Count || rowIndex >= _cartTable.Rows.Count) return;
+
+            _isInternalCartUpdating = true;
+            try
+            {
+                _cartItems.RemoveAt(rowIndex);
+                _cartTable.Rows.RemoveAt(rowIndex);
+                CalculateTotals();
+
+                if (_cartTable.Rows.Count > 0)
+                {
+                    int nextIndex = Math.Min(rowIndex, _cartTable.Rows.Count - 1);
+                    if (nextIndex >= 0 && nextIndex < dgvCart.Rows.Count)
+                    {
+                        dgvCart.ClearSelection();
+                        dgvCart.Rows[nextIndex].Selected = true;
+                    }
+                }
+            }
+            finally
+            {
+                _isInternalCartUpdating = false;
+            }
+        }
+
+        private void SyncCartTable(int? preserveRowIndex = null)
+        {
+            _isInternalCartUpdating = true;
+            int selectedIdx = preserveRowIndex ?? (dgvCart.CurrentCell != null ? dgvCart.CurrentCell.RowIndex : -1);
+            int firstDisplayedScrollingRowIndex = dgvCart.FirstDisplayedScrollingRowIndex;
+
+            try
+            {
+                _cartTable.BeginLoadData();
+                _cartTable.Rows.Clear();
+                foreach (var item in _cartItems)
+                {
+                    _cartTable.Rows.Add(
+                        item.ProductId,
+                        item.Barcode,
+                        item.ProductName,
+                        item.UnitPrice,
+                        item.Quantity,
+                        item.LineTotal,
+                        item.AvailableStock
+                    );
+                }
+                _cartTable.EndLoadData();
+
+                CalculateTotals();
+
+                if (selectedIdx >= 0 && selectedIdx < dgvCart.Rows.Count)
+                {
+                    dgvCart.ClearSelection();
+                    dgvCart.Rows[selectedIdx].Selected = true;
+                    if (firstDisplayedScrollingRowIndex >= 0 && firstDisplayedScrollingRowIndex < dgvCart.Rows.Count)
+                    {
+                        dgvCart.FirstDisplayedScrollingRowIndex = firstDisplayedScrollingRowIndex;
+                    }
+                }
+            }
+            finally
+            {
+                _isInternalCartUpdating = false;
+            }
         }
 
         private bool _isUpdatingTotals = false;
@@ -466,13 +576,18 @@ namespace POS
             }
         }
 
-        private void dgvProductsCatalog_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void dgvProductsCatalog_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && dgvProductsCatalog.Columns[e.ColumnIndex].Name == "colAdd")
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0 && dgvProductsCatalog.Columns[e.ColumnIndex].Name == "colAdd")
             {
                 if (!EnsureActiveShift(true)) return;
                 AddSelectedCatalogProduct(e.RowIndex);
             }
+        }
+
+        private void dgvProductsCatalog_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            dgvProductsCatalog_CellClick(sender, e);
         }
 
         private void dgvProductsCatalog_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -508,9 +623,9 @@ namespace POS
             AddProductToCart(product, 1);
         }
 
-        private void dgvCart_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void dgvCart_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0 || e.RowIndex >= _cartItems.Count) return;
+            if (e.RowIndex < 0 || e.RowIndex >= _cartItems.Count || e.ColumnIndex < 0) return;
 
             string colName = dgvCart.Columns[e.ColumnIndex].Name;
             var item = _cartItems[e.RowIndex];
@@ -523,31 +638,40 @@ namespace POS
                     return;
                 }
                 item.Quantity++;
-                SyncCartTable();
+                UpdateCartRow(e.RowIndex);
             }
             else if (colName == "colMinus")
             {
                 if (item.Quantity > 1)
                 {
                     item.Quantity--;
-                    SyncCartTable();
+                    UpdateCartRow(e.RowIndex);
                 }
                 else
                 {
-                    _cartItems.RemoveAt(e.RowIndex);
-                    SyncCartTable();
+                    RemoveCartItem(e.RowIndex);
                 }
             }
             else if (colName == "colDelete")
             {
-                _cartItems.RemoveAt(e.RowIndex);
-                SyncCartTable();
+                RemoveCartItem(e.RowIndex);
             }
+        }
+
+        private void dgvCart_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            dgvCart_CellClick(sender, e);
+        }
+
+        private void dgvCart_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            dgvCart_CellClick(sender, e);
         }
 
         private void dgvCart_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && e.RowIndex < _cartItems.Count && dgvCart.Columns[e.ColumnIndex].Name == "Quantity")
+            if (_isInternalCartUpdating) return;
+            if (e.RowIndex >= 0 && e.RowIndex < _cartItems.Count && e.ColumnIndex >= 0 && dgvCart.Columns[e.ColumnIndex].Name == "Quantity")
             {
                 var row = dgvCart.Rows[e.RowIndex];
                 if (int.TryParse(row.Cells["Quantity"].Value?.ToString(), out int newQty))
@@ -555,18 +679,19 @@ namespace POS
                     var item = _cartItems[e.RowIndex];
                     if (newQty <= 0)
                     {
-                        _cartItems.RemoveAt(e.RowIndex);
+                        RemoveCartItem(e.RowIndex);
                     }
                     else if (newQty > item.AvailableStock)
                     {
                         MessageBox.Show($"الكمية المتاحة في المخزن هي ({item.AvailableStock}) فقط.", "تنبيه المخزون", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         item.Quantity = item.AvailableStock;
+                        UpdateCartRow(e.RowIndex);
                     }
                     else
                     {
                         item.Quantity = newQty;
+                        UpdateCartRow(e.RowIndex);
                     }
-                    SyncCartTable();
                 }
             }
         }

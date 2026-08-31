@@ -39,7 +39,6 @@ namespace POS
             UIStyler.StyleDangerButton(btnLogout, "تسجيل خروج");
             lblCurrentTime.AutoSize = true;
             SetupUserInfo();
-            InitializeChildForms();
 
             bool isAdmin = _currentUser != null && (string.Equals(_currentUser.Role, "Admin", StringComparison.OrdinalIgnoreCase) || _currentUser.Role == "مدير");
             if (isAdmin)
@@ -208,17 +207,81 @@ namespace POS
             catch { }
         }
 
-        private void InitializeChildForms()
+        #region Lazy Loading Child Form Getters
+
+        private DashboardForm GetDashboardForm()
         {
-            _dashboardForm = new DashboardForm { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
-            _posForm = new POSForm(_currentUser) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
-            _salesForm = new SalesForm(_currentUser) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
-            _productsForm = new ProductsForm { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
-            _purchasesForm = new PurchasesForm { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
-            _shiftsForm = new ShiftsForm(_currentUser) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
-            _usersForm = new UsersForm(_currentUser) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
-            _settingsForm = new SettingsForm(_currentUser) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+            if (_dashboardForm == null || _dashboardForm.IsDisposed)
+            {
+                _dashboardForm = new DashboardForm { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+            }
+            return _dashboardForm;
         }
+
+        private POSForm GetPOSForm()
+        {
+            if (_posForm == null || _posForm.IsDisposed)
+            {
+                _posForm = new POSForm(_currentUser) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+            }
+            return _posForm;
+        }
+
+        private SalesForm GetSalesForm()
+        {
+            if (_salesForm == null || _salesForm.IsDisposed)
+            {
+                _salesForm = new SalesForm(_currentUser) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+            }
+            return _salesForm;
+        }
+
+        private ProductsForm GetProductsForm()
+        {
+            if (_productsForm == null || _productsForm.IsDisposed)
+            {
+                _productsForm = new ProductsForm { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+            }
+            return _productsForm;
+        }
+
+        private PurchasesForm GetPurchasesForm()
+        {
+            if (_purchasesForm == null || _purchasesForm.IsDisposed)
+            {
+                _purchasesForm = new PurchasesForm { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+            }
+            return _purchasesForm;
+        }
+
+        private ShiftsForm GetShiftsForm()
+        {
+            if (_shiftsForm == null || _shiftsForm.IsDisposed)
+            {
+                _shiftsForm = new ShiftsForm(_currentUser) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+            }
+            return _shiftsForm;
+        }
+
+        private UsersForm GetUsersForm()
+        {
+            if (_usersForm == null || _usersForm.IsDisposed)
+            {
+                _usersForm = new UsersForm(_currentUser) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+            }
+            return _usersForm;
+        }
+
+        private SettingsForm GetSettingsForm()
+        {
+            if (_settingsForm == null || _settingsForm.IsDisposed)
+            {
+                _settingsForm = new SettingsForm(_currentUser) { TopLevel = false, FormBorderStyle = FormBorderStyle.None, Dock = DockStyle.Fill };
+            }
+            return _settingsForm;
+        }
+
+        #endregion
 
         private void ShowView(string viewName)
         {
@@ -230,40 +293,46 @@ namespace POS
             switch (viewName)
             {
                 case "Dashboard":
-                    targetForm = _dashboardForm;
+                    var dash = GetDashboardForm();
+                    targetForm = dash;
                     activeButton = btnNavDashboard;
                     sectionTitle = "لوحة التحكم العامة ومتابعة الأداء";
-                    _dashboardForm?.RefreshData();
+                    dash.RefreshData();
                     break;
                 case "POS":
-                    targetForm = _posForm;
+                    var pos = GetPOSForm();
+                    targetForm = pos;
                     activeButton = btnNavPOS;
                     sectionTitle = "نقطة البيع - شاشة الكاشير السريع (POS)";
-                    _posForm?.RefreshData();
+                    pos.RefreshData();
                     break;
                 case "Sales":
-                    targetForm = _salesForm;
+                    var sales = GetSalesForm();
+                    targetForm = sales;
                     activeButton = btnNavSales;
                     sectionTitle = "سجل فواتير وتقارير المبيعات العامة";
-                    _salesForm?.RefreshData();
+                    sales.RefreshData();
                     break;
                 case "Products":
-                    targetForm = _productsForm;
+                    var prods = GetProductsForm();
+                    targetForm = prods;
                     activeButton = btnNavProducts;
                     sectionTitle = "إدارة المنتجات والمخزون والتسعير";
-                    _productsForm?.RefreshData();
+                    prods.RefreshData();
                     break;
                 case "Purchases":
-                    targetForm = _purchasesForm;
+                    var purchases = GetPurchasesForm();
+                    targetForm = purchases;
                     activeButton = btnNavPurchases;
                     sectionTitle = "إدارة فواتير المشتريات والموردين";
-                    _purchasesForm?.RefreshData();
+                    purchases.RefreshData();
                     break;
                 case "Shifts":
-                    targetForm = _shiftsForm;
+                    var shifts = GetShiftsForm();
+                    targetForm = shifts;
                     activeButton = btnNavShifts;
                     sectionTitle = "نظام الورديات والحضور والانصراف وحساب ساعات العمل";
-                    _shiftsForm?.RefreshData();
+                    shifts.RefreshData();
                     break;
                 case "Users":
                     if (!isAdmin)
@@ -271,10 +340,11 @@ namespace POS
                         MessageBox.Show("عذراً، هذه الشاشة مخصصة لمدير النظام فقط.", "صلاحية مقيدة", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-                    targetForm = _usersForm;
+                    var users = GetUsersForm();
+                    targetForm = users;
                     activeButton = btnNavUsers;
                     sectionTitle = "إدارة المستخدمين وصلاحيات الموظفين";
-                    _usersForm?.RefreshData();
+                    users.RefreshData();
                     break;
                 case "Settings":
                     if (!isAdmin)
@@ -282,10 +352,11 @@ namespace POS
                         MessageBox.Show("عذراً، هذه الشاشة مخصصة لمدير النظام فقط.", "صلاحية مقيدة", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
-                    targetForm = _settingsForm;
+                    var settings = GetSettingsForm();
+                    targetForm = settings;
                     activeButton = btnNavSettings;
                     sectionTitle = "إعدادات النظام العامة والتحكم بالصلاحيات والنسخ الاحتياطي";
-                    _settingsForm?.RefreshData();
+                    settings.RefreshData();
                     break;
             }
 
